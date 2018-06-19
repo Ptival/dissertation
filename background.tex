@@ -1,0 +1,190 @@
+This section describes the various concepts that are necessary to understand the
+rest of the dissertation.
+
+\section{Static typing}
+\label{static-typing}
+
+% Define static typing
+
+% Discipline of prescribing valid programs from invalid ones
+
+Programmers typically don't write programs by simply manipulating bits in the
+computer's memory.  Most languages offer abstraction mechanisms that lets their
+user reason at a higher level.  One such high-level abstraction is the notion of
+a \define{data type}.  A programmer will want to manipulate structured data such
+as numbers, Boolean values, or compound values made out of different values
+organized together in some fashion.  They will then use, and possibly define, a
+set of operations to work on values from different data types.  Those operations
+might sometimes be entirely oblivious in what data type they are manipulating,
+but frequently, they will expect some properties out of their input values, and
+provide some properties for their output values.
+
+A \define{type system} is a mechanism that enforces some discipline about
+the proper use of values in a program according to a set of typing rules.
+\define{Typing rules} usually ascribe a type to every value of a program, and
+prescribe the ways in which values of a given type may be used in contexts of a
+given type.  A \define{type} can be anything from a simple classification of
+values according to their nature (for instance, distinguishing numbers from
+functions), to more semantic rules that may sometimes be defined by the user of
+the language.
+
+A \define{static} typing discipline allows the programming environment (be it a
+compiler, an interpreter, or any other language tool) to reject programs
+\textbf{before they run}.  There can be several reasons for why one might want
+to reject a program.  The simplest one is a breach of expectation between a
+value and the context into which it is passed: this is usually called a
+\define{type error}.  For instance, a function declared to expect a number input
+might not be allowed to receive a string instead.
+
+An other, less obvious, reason for rejecting a syntactically-valid,
+semantically-valid program, is that it makes the static enforcement of rules too
+complicated.  For instance, dependent type systems (covered
+in Section~\ref{dependent-types}) cannot safely ensure their typing discipline in the
+presence of arbitrary recursion.  In order to reject programs before they are
+run, they must restrict the programs they allow to some subsets of ``safe''
+recursive programs.
+
+While the idea of preventing programmers from running syntactically-valid
+programs might seem like a nuisance, it provides at least two benefits.  From
+the programmer's point of view, a disciplined use of the type system can help
+them catch, before their program is run, conditions that would make the program
+crash were it to be executed.  These conditions can be prevented before they
+happen, and often are indicated at locations close to the source of error.  From
+the programs and programmers receiving the statically-typed code, the typing
+discipline provides information that can be leveraged as documentation, or in
+order to perform code analyses and transformations that would be intractable or
+unsafe without types.
+
+\section{Dependent types}
+\label{dependent-types}
+
+This thesis will often focus on dependent type systems.  A \define{dependent}
+type is a type whose definition depends on a program value.  Non-dependent type
+systems can only express lightweight relationships between the input and output
+of functions, as well as lightweight constraints on what these inputs and
+outputs may be.  In a dependent type system, one can express such types as
+\textit{the type of functions that take a number and return a larger number}, or
+\textit{the type of positive numbers that are less than 256}.  In order to
+express these, one must be able to mention in the type, either concrete values
+like \textit{256}, or program values like the input value of the function.
+
+In order to define functions whose output type depend on the value of their
+input, dependent type systems must have a \define{type former} (i.e. a syntactic
+construct) for \define{dependent functions}~\footnotemark.  In the literature,
+the type of functions which accept an input value $a$ of type $A$, and return an
+output value of type $B(a)$ (where $B$ is a family of types indexed by values of
+type $A$), is written as either:
+
+\footnotetext{ \textit{Dependent functions} are sometimes referred to as
+\textit{dependent products} in the literature.  Unfortunately, the similar but
+different concept of a \textit{dependent pair} is sometimes referred to as
+either a \textit{dependent sum} or, confusingly, a \textit{dependent product}.
+Since both views are reasonable, and in order to avoid confusion, we will
+strictly adhere to the unambiguous names of \textit{dependent function type} and
+\textit{dependent pair type} in this dissertation. }
+
+\begin{itemize}
+
+  \item \mintinline{agda}{(a : A) → B(a)} % $(a : A) \rightarrow B(a)$
+
+  \item \mintinline{agda}{∀(a : A), B(a)}
+  % $\forall (a : A), B(a)$
+        ~\footnote{The $\forall$ symbol is pronounced ``for all''.}
+
+  \item \mintinline{agda}{Π(a : A) → B(a)} % $\Pi (a : A) \rightarrow B(a)$
+
+\end{itemize}
+
+We will tend to use the latter, and refer to those types as $\Pi$-types.  When a
+dependent function takes several arguments, we will group them all into a single
+$\Pi$, and coalesce successive values of the same type in groups under the same
+parenthesis.  In practice, this means that the types:
+
+\begin{minted}{agda}
+Π (a : X) (b c : Y) (d : Z) → R(a, b, c, d)
+\end{minted}
+
+and
+
+\begin{minted}{agda}
+Π (a : X) → Π (b : Y) → Π (c : Y) → Π (d : Z) → R(a, b, c, d)
+\end{minted}
+
+are syntactically equivalent, and we will favor the former (shorter) syntax.
+
+% Introduce Π-telescopes
+
+Nested $\Pi$-types can actually depend on the values of previously-quantified
+variables.  We call a \define{$\Pi$-telescope} any sequence of $\Pi$-types
+nested within one another.  We can summarize them in a list of bindings and
+their types, where each type is allowed to, but does not have to, depend on
+previous bindings.  For instance, the type:
+
+\begin{minted}{agda}
+Π (a : X) (b : Y(a)) (c : Z(a)) → R(a, b, c)
+\end{minted}
+
+contains a telescope of three bindings, where the last two bindings' types
+depend on the first binding.
+
+Dependent types may also manifest themselves in other forms depending on the
+constructs of the language that integrates them.  For instance, languages with
+records may want to allow dependent records: the type of some fields may depend
+on the value of some other fields.  A typical example is the packing of a plain data structure with extra properties that we want it to have, for instance, ensuring the binary-search-tree (or \define{BST}) property of an arbitrary binary tree:
+
+\begin{minted}{agda}
+data BST a = MkBST
+  { tree : Tree a
+  , bst  : IsBST tree
+  }
+\end{minted}
+
+\section{Proof assistants}
+
+\begin{itemize}
+
+  \item Define proof assistants
+
+        \begin{itemize}
+
+          \item Present Coq-style proof assistants, introducing concepts of
+proof contexts, goals, and tactics
+
+          \item Emphasize the distinction between the program text, and the
+program being built by the assistant
+
+          \item X
+
+        \end{itemize}
+
+\end{itemize}
+
+\section{Program refactoring}
+
+\begin{itemize}
+
+  \item Define the notion of a refactoring
+
+        \begin{itemize}
+
+          \item Define the notion of semantic preservation
+
+          \item X
+
+          \item X
+
+        \end{itemize}
+
+  \item X
+
+        \begin{itemize}
+
+          \item X
+
+          \item X
+
+          \item X
+
+        \end{itemize}
+
+\end{itemize}
