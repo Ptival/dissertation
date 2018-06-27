@@ -4,8 +4,8 @@ A proof assistant is typically composed of several interacting pieces:
 
 \begin{itemize}
 
-  \item a \emph{programming language}, allowing the user can define programs
-that they wish to execute and/or reason about formally,
+  \item a \emph{programming language}, allowing the user to define programs that
+they wish to execute and/or reason about formally,
 
   \item a \emph{specification language}, allowing the user to define properties
 of programs, or general theorems, that they wish to prove,
@@ -33,17 +33,16 @@ to use in order to progress in building the proof term.  These tactics include:
 
 \begin{itemize}
 
-  \item proof-solving tactics, which attempt to terminate a sub-proof by
-constructing the complete proof term, therefore finishing this part of the
-proof,
+  \item \emph{proof-solving tactics}, which attempt to complete a proof
+obligation by constructing the complete proof,
 
-  \item case-splitting tactics, which break a proof obligation into several
-sub-obligations, by using some rule of the formal logic with multiple
+  \item \emph{case-splitting tactics}, which break a proof obligation into
+several sub-obligations, by using some rule of the formal logic with multiple
 antecedents,
 
-  \item bookkeeping tactics, which modify the context or the goal of the current
-proof obligation, either by adding/removing/reordering/rewriting in hypotheses,
-or by performing modifications in the goal.
+  \item \emph{bookkeeping tactics}, which modify the context or the goal of the
+current proof obligation, either by adding/removing/reordering/rewriting in
+hypotheses, or by performing modifications in the goal.
 
 \end{itemize}
 
@@ -141,7 +140,7 @@ P, Q : nat -> Prop
 x, y, z : nat
 H1 : Q z → x = y
 H2 : P x
-==================   (* 2. In the original context, one must prove the antecedent. *)
+==================   (* 2. One must prove the antecedent. *)
 Q z
 \end{minted}
 
@@ -160,7 +159,7 @@ P, Q : nat -> Prop
 x, y, z : nat
 H1 : Q z → x = y
 H2 : P x
-==================   (* 2. In the original context, one must prove the antecedent. *)
+==================   (* 2. Again, one must prove the antecedent. *)
 Q z
 \end{minted}
 
