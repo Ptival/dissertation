@@ -100,15 +100,15 @@ dependent function takes several arguments, we will group them all into a single
 $\Pi$, and coalesce successive values of the same type in groups under the same
 parenthesis.  In practice, this means that the types:
 
-\begin{minted}{agda}
-Π (a : X) (b c : Y) (d : Z) → R(a, b, c, d)
-\end{minted}
+\mintinline{agda}{
+  Π (a : X) (b c : Y) (d : Z) → R(a, b, c, d)
+}
 
 and
 
-\begin{minted}{agda}
-Π (a : X) → Π (b : Y) → Π (c : Y) → Π (d : Z) → R(a, b, c, d)
-\end{minted}
+\mintinline{agda}{
+  Π (a : X) → Π (b : Y) → Π (c : Y) → Π (d : Z) → R(a, b, c, d)
+}
 
 are syntactically equivalent, and we will favor the former (shorter) syntax.
 
@@ -120,9 +120,9 @@ nested within one another.  We can summarize them in a list of bindings and
 their types, where each type is allowed to, but does not have to, depend on
 previous bindings.  For instance, the type:
 
-\begin{minted}{agda}
-Π (a : X) (b : Y(a)) (c : Z(a)) → R(a, b, c)
-\end{minted}
+\mintinline{agda}{
+  Π (a : X) (b : Y(a)) (c : Z(a)) → R(a, b, c)
+}
 
 contains a telescope of three bindings, where the last two bindings' types
 depend on the first binding.

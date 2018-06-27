@@ -1,0 +1,121 @@
+\section{Background}
+
+A proof assistant is typically composed of several interacting pieces:
+
+\begin{itemize}
+
+  \item a \emph{programming language}, allowing the user can define programs
+that they wish to execute and/or reason about formally,
+
+  \item a \emph{specification language}, allowing the user to define properties
+of programs, or general theorems, that they wish to prove,
+
+  \item a \emph{proof language}, allowing the user to build those proofs.
+
+\end{itemize}
+
+Note that these languages need not be different from one another, and several
+languages can help fulfill one of those purposes.  For instance, in the Coq
+proof assistant, the programming language and the specification language are the
+same language, called \Gallina{}, and the proof language can be either
+\Gallina{} itself, or a proof-building scripting language called \Ltac{}.
+
+Learning to use such a proof assistant therefore requires familiarizing oneself
+with not only a programming language with a complex type system, but also the
+logical foundation of formal proofs, and the idiosyncrasies of the proof
+environment of choice.
+
+For the Coq proof assistant, novice users are generally taught to use \Ltac{} to
+build proofs, since manually building \Gallina{} terms requires more expertise
+and is usually tedious.  An \Ltac{} script is a sequence of commands (usually
+called \define{tactics}) directing the proof assistant as to what logical rules
+to use in order to progress in building the proof term.  These tactics include:
+
+\begin{itemize}
+
+  \item proof-solving tactics, which attempt to terminate a sub-proof by
+constructing the complete proof term, therefore finishing this part of the
+proof,
+
+  \item case-splitting tactics, which break a proof obligation into several
+sub-obligations, by using some rule of the formal logic with multiple
+antecedents,
+
+  \item bookkeeping tactics, which modify the context or the goal of the current
+proof obligation, either by adding/removing/reordering/rewriting in hypotheses,
+or by performing modifications in the goal.
+
+\end{itemize}
+
+A typical proof can therefore be thought of as a tree, branching on
+case-splitting tactics, extending on bookkeeping tactics, and with proof-solving
+tactics as leaves.  The proving process is rarely linear: many proofs will
+require using concepts such as \emph{case analysis} and \emph{induction} in
+order to break down a complex goal into specialized sub-goals that can be solved
+separately.  In those sub-cases, one will often need to perform applications and
+rewriting using existing theorems.
+
+The \define{application} of a theorem can be performed on either a hypothesis or
+a goal.  A theorem or hypothesis can be applied to a hypothesis if the
+hypothesis matches one of the antecedents of the theorem.  It then yields the
+conclusion of the theorem as a hypothesis, but also adds new obligations for all
+the other antecedents. That is, given the context:
+
+\begin{minted}{coq}
+A, B, C : Prop
+H1 : A → B → C
+H2 : B
+==================
+C
+\end{minted}
+
+applying hypothesis \mintinline{coq}{H1} to hypothesis \mintinline{coq}{H2}
+yields the following two obligations:
+
+\begin{minted}{coq}
+A, B, C : Prop
+H1 : A → B → C
+H2 : C
+==================   (* 1. Hypothesis H2 became the conclusion of H1. *)
+C
+
+A, B, C : Prop
+H1 : A → B → C
+H2 : B
+==================   (* 2. In the original context, one must prove A. *)
+A
+\end{minted}
+
+Conversely, a theorem or hypothesis can be applied to the goal of the current
+obligation if its conclusion matches the goal.  It yields an obligation for each
+antecedent.  For instance, applying hypothesis \mintinline{coq}{H1} from the
+original context to the goal would yield the following two obligations:
+
+\begin{minted}{coq}
+A, B, C : Prop
+H1 : A → B → C
+H2 : B
+==================   (* 1. One must prove the first antecedent A. *)
+A
+
+A, B, C : Prop
+H1 : A → B → C
+H2 : B
+==================   (* 2. One must prove the second antecedent B. *)
+B
+\end{minted}
+
+% TODO
+
+We identified three challenges to beginners in the learning process:
+
+\begin{enumerate}
+
+  \item conceptualizing and keeping track of the \emph{proof tree structure}
+while building proofs,
+
+  \item identifying the effects of an \Ltac{} tactic on the proof context,
+
+  \item identifying tactics
+
+\end{enumerate}

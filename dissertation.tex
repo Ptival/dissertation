@@ -31,6 +31,16 @@
 	\settowidth\cvlabelwidth{\cvlabelfont 0000--0000}%
 }
 
+\setminted{
+  linenos=true,
+  breaklines=true,
+  encoding=utf8,
+  fontsize=\footnotesize,
+  frame=lines
+}
+\AtBeginEnvironment{minted}{\dontdofcolorbox}
+\def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+
 % OGS recommends increasing the margins slightly.
 \increasemargins{.1in}
 
@@ -235,7 +245,7 @@ TODO
 
 \chapter{Related work}
 
-\chapter{PeaCoq: novel display and user interaction in proof assistants}
+\input{peacoq}
 
 \chapter{Assisted refactoring in functional languages}
 
