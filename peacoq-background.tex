@@ -105,16 +105,84 @@ H2 : B
 B
 \end{minted}
 
+\define{Rewriting} with a theorem or a hypothesis is a similar concept, but for
+dealing with equalities (or, more generally, structures that admit equivalence
+relations, called \define{setoids}).  We will focus on the simple case of
+equalities.  Again, one can either use rewrite in a hypothesis, or over the
+goal.  One can rewrite with a theorem or hypothesis as long as its conclusion is
+an equality.  The rewriting consists of replacing one side of the equality with
+the other side, for a given occurrence.  It is a directed operation, either
+replacing the left operand of the binary relation with the right one, or
+vice-versa.
+
+For instance, given this original context:
+
+\begin{minted}{coq}
+P, Q : nat -> Prop
+x, y, z : nat
+H1 : Q z → x = y
+H2 : P x
+==================
+P y
+\end{minted}
+
+rewriting from left to right with hypothesis \mintinline{coq}{H1} in hypothesis
+\mintinline{coq}{H2} yields the two obligations:
+
+\begin{minted}{coq}
+P, Q : nat -> Prop
+x, y, z : nat
+H1 : Q z → x = y
+H2 : P y
+==================   (* 1. x has been replaced with y in H2. *)
+P y
+
+P, Q : nat -> Prop
+x, y, z : nat
+H1 : Q z → x = y
+H2 : P x
+==================   (* 2. In the original context, one must prove the antecedent. *)
+Q z
+\end{minted}
+
+while rewriting from right to left with hypothesis \mintinline{coq}{H1} in the
+goal yields the two obligations:
+
+\begin{minted}{coq}
+P, Q : nat -> Prop
+x, y, z : nat
+H1 : Q z → x = y
+H2 : P x
+==================   (* 1. y has been replaced with x in the goal. *)
+P x
+
+P, Q : nat -> Prop
+x, y, z : nat
+H1 : Q z → x = y
+H2 : P x
+==================   (* 2. In the original context, one must prove the antecedent. *)
+Q z
+\end{minted}
+
+A novice user will need to learn to use these tactics effectively, but will also
+need to learn about the families of theorems that are applicable in their proof
+development.  For instance, the Coq prelude contains 106 equality theorems, and
+importing the module about lists increases this number to 1006.  While there are
+facilities to look up theorems of interest based on the shape of their type,
+this still lacks in ease of discovery, and it is not rare for one to miss or
+re-derive an existing theorem.
+
 % TODO
 
-We identified three challenges to beginners in the learning process:
+These are the three challenges we have identified in the learning process for
+novice users:
 
 \begin{enumerate}
 
   \item conceptualizing and keeping track of the \emph{proof tree structure}
 while building proofs,
 
-  \item identifying the effects of an \Ltac{} tactic on the proof context,
+  \item identifying the effects of a tactic on the proof context,
 
   \item identifying tactics
 
