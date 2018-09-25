@@ -1,0 +1,196 @@
+\subsection{Global design of \PeaCoq{}}
+
+We will discuss the global architecture of \PeaCoq{} that allows us to build all
+the features we mentioned.  Each feature will then be described individually.
+
+\PeaCoq{} is designed following a client-server architecture.  The server
+handles the \Coq{} process, and exposes end-points to communicate with it via
+HTTP.\@ The client is a web application, containing the front-end view that users
+interact with, and facilities for driving the interactions with the server.  Let
+us describe each side further.
+
+\tikzset{>=latex}
+
+\begin{tikzpicture}[node distance=1.5cm]
+
+  % \tikzstyle{state} = [draw, very thick, fill=white, rectangle, minimum height=3em, minimum width=7em, node distance=8em, font={\sffamily\bfseries}]
+  % \tikzstyle{stateEdgePortion} = [black,thick];
+  % \tikzstyle{stateEdge} = [stateEdgePortion,->];
+  % \tikzstyle{edgeLabel} = [pos=0.5, text centered, font={\sffamily\small}];
+
+  \tikzstyle{outer} = [rectangle,draw = black,thick,inner sep = 10pt];
+  \tikzstyle{inner} = [rectangle,rounded corners,draw = black,thick];
+  \tikzstyle{arrow} = [thick];
+
+  \node [inner]                         (snap)       {Snap Server};
+  \node [inner,below=of snap]           (sapi)       {SerTop (SerAPI)};
+  \node [below=of sapi]                 (coq-label)  {Coq};
+  \node [inner, below=0cm of coq-label] (plugin)     {PeaCoq plug-in};
+
+  \node [inner,fit={(coq-label) (plugin)}] (coq) {};
+
+  \node [above=0.5cm of snap] (backend-label) {Back-end};
+  \node [outer,fit={(backend-label) (snap) (sapi) (coq)}] (backend) {};
+
+  \draw[<->,ultra thick] (snap.south) -- (sapi.north);
+  \draw[<->,ultra thick] (sapi.south) -- (coq.north);
+
+  \node [inner,right=5.5cm of snap] (driver)     {Driver};
+  \node [inner,below=of driver]     (editor)     {Editor};
+  \node [inner,left=of editor]      (prooftree)  {Proof-tree};
+  \node [inner,right=of editor]     (automation) {Automation};
+
+  \draw[<->,ultra thick] (driver.south west) -- (prooftree.north);
+  \draw[<->,ultra thick] (driver.south) -- (editor.north);
+  \draw[<->,ultra thick] (driver.south east) -- (automation.north);
+
+  \node [above=0.5cm of driver] (frontend-label) {Front-end};
+  \node [outer,fit={(frontend-label) (driver) (prooftree) (editor) (automation)}] (frontend) {};
+
+  \draw[<->,ultra thick] (snap.east) -- (driver.west);
+
+\end{tikzpicture}
+
+\subsubsection*{Back-end / Server}
+
+In order to let front-ends interact with it, the \Coq{} process exposes an API
+that serializes some meta-data and accepts certain commands.  Unfortunately,
+prior to \PeaCoq{}'s development, very few tools had used this API, and as a
+result, it is lacking both in polish and in features.
+
+The protocol it uses is based upon XML syntax, and exposes commands to
+manipulate an abstract document (a collection of \Coq{} sentences) and command
+and observe its execution.
+
+While developing \PeaCoq{}, we interacted with Emilio Jesús Gallego Arias, who
+was developing a layer over this XML protocol, named \SerAPI{} (for
+serialization API).  This layer offers a less rough API based on s-expressions,
+abstracting over some minute details of \Coq{}'s implementation.
+
+However, at the time \PeaCoq{} was built, \Coq{} was not exposing enough of its
+internals for our needs.  In order to remedy this, we also built a \Coq{}
+plug-in to expose this data.  Plug-ins circumvent the IDE API by directly being
+compiled and loaded alongside the \Coq{} code: thus, they have access to all the
+public interfaces of \Coq{}'s internal modules.  Once our plug-in is loaded, it
+registers as a \Vernacular{} command that can be invoked either by users, or
+through the IDE API.\@
+
+In order to communicate with front-ends, the back-end is driven by a HTTP
+server, based on \Haskell{}'s \Snap{} framework.  The details of its
+implementation are fairly mundane: it simply listens to requests from the
+front-end, passes them down to \Coq{} through \SerAPI{}, and forwards the
+responses back without much processing.  However, this architecture provided
+several advantages:
+
+\begin{itemize}
+
+  \item Since the back-end communicates with the front-end over HTTP, the two
+need not be on the same physical machine.  For instance, we have had the
+back-end running on a powerful Internet-facing machine, and connected it from a
+less powerful phone, on public transit.  It worked flawlessly, even in the
+presence of computation-intensive loads like our automation, because the
+computation was happening server-side.  Meanwhile, the lightweight client was
+only processing display and communication with the server.
+
+  \item The back-end was built in such a way that it could accept multiple
+connections at once.  Each connection would spawn its own, separate instance of
+\Coq{}.  This means that multiple clients could independently connect and work
+on the same server.  We used this in our study at the University of Washington,
+where one server was shared among all students, who did not need to install
+\Coq{} on their machine.
+
+\end{itemize}
+
+\subsubsection*{Front-end / Client}
+
+The front-end of \PeaCoq{} is a simple web application.  It is currently written
+in \TypeScript{}, a statically-typed dialect of \JavaScript{}.  We call driver
+the part of the code responsible for communicating with the back-end.  We use a
+reactive programming library called \RxJS{}, which provides a stream abstraction
+for sequences of values.  Messages from the back-end are published as streams,
+and each of the components involved in the front-end (namely, the editor, the
+proof-tree, and the automation layer) can subscribe to those messages they need
+to observe.  Conversely, those components publish streams of commands they'd
+like the back-end to process, which the driver subscribes to, and orchestrates
+the dispatch of.
+
+This orchestration can require some finesse.  The API provided by \Coq{} is
+fairly stateless, that is, \emph{not} in the sense that there are no states, but
+rather, in the sense that there is no notion of a current, mutable state.
+Instead, each state is given a unique identifier, and subsequent commands may
+explicitly state over which previous state they wish to be applied.  This
+abstraction holds well at the document level, but unfortunately, some commands
+change global, mutable flags, in ways that can be observed.
+
+In other to prevent issues with such observable, mutable state, some sequences
+of commands must be processed atomically, that is, no other action may be
+interleaved with the sequence.  In order to achieve this, the layers emit their
+commands not as a simple sequence of commands, but as a sequence of sequences of
+commands, to be dispatched atomically.
+
+This raises another concern: some atomic sequences of commands have data
+dependencies.  In particular, later commands often need to know the
+\emph{output} of previous commands.  A pervasive example of such a pattern is
+found in our automation layer, where commands must be silently tried in the
+background, their output must be gathered, and then their effect must be
+cancelled.  In order to cancel an action, we must tell \Coq{} the identifier of
+the state(s) to be cancelled, but that identifier is only know asynchronously,
+in a response from the action that created said state.
+
+Once again, this problem is easily solved by issuing atomic sequences to the
+driver not as an array of sequences, but as a stream of commands.  When the
+driver chooses to emit a given atomic sequence, it subscribes to it.  It will
+subsequently, and asynchronously, receive one or many commands, until the stream
+indicates it has completed.  Elements from this stream can be asynchronously
+built from other streams, and so we can build those dependent atomic sequences
+as:
+
+\begin{minted}{javascript}
+// By convention, we put a $ sign behind stream variables.
+const commandToCancel = new Add('Command To Cancel')
+
+const answer$ =
+  added$.filter(sameTagAs(commandToCancel))
+  .takeUntil(completed$.filter(sameTagAs(commandToCancel)))
+
+const output$ = answer$.map(...) // do what you need
+
+const cancelCommand$ =
+  answer$.map(a => new Cancel([a.stateId]))
+
+const commands$$ =
+  Rx.Observable.concat([
+    Rx.Observable.of(commandToCancel),
+    cancelCommand$
+  ])
+\end{minted}
+
+Understanding this code is not necessary, but here is a high-level explanation:
+
+\begin{itemize}
+
+  \item We create (but, do \emph{not} issue yet!) the command whose output we
+want to observe.  When a command is created, it acquires a unique tag, that is
+sent to \Coq{}, and appears in responses.  This helps us filter those answers
+that correspond to this query.
+
+  \item We preemptively subscribe to the stream of answers, looking for ones
+with the tag of our command.  In case there is no answer, we also cut this
+subscription short when the stream of completed answers emits.  Every command
+will produce such an item, so we are guaranteed to terminate.
+
+  \item We can listen to this answer, and compute our output however we see
+fit.
+
+  \item We can also listen to this answer in order to emit a cancel command for
+it.
+
+  \item The final atomic sequence of commands we send to the driver is the
+concatenation of two observables: the command, and its corresponding cancel
+command.
+
+\end{itemize}
+
+This is the most important abstraction on the front-end side.  Most of the code
+is event-driven by subscribing to those streams and producing streams of
+requests.

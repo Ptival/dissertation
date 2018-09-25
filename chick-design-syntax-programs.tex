@@ -1,0 +1,43 @@
+\subsection{Syntax of programs}\label{chick-design-syntax-programs}
+
+Our programs are defined as sequences of commands in the following vernacular
+(to borrow Coq's parlance):
+
+\begin{grammar}
+<program> ::= $\overrightarrow{ \synt{vernac} }$
+
+<vernac> ::= \ %trick LaTeX
+\alt Definition(\{ kind : <definition-kind> , name : <var>, type : <term>, body : <term> \})
+\alt Inductive(<inductive>)
+
+<definition-kind> ::= Definition | Fixpoint
+\end{grammar}
+
+Our \define{definition kinds} follow \Coq{}'s \Vernacular{} conventions: a
+\mintinline{coq}{Definition} is \emph{never} recursive, while a
+\mintinline{coq}{Fixpoint} is \emph{allowed} to be recursive.  Declarations are
+ordered, and may only depend on previous declarations.  This will ease the task
+of our repair algorithm, since dependencies are syntactically ordered.  In a
+language where declarations are allowed to depend on other declarations backward
+\emph{and} forward, we would want to repair programs according to the dependency
+tree rather than the syntactic order of declarations.
+
+Inductive definitions are not mutual, and follow the following syntax:
+
+\noindent
+\begin{grammar}
+<inductive> ::= Inductive(\{\\
+name : \synt{var},\\
+parameters : $\overrightarrow{ ( \synt{var} , \synt{term} ) }$,\\
+indices : $\overrightarrow{ ( \synt{binder} , \synt{term} ) }$,\\
+universe : \synt{universe},\\
+constructors : $\overrightarrow{ \synt{constructor} }$\\
+\})
+
+<constructor> ::= Constructor(\{\\
+name : \synt{var},\\
+parameters : $\overrightarrow{ ( \synt{binder}, \synt{term} ) }$,\\
+indices : $\overrightarrow{ \synt{term} }$\\
+\})
+\end{grammar}
+\vspace{\baselineskip}

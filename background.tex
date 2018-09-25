@@ -1,3 +1,8 @@
+% Pygments/minted put annoying boxes on Unicode because the Coq lexer is stupid
+\makeatletter
+\expandafter\def\csname PYGmonokai@tok@err\endcsname{\def\PYGmonokai@bc##1{\textcolor[rgb]{0.98,0.15,0.45}{##1}}}
+\makeatother
+
 This section describes the various concepts that are necessary to understand the
 rest of the dissertation.
 
@@ -19,14 +24,15 @@ might sometimes be entirely oblivious to what data type they are manipulating,
 but frequently, they will expect some properties out of their input values, and
 provide some properties for their output values.
 
-A \define{type system} is a mechanism that enforces some discipline about
-the proper use of values in a program according to a set of typing rules.
+A \define{type system} is a mechanism that enforces some discipline about the
+proper use of values in a program according to a set of typing rules.
 \define{Typing rules} usually ascribe a type to every value of a program, and
 prescribe the ways in which values of a given type may be used in contexts of a
 given type.  A \define{type} can be anything from a simple classification of
 values according to their nature (for instance, distinguishing numbers from
 functions), to more semantic rules that may sometimes be defined by the user of
-the language.
+the language.  In this dissertation, we will use the notation \mintinline{coq}{t
+: τ} to indicate that a term \coqinline{t} has type \coqinline{τ}.
 
 A \define{static} typing discipline allows the programming environment (be it a
 compiler, an interpreter, or any other language tool) to reject programs
@@ -58,15 +64,16 @@ unsafe without types.
 \section{Dependent types}
 \label{dependent-types}
 
-This thesis will often focus on dependent type systems.  A \define{dependent}
-type is a type whose definition depends on a program value.  Non-dependent type
-systems can only express lightweight relationships between the input and output
-of functions, as well as lightweight constraints on what these inputs and
-outputs may be.  In a dependent type system, one can express such types as
-\textit{the type of functions that take a number and return a larger number}, or
-\textit{the type of positive numbers that are less than 256}.  In order to
-express these, one must be able to mention in the type, either concrete values
-like \textit{256}, or program values like the input value of the function.
+This dissertation will often focus on dependent type systems.  A
+\define{dependent} type is a type whose definition depends on a program value.
+Non-dependent type systems can only express lightweight relationships between
+the input and output of functions, as well as lightweight constraints on what
+these inputs and outputs may be.  In a dependent type system, one can express
+such types as \textit{the type of functions that take a number and return a
+larger number}, or \textit{the type of positive numbers that are less than 256}.
+In order to express these, one must be able to mention in the type, either
+concrete values like \textit{256}, or program values like the input value of the
+function.
 
 In order to define functions whose output type depend on the value of their
 input, dependent type systems must have a \define{type former} (i.e. a syntactic
@@ -83,15 +90,19 @@ Since both views are reasonable, and in order to avoid confusion, we will
 strictly adhere to the unambiguous names of \textit{dependent function type} and
 \textit{dependent pair type} in this dissertation. }
 
+\makeatletter
+\expandafter\def\csname PYGmonokai@tok@err\endcsname{\def\PYGmonokai@bc##1{\textcolor[rgb]{0.98,0.15,0.45}{##1}}}
+\makeatother
+
 \begin{itemize}
 
-  \item \mintinline{agda}{(a : A) → B(a)} % $(a : A) \rightarrow B(a)$
+  \item \coqinline{(a : A) → B(a)} % $(a : A) \rightarrow B(a)$
 
-  \item \mintinline{agda}{∀(a : A), B(a)}
+  \item \coqinline{∀(a : A), B(a)}
   % $\forall (a : A), B(a)$
         ~\footnote{The $\forall$ symbol is pronounced ``for all''.}
 
-  \item \mintinline{agda}{Π(a : A) → B(a)} % $\Pi (a : A) \rightarrow B(a)$
+  \item \coqinline{Π(a : A) → B(a)} % $\Pi (a : A) \rightarrow B(a)$
 
 \end{itemize}
 
@@ -100,15 +111,15 @@ dependent function takes several arguments, we will group them all into a single
 $\Pi$, and coalesce successive values of the same type in groups under the same
 parenthesis.  In practice, this means that the types:
 
-\mintinline{agda}{
-  Π (a : X) (b c : Y) (d : Z) → R(a, b, c, d)
-}
+\makeatletter
+\expandafter\def\csname PYGmonokai@tok@err\endcsname{\def\PYGmonokai@bc##1{\textcolor[rgb]{0.98,0.15,0.45}{##1}}}
+\makeatother
+
+\mintinline{coq}{Π(a : X) (b c : Y) (d : Z) → R(a, b, c, d)}
 
 and
 
-\mintinline{agda}{
-  Π (a : X) → Π (b : Y) → Π (c : Y) → Π (d : Z) → R(a, b, c, d)
-}
+\mintinline{coq}{Π(a : X) → Π(b : Y) → Π(c : Y) → Π(d : Z) → R(a, b, c, d)}
 
 are syntactically equivalent, and we will favor the former (shorter) syntax.
 
@@ -120,19 +131,23 @@ nested within one another.  We can summarize them in a list of bindings and
 their types, where each type is allowed to, but does not have to, depend on
 previous bindings.  For instance, the type:
 
-\mintinline{agda}{
-  Π (a : X) (b : Y(a)) (c : Z(a)) → R(a, b, c)
+\mintinline{coq}{
+Π(a : X) (b : Y(a)) (c : Z(a)) → R(a, b, c)
 }
 
-contains a telescope of three bindings, where the last two bindings' types
-depend on the first binding.
+contains a telescope of three bindings (namely, \coqinline{a}, \coqinline{b},
+and \coqinline{c}), and the type of the last two bindings depend on the value of
+the first binding.
 
 Dependent types may also manifest themselves in other forms depending on the
 constructs of the language that integrates them.  For instance, languages with
 records may want to allow dependent records: the type of some fields may depend
-on the value of some other fields.  A typical example is the packing of a plain data structure with extra properties that we want it to have, for instance, ensuring the binary-search-tree (or \define{BST}) property of an arbitrary binary tree:
+on the value of some other fields.  A typical example is the packing of a plain
+data structure with extra properties that we want it to have, for instance,
+ensuring the binary-search-tree (or \define{BST}) property of an arbitrary
+binary tree:
 
-\begin{minted}{agda}
+\begin{minted}{coq}
 data BST a = MkBST
   { tree : Tree a
   , bst  : IsBST tree

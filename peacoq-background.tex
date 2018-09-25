@@ -54,11 +54,28 @@ order to break down a complex goal into specialized sub-goals that can be solved
 separately.  In those sub-cases, one will often need to perform applications and
 rewriting using existing theorems.
 
-The \define{application} of a theorem can be performed on either a hypothesis or
-a goal.  A theorem or hypothesis can be applied to a hypothesis if the
-hypothesis matches one of the antecedents of the theorem.  It then yields the
-conclusion of the theorem as a hypothesis, but also adds new obligations for all
-the other antecedents. That is, given the context:
+The \define{application} of a theorem (or a hypothesis) \coqinline{t : τ} can be
+performed in either a hypothesis or a goal.  To apply it in a hypothesis
+\coqinline{a : α}:
+
+\begin{itemize}
+
+  \item the type of the applied term, \coqinline{τ}, must reduce to a Π-telescope:
+
+    \coqinline{Π(t1 : τ1) ... (tn : τn) → tr : τr}
+
+  \item the type of the target hypothesis, \coqinline{α}, must be compatible
+with of one of the \coqinline{τi} (if there are multiple candidates, the first
+such \coqinline{τi} will be considered)
+
+\end{itemize}
+
+It then yields the conclusion of the applied term, \coqinline{τr}, as a
+hypothesis, but also adds new obligations for all the other antecedents in the
+telescope.  Intuitively, the applied term \coqinline{t} was fully-applied, with
+formal parameter \coqinline{τi} receiving argument \coqinline{a}, and all other
+formal parameters receiving arguments to be determined by solving the new
+obligations.  That is, given the context:
 
 \begin{minted}{coq}
 A, B, C : Prop
@@ -68,20 +85,26 @@ H2 : B
 C
 \end{minted}
 
-applying hypothesis \mintinline{coq}{H1} to hypothesis \mintinline{coq}{H2}
+applying hypothesis \mintinline{coq}{H1} in hypothesis \mintinline{coq}{H2}
 yields the following two obligations:
 
 \begin{minted}{coq}
+(* 1. Hypothesis H2 became the conclusion of H1. *)
 A, B, C : Prop
 H1 : A → B → C
 H2 : C
-==================   (* 1. Hypothesis H2 became the conclusion of H1. *)
+==================
 C
+\end{minted}
 
+and:
+
+\begin{minted}{coq}
+(* 2. In the original context, one must prove A. *)
 A, B, C : Prop
 H1 : A → B → C
 H2 : B
-==================   (* 2. In the original context, one must prove A. *)
+==================
 A
 \end{minted}
 
@@ -91,16 +114,22 @@ antecedent.  For instance, applying hypothesis \mintinline{coq}{H1} from the
 original context to the goal would yield the following two obligations:
 
 \begin{minted}{coq}
+(* 1. One must prove the first antecedent A. *)
 A, B, C : Prop
 H1 : A → B → C
 H2 : B
-==================   (* 1. One must prove the first antecedent A. *)
+==================
 A
+\end{minted}
 
+and:
+
+\begin{minted}{coq}
+(* 2. One must prove the second antecedent B. *)
 A, B, C : Prop
 H1 : A → B → C
 H2 : B
-==================   (* 2. One must prove the second antecedent B. *)
+==================
 B
 \end{minted}
 
@@ -117,8 +146,8 @@ vice-versa.
 For instance, given this original context:
 
 \begin{minted}{coq}
-P, Q : nat -> Prop
-x, y, z : nat
+P, Q : ℕ → Prop
+x, y, z : ℕ
 H1 : Q z → x = y
 H2 : P x
 ==================
@@ -129,18 +158,24 @@ rewriting from left to right with hypothesis \mintinline{coq}{H1} in hypothesis
 \mintinline{coq}{H2} yields the two obligations:
 
 \begin{minted}{coq}
-P, Q : nat -> Prop
-x, y, z : nat
+(* 1. x has been replaced with y in H2. *)
+P, Q : ℕ → Prop
+x, y, z : ℕ
 H1 : Q z → x = y
 H2 : P y
-==================   (* 1. x has been replaced with y in H2. *)
+==================
 P y
+\end{minted}
 
-P, Q : nat -> Prop
-x, y, z : nat
+and:
+
+\begin{minted}{coq}
+(* 2. One must prove the antecedent. *)
+P, Q : ℕ → Prop
+x, y, z : ℕ
 H1 : Q z → x = y
 H2 : P x
-==================   (* 2. One must prove the antecedent. *)
+==================
 Q z
 \end{minted}
 
@@ -148,18 +183,24 @@ while rewriting from right to left with hypothesis \mintinline{coq}{H1} in the
 goal yields the two obligations:
 
 \begin{minted}{coq}
-P, Q : nat -> Prop
-x, y, z : nat
+(* 1. y has been replaced with x in the goal. *)
+P, Q : ℕ → Prop
+x, y, z : ℕ
 H1 : Q z → x = y
 H2 : P x
-==================   (* 1. y has been replaced with x in the goal. *)
+==================
 P x
+\end{minted}
 
-P, Q : nat -> Prop
-x, y, z : nat
+and:
+
+\begin{minted}{coq}
+(* 2. Again, one must prove the antecedent. *)
+P, Q : ℕ → Prop
+x, y, z : ℕ
 H1 : Q z → x = y
 H2 : P x
-==================   (* 2. Again, one must prove the antecedent. *)
+==================
 Q z
 \end{minted}
 
@@ -173,8 +214,8 @@ re-derive an existing theorem.
 
 % TODO
 
-These are the three challenges we have identified in the learning process for
-novice users:
+We have identified three challenges in the learning process for novice users
+that we would like to tackle with \PeaCoq{}:
 
 \begin{enumerate}
 
@@ -183,6 +224,7 @@ while building proofs,
 
   \item identifying the effects of a tactic on the proof context,
 
-  \item identifying tactics
+  \item identifying relevant tactics that can be applied in a given proof
+obligation.
 
 \end{enumerate}

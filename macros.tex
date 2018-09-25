@@ -4,5 +4,93 @@
 \newcommand{\Language}[1]{\emph{#1}}
 \newcommand{\Gallina}{\Language{Gallina}}
 \newcommand{\Ltac}{\Language{Ltac}}
+\newcommand{\Vernacular}{\Language{Vernacular}}
+
+\newcommand{\Chick}{\Language{Chick}}
+\newcommand{\Coq}{\Language{Coq}}
+\newcommand{\Haskell}{\Language{Haskell}}
+\newcommand{\JavaScript}{\Language{JavaScript}}
+\newcommand{\PeaCoq}{\Language{PeaCoq}}
+\newcommand{\RxJS}{\Language{RxJS}}
+\newcommand{\SerAPI}{\Language{SerAPI}}
+\newcommand{\Snap}{\Language{Snap}}
+\newcommand{\TypeScript}{\Language{TypeScript}}
+
+\newcommand{\OperatorColor}{purple}
+\newcommand{\Operator}[1]{\textcolor{\OperatorColor}{\ #1\ }}
+\newcommand{\Entails}{\Operator{\vdash}}
+\newcommand{\HasType}{\Operator{:}}
+
+\newmintinline[mycoq]{coq}{fontsize=\small}
+\newcommand{\coqinline}[1]{%
+\colorbox{monokaibg}{%
+\parbox[c][2em]{\widthof{\mycoq{#1}}}{\mycoq{#1}}%
+}%
+}
+
+\newcommand{\modified}[1]{\color{yellow}{#1}}
+\newcommand{\repaired}[1]{\color{green}{#1}}
+
+\newcommand{\rulename}[1]{$\LeftTirNameStyle{#1}$}
+
+\newcommand{\RmApp}{Rm-App}
+\newcommand{\RmPi}{Rm-Pi}
+\newcommand{\InsApp}{Ins-App}
 
 %%%%% Math-mode macros %%%%%
+
+\newcommand{\opcolor}{purple}
+\newcommand{\out}[1]{ \boxed{ \textcolor{teal}{#1} } }
+\newcommand{\MathPatches}[3]{
+  #1 % \overset{#2}{\mathbin{\textcolor{\opcolor}{\rightsquigarrow}}} \out{#3}
+}
+
+\newcommand{\App}{\$}
+\newcommand{\Mod}{Mod}
+\newcommand{\Drop}{Drop}
+\newcommand{\Ins}{Ins}
+\newcommand{\Keep}{Keep}
+\newcommand{\Lam}{\lambda}
+
+\newcommand{\oMod}{\overset{\mathtt{\Mod}}}
+\newcommand{\oDrop}{\overset{\mathtt{\Drop}}}
+\newcommand{\oIns}{\overset{\mathtt{\Ins}}}
+\newcommand{\oKeep}{\overset{\mathtt{\Keep}}}
+
+\newcommand{\Cons}{::}
+\newcommand{\permute}[2]{ \overline{#2}^{\overset{#1}{\rightleftarrows} } }
+\newcommand{\permuteOp}[2]{ \overset{\overset{#1}{\rightleftarrows}}{#2} }
+
+\newcommand{\mkMathPiRaw}[4]{#3{\Pi} #4{#1} \rightarrow #2}
+\newcommand{\mkMathPi}[5]{\mkMathPiRaw{(#2 : #1)}{#3}{#4}{#5}}
+
+
+\newcommand{\MathCons}[2]{#1 \Cons #2}
+\newcommand{\MathDrop}[1]{\oDrop{\Cons} #1}
+\newcommand{\MathDropApp}[1]{\oDrop{\App} #1}
+\newcommand{\MathDropLam}[1]{\oDrop{\Lam} #1}
+\newcommand{\MathDropPi}[1]{\oDrop{\Pi} #1}
+\newcommand{\MathHole}{\texttt{\_}}
+\newcommand{\MathIns}[2]{#1 \oIns{\Cons} #2}
+\newcommand{\MathInsApp}[2]{\mkMathApp{#1}{#2}{\oIns}}
+\newcommand{\MathInsAppOp}{\oIns{\App}}
+\newcommand{\MathInsLam}[2]{\mkMathLam{#1}{#2}{\oIns}{}}
+\newcommand{\MathInsLamOp}{\oIns{\Lam}}
+\newcommand{\MathInsPi}[3]{\mkMathPi {#1}{#2}{#3}{\oIns}{}}
+\newcommand{\MathInsPiOp}{\oIns{\Pi}}
+\newcommand{\MathLam}[2]{\mkMathLam{#1}{#2}{}{}}
+\newcommand{\MathLams}[3]{\mkMathLam{#1}{#2}{}{\BarCount{#3}}}
+\newcommand{\MathKeepPiOp}{\oKeep{\Pi}}
+\newcommand{\MathMod}[2]{#1 \oMod{\Cons} #2}
+\newcommand{\MathModAppOp}{\oMod{\App}}
+\newcommand{\MathModLamOp}{\oMod{\Lam}}
+\newcommand{\MathModPiOp}{\oMod{\Pi}}
+\newcommand{\MathPermute}[2]{\permuteOp{#1}{\Cons} #2}
+\newcommand{\MathPermuteLams}[2]{\permuteOp{#1}{\lambda} #2}
+\newcommand{\MathPermutePis}[2]{\permuteOp{#1}{\Pi} #2}
+\newcommand{\MathPi}[3]{\mkMathPi{#1}{#2}{#3}{}{}}
+\newcommand{\MathPis}[4]{\mkMathPi{#1}{#2}{#3}{}{\BarCount{#4}}}
+\newcommand{\MathReplace}[1]{#1} % \thickul{#1}}
+\newcommand{\MathSame}{\mathds{1}}
+
+\newcommand{\mkMathApp}[3]{#1 #3{ \$ } #2}

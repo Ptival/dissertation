@@ -1,5 +1,6 @@
 *.aux
 *.bbl
+*.bcf
 *.blg
 *.cls
 *.dvi
@@ -27,5 +28,7 @@
 *.maf
 *.mtc
 *.mtc0
+*.swp
+*.xml
 /.auctex-auto
 /_minted-dissertation

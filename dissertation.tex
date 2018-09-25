@@ -5,7 +5,7 @@
 %\usepackage{mathptmx}
 
 \usepackage{fontspec}
-\setmainfont{Times New Roman}
+\setmainfont{TeX Gyre Pagella}
 \setmonofont{DejaVuSansMono}
 %\renewcommand{\familydefault}{\sfdefault}
 %\usepackage[scaled=1]{helvet}
@@ -16,39 +16,72 @@
 \usepackage{booktabs}
 \usepackage{ragged2e}
 \usepackage{microtype}
-\usepackage[breaklinks=true,pdfborder={0 0 0}]{hyperref}
+
+\usepackage[numbers]{natbib}
+%\usepackage[style=ieee,natbib=true]{biblatex}
+
 \usepackage{graphicx}
 
 % Valentin
+\usepackage{amsmath}
 \usepackage[english]{babel}
+\usepackage{color}
 \usepackage{DejaVuSansMono}
+\usepackage{dsfont}
 \let\textlozenge\relax
+\usepackage[inline]{enumitem}
+\usepackage{graphicx}
 %\usepackage{gfsdidot}
+\usepackage{mathpartir}
+\usepackage{mdframed}
 \usepackage{minted}
+\usemintedstyle{monokai}
 \usepackage[parfill]{parskip}
+%\usepackage{showframe}
+\usepackage{syntax}
+\usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz
+\usepackage{tikz}
+\usepackage{xpatch}
+\usepackage[breaklinks=true,pdfborder={0 0 0}]{hyperref}
+
+\usetikzlibrary{arrows, calc, fit, positioning, shapes}
+\graphicspath{ {./images/} }
 
 \AtBeginDocument{%
 	\settowidth\cvlabelwidth{\cvlabelfont 0000--0000}%
 }
 
+\definecolor{monokaibg}{HTML}{272822}
 \setminted{
+  bgcolor=monokaibg,
   linenos=true,
+  style=monokai,
   breaklines=true,
   encoding=utf8,
-  fontsize=\footnotesize,
-  frame=lines
+  fontsize=\normalsize,
+  baselinestretch=1,
 }
-\AtBeginEnvironment{minted}{\dontdofcolorbox}
-\def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+
+\makeatletter
+% \AtBeginEnvironment{minted}{\dontdofcolorbox}
+% \def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+% \xpatchcmd{\inputminted}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+% \xpatchcmd{\mintinline}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+
+% \expandafter\def\csname PYGmonokai@tok@err\endcsname{
+%   \def\PYGmonokai@tc##1{\textcolor[rgb]{0.59,0.88,0.31}{##1}}
+%   \def\PYGmonokai@bc##1{\setlength{\fboxsep}{0pt}\colorbox[rgb]{0.88,0.00,0.06}{\strut ##1}}
+% }
+\makeatother
 
 % OGS recommends increasing the margins slightly.
 \increasemargins{.1in}
 
 % These are just for testing/examples, delete them
-\usepackage{trace}
+%\usepackage{trace}
 %\usepackage{showframe} % This package was just to see page margins
-\usepackage[english]{babel}
-\usepackage{blindtext}
+%\usepackage[english]{babel}
+%\usepackage{blindtext}
 \overfullrule5pt
 % ---
 
@@ -249,6 +282,8 @@ TODO
 
 \chapter{Assisted refactoring in functional languages}
 
+\input{chick}
+
 \chapter{Assisted refactoring in proof assistants}
 
 \chapter{Takeaways}
@@ -259,7 +294,7 @@ TODO
 
 % Stuff at the end of the dissertation goes in the back matter
 \backmatter
-\bibliographystyle{plain} % Or whatever style you want like plainnat
-\bibliography{references}
+\bibliographystyle{plainnat} % Or whatever style you want like plainnat
+\bibliography{bibliography}
 
 \end{document}

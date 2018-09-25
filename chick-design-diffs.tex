@@ -1,0 +1,244 @@
+\subsection{Describing program modifications with diffed data structures}\label{chick-design-diffs}
+
+We define a family of data types that allows us to capture changes made to
+programs from the language presented in
+section~\ref{chick-design-syntax-programs}.  We will refer to these descriptions
+of changes as \textit{diffs}.  We will usually denote a \textit{diff type}
+$\delta_{\tau}$ if it corresponds to values of the diffed type $\tau$.  For
+instance, the type $\delta_{\text{universe}}$ would capture how values of type
+\coqinline{universe} may have been modified).
+
+Importantly, note that we are not talking about values and types as they appear
+in the user's program, but rather, about the internal values and types of the
+meta-language.  For instance, if a user changes a \coqinline{bool} value in
+their program from \coqinline{true} to \coqinline{false}, we will capture this
+change using $\delta_{\text{term}}$, the diff type for $\synt{term}$; whereas
+values of the diff type $\delta_{\text{bool}}$ would describe changes made to
+boolean flags in the meta-language.
+
+When the user makes a change to their program, we will attempt to guess the
+structure of their changes, as a value of one of the program diff type
+$\delta_{\text{program}}$.  To illustrate the kind of changes we are interested
+in describing, let us go back to our motivating example in
+Figure~\ref{listtovec}, where we can observe the following user-provided
+modifications (dashed blue outline):
+
+\begin{enumerate}
+
+\item they renamed \coqinline{list} into \coqinline{vec},
+
+\item added an index of type \coqinline{nat},
+
+\item renamed constructor \coqinline{nil} into \coqinline{vnil},
+
+\item instantiated the index for the first constructor with \coqinline{O},
+
+\item renamed constructor \coqinline{cons} into \coqinline{vcons},
+
+\item added a parameter \coqinline{n} of type \coqinline{nat} to the second
+  constructor,
+
+\item updated the recursive occurrence's name,
+
+\item updated the recursive occurrence's index,
+
+\item and instantiated the index for the second constructor with \coqinline{(S n)}.
+
+\end{enumerate}
+
+Intuitively, we want to capture changes like insertion, modifications,
+deletions, and permutations, at all syntactic levels of the meta-language
+(within terms, within inductive declarations).  We will use the same
+descriptions to capture user-provided and repair-generated modifications.
+
+Every diff type is accompanied by a patching function, which, given an element
+of the diffed type and an element of the diff type produces, when successful, a
+patched element.  This operation is partial for many diff types, because they
+often capture modifications that only make sense for certain constructors of the
+diffed type: for instance, a diff that says the head of a list has been modified
+does not apply to the empty list.  We will overload the notation
+$\MathPatches{x}{\delta_x}{x'}$ to indicate that $x'$ is the (optional) value
+obtained when (successfully) patching $x$ according to the diff $\delta_x$,
+using the relevant patching function for that diff type.  In all of our
+notations, we use a black frame and a teal highlight to indicate that a value is
+an output.
+
+\subsection{Atomic diff}
+
+There are many data types for which we will only capture changes at an atomic
+granularity: either the value is the same in the new program, or it has been
+replaced with a different, unrelated value.  For instance, a binder can either
+have the same name, or have been renamed.  Similarly, the only possible change
+to the recursive flag of a definition is to be atomically changed to a different
+value.  The parameterized $\delta_{atomic}$ diff type captures such cases for a
+given type $\tau$:
+
+\begin{grammar}
+<$\delta_{atomic}\ \tau$> ::= \ %trick LaTeX
+\alt $\MathSame$                        \hfill (unchanged)
+% \alt $\MathReplace{\langle\tau\rangle}$ \hfill (replaced)
+\end{grammar}
+%
+with the following semantics:
+
+\begin{mathpar}
+
+  {
+    \inferrule*
+    [right=Identity]
+    {  }
+    {\MathPatches{x}{\MathSame}{x}}
+  }
+
+  {
+    \inferrule*
+    [right=Replace]
+    {  }
+    {\MathPatches{x}{\MathReplace{y}}{y}}
+  }
+
+\end{mathpar}
+
+\subsection{List diff} \label{list-diff}
+
+For lists, we provide a rich selection of diff operations.  The aim is not to
+have a canonical representation, but rather to capture closely the intent of
+the user modifications:
+
+\begin{grammar}
+<$\delta_{\text{list}} \ \tau \ \delta_{\tau}$> ::= \ %trick LaTeX
+\alt \synt{$\delta_{\text{atomic}}\ \tau$} \hfill (atomic modification)
+\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}$\langle\tau\rangle$
+       & $\MathIns{}{}$
+       & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular} \hfill
+     (insert a head)
+\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}$\langle\delta_\tau\rangle$
+       & $\MathMod{}{}$
+       & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular}
+     \hfill (modify and keep the head)
+%\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}\quad & $\MathKeep{}$
+%       & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular}
+%     \hfill (keep the head)
+\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}\quad
+       & $\MathDrop{}$
+       & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular}
+     \hfill (drop the head)
+\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}\quad
+       & FIXME % $\MathPermute{p}{}$
+       & \synt{$\delta_{\text{list}}\ \tau\ \delta_{\tau}$} \\\end{tabular}
+     \hfill (permute according to a permutation $p$)
+\end{grammar}
+%
+with the following semantics:
+
+\begin{mathpar}
+  {
+    \inferrule*
+    [right=Insert]
+    {\MathPatches{l}{\delta_{l}}{l'}}
+    {\MathPatches{l}{\MathIns{h}{\delta_{l}}}{(h :: l')}}
+  }
+
+  {
+    \inferrule*
+    [right=Modify]
+    {\MathPatches{h}{\delta_{h}}{h'} \quad \MathPatches{t}{\delta_{t}}{t'}}
+    {\MathPatches{(h :: t)}{\MathMod{\delta_{h}}{\delta_{t}}}{(h' :: t')}}
+  }
+\\
+  % {
+  %   \inferrule*
+  %   [right=Keep]
+  %   {\MathPatches{t}{\delta_{t}}{t'}}
+  %   {\MathPatches{(h :: t)}{\MathKeep{\delta_{t}}}{(h :: t')}}
+  % }
+  {
+    \inferrule*
+    [right=Drop]
+    {\MathPatches{t}{\delta_{t}}{t'}}
+    {\MathPatches{(h :: t)}{\MathDrop{\delta_{t}}}{t'}}
+  }
+
+  {
+    \inferrule*
+    [right=Permute]
+    {\MathPatches{(h_{p(1)} \Cons \ldots \Cons h_{p(|p|)} \Cons t)}{\delta}{l}}
+    {\MathPatches{(h_1 \Cons \ldots \Cons h_{|p|} \Cons t)}{\MathPermute{p}{\delta}}{l}}
+  }
+
+\end{mathpar}
+
+Note that we defined the semantics of $\MathModPiOp$ so that it both modifies
+and keeps the head: the recursive occurrence in rule~\rulename{Modify},
+$\delta_t$, therefore applies to the tail $t$ and not the whole list after the
+head has been repaired.  On the other hand, the recursive occurrence in
+rule~\rulename{Permute}, $\delta$, targets the entire list after the permutation
+is performed, not solely the tail: this is necessary because we will want to
+perform modifications of elements after having shuffled them around.
+
+\subsection{Term diff}
+
+The diffs for terms include atomic changes, as well as insertion, modification,
+deletion, and permutation of most constructors.  We illustrate a couple of
+these:
+
+\begin{grammar}
+<$\delta_{term}$> ::= \ %trick LaTeX
+\alt \synt{$\delta_{atomic}\ t$} \hfill (atomic modification)
+\alt \synt{$\delta_{term}$} $\oIns{ \$ }$ \synt{$\delta_{term}$} \hfill
+(insert application)
+\alt $\oIns{\lambda}$ \synt{v}, \synt{$\delta_{term}$} \hfill (insert value
+abstraction)
+\alt $\oIns{\Pi}$ (\synt{v} : \synt{$\delta_{term}$}),
+\synt{$\delta_{term}$} \hfill (insert type abstraction)
+\alt ... \hfill (other insertions)
+\alt ... \hfill (removals/modifications/permutations)
+\end{grammar}
+
+\noindent Note that we use an infix dollar sign ($\$$) as a symbol for function
+application in our diffs, even though we use an infix space for function
+application in our terms, which is not ideal but should prevent confusion.  For
+our purpose, we biased the diffs on binary operations in the least surprising
+way: deleting an application keeps its left child, i.e. removes the function
+call and keeps the function (see \rulename{\RmApp}), while deleting a
+\coqinline{Pi} keeps its right child, i.e. removes the value being quantified
+but keeps the return type (see \rulename{\RmPi}).  For insertion, we allow
+maximal flexibility by passing the entire old term to all recursive occurrences:
+for instance, the diff $(\MathInsApp{\MathSame}{\MathSame})$ turns any term $t$
+into the self-application $(t\ t)$ (see \rulename{\InsApp}).  However, it is
+often the case that only one recursive occurrence will use the original term,
+while the other ones will replace it: for instance, the diff
+$(\MathInsApp{\MathSame}{\MathReplace{x}})$ turns any term $t$ into the
+application $(t\ x)$.
+
+\begin{mathpar}
+  {
+    \inferrule*
+    [right=\RmApp]
+    {\MathPatches{f}{\delta}{f'}}
+    {\MathPatches{f\ x}{\MathDropApp{\delta}}{f'}}
+  }
+
+  {
+    \inferrule*
+    [right=\RmPi]
+    {\MathPatches{\tau_{2}}{\delta}{\tau_{2}'}}
+    {\MathPatches{\MathPi{\tau_{1}}{x}{\tau_{2}}}{\MathDropPi{\delta}}{\tau_{2}'}}
+  }
+
+  {
+    \inferrule*
+    [right=\InsApp]
+    {\MathPatches{t}{\delta_1}{t_1} \quad \MathPatches{t}{\delta_2}{t_2}}
+    {\MathPatches{t}{\MathInsApp{\delta_1}{\delta_2}}{t_1\ t_2}}
+  }
+
+\end{mathpar}
+
+\subsection{Other diff types}
+
+We also need diffs for many other internal data types.  Diff types for tuples
+are derived from diff types of their constituents in a straightforward way.
+Inductive data type definitions, as well as constructor definitions, behave
+essentially like a tuple of all their arguments, so their diff type is derived
+accordingly.

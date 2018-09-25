@@ -1,0 +1,60 @@
+\subsection{Syntax of terms}\label{chick-design-syntax-terms}
+
+\Chick{} is designed as a core functional programming language upon which the
+repair algorithm will operate.  The aim was to represent a language such as
+\Gallina{}, and as such, \Chick{} is a dependently-typed lambda calculus, with
+inductive constructions.  The syntax of \Chick{} is given in this grammar:
+
+\begin{grammar}%
+<term> ::= \ %trick LaTeX
+\alt <term> : <term>                                           \hfill (type annotation)
+\alt <term> <term>                                             \hfill (application)
+\alt _                                                         \hfill (hole)
+\alt $\lambda$ <binder>, <term>                                \hfill (value abstraction)
+\alt match <term> with $\overrightarrow{ \synt{pattern} }$ end \hfill (pattern matching)
+\alt $\Pi$(<binder> : <term>) → <term>                         \hfill (type abstraction)
+\alt <universe>                                                \hfill (universes)
+\alt <var>                                                     \hfill (variable)
+
+<universe> ::= Prop \alt Set \alt Type
+
+<binder> ::= \ % trick LaTeX
+\alt <var> \hfill (named)
+\alt _     \hfill (anonymous)
+
+<pattern> ::= ($\overrightarrow{ \synt{binder} }$, <term>)
+\end{grammar}
+
+The \emph{application}, \emph{value abstraction}, \emph{type abstraction}, and
+\emph{variable} constructs, are standard constructs of a dependently-typed
+lambda calculus.
+
+The \emph{type annotation} construct lets us ascribe a type to a given term.
+The \emph{hole} construct can take the place of a term anywhere: it stands for a
+missing value that should be filled by the programmer.  Together, these two
+constructs let us have \define{typed holes}, that is, placeholder values whose
+type is known.  This proves invaluable throughout the repair algorithm, as we
+will see, since there are situations where the algorithm must come up with
+arbitrary values, knowing only the type they should bear.  In the absence of
+synthesis techniques to generate such values, the algorithm can safely insert a
+typed hole, leaving to the programmer the task of figuring out the proper value.
+
+Finally, the \emph{pattern matching} construct is found in languages with
+algebraic data types, and lets us dispatch code based on the shape of some
+such data type.
+
+We use the same universe names as found in \Gallina{}, though we do not yet
+support its cumulative universe hierarchy syntactically.  However, this does
+\emph{not} mean that \Chick{} cannot repair \Gallina{} programs that use the
+universe hierarchy, but rather, it cannot syntactically represent universe
+levels.  Instead, \Chick{} is oblivious to universe levels, so it will repair
+programs regardless of their universe level.  The downside is that it cannot
+represent explicit universe levels, and as such, might break programs that
+require them.  Universe levels can be added almost for free, since the repair
+algorithm could simply carry them along and attempt no repair.
+
+While we use the underscore symbol ($\_$) to represent both a hole term and an
+anonymous binder, the two concepts can never appear in the same program
+location, and therefore, there can be no confusion: in a term context, the
+symbol represents a hole, while in a binding context, it represents an anonymous
+binder.
