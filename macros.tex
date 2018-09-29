@@ -23,9 +23,9 @@
 
 \newmintinline[mycoq]{coq}{fontsize=\small}
 \newcommand{\coqinline}[1]{%
-\colorbox{monokaibg}{%
-\parbox[c][2em]{\widthof{\mycoq{#1}}}{\mycoq{#1}}%
-}%
+  \colorbox{monokaibg}{%
+    \parbox[c][0.9em]{\widthof{\mycoq{#1}}}{\mycoq{#1}}%
+  }%
 }
 
 \newcommand{\modified}[1]{\color{yellow}{#1}}

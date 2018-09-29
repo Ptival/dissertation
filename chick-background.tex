@@ -58,9 +58,9 @@ Inductive nat : Set :=
 
 Inductive @\modified{vec}@ (A : Type)
 : @\modified{nat →}@ Type :=
-| @\modified{vnil}@ : vec A @\modified{O}@
+| @\modified{vnil}@ : @\modified{vec}@ A @\modified{O}@
 | @\modified{vcons}@ : A → @\modified{∀ (n : nat),}@
-    @\modified{vec}@ A @\modified{n}@ → vec A @\modified{(S n)}@.
+    @\modified{vec}@ A @\modified{n}@ → @\modified{vec}@ A @\modified{(S n)}@.
 
 Definition a_list
 : @\repaired{vec}@ nat @\repaired{(\_ : nat)}@ :=

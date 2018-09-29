@@ -25,6 +25,7 @@
 % Valentin
 \usepackage{amsmath}
 \usepackage[english]{babel}
+\usepackage{calc}
 \usepackage{color}
 \usepackage{DejaVuSansMono}
 \usepackage{dsfont}
@@ -35,9 +36,8 @@
 \usepackage{mathpartir}
 \usepackage{mdframed}
 \usepackage{minted}
-\usemintedstyle{monokai}
 \usepackage[parfill]{parskip}
-%\usepackage{showframe}
+\usepackage{showframe}
 \usepackage{syntax}
 \usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz
 \usepackage{tikz}
@@ -61,6 +61,8 @@
   fontsize=\normalsize,
   baselinestretch=1,
 }
+\AtBeginEnvironment{minted}{%
+  \renewcommand{\fcolorbox}[4][]{#4}}
 
 \makeatletter
 % \AtBeginEnvironment{minted}{\dontdofcolorbox}
