@@ -24,6 +24,7 @@
 
 % Valentin
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage[english]{babel}
 \usepackage{calc}
 \usepackage{color}
@@ -31,6 +32,7 @@
 \usepackage{dsfont}
 \let\textlozenge\relax
 \usepackage[inline]{enumitem}
+\usepackage{environ}
 \usepackage{graphicx}
 %\usepackage{gfsdidot}
 \usepackage{mathpartir}
@@ -41,6 +43,7 @@
 \usepackage{syntax}
 \usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz
 \usepackage{tikz}
+\usepackage{ulem}%\uline
 \usepackage{xpatch}
 \usepackage[breaklinks=true,pdfborder={0 0 0}]{hyperref}
 
@@ -88,7 +91,7 @@
 % ---
 
 % Required information
-\title{This is the Title of My Dissertation}
+\title{Front-end tooling for building and maintaining functional programs}
 \author{Valentin Robert}
 \degree{Computer Science}{Doctor of Philosophy}
 % Each member of the committee should be listed as Professor Foo Bar.
@@ -178,14 +181,24 @@ TODO
 % use. See the examples here. In addition, each chapter ack needs to
 % be repeated at the end of the relevant chapter.
 \begin{acknowledgements}
-TODO
+I would like to acknowledge Professor Sorin Lerner for his support as the chair
+of my committee.
+
+Chapter~\ref{peacoq}, in part, has been published in a series of blog
+articles. The dissertation author was the primary investigator and author of
+this material.
+
+Chapter~\ref{chick}, in part, is currently being prepared for submission for
+publication of the material.  The dissertation author was the primary
+investigator and author of this material.
+
 % I would like to acknowledge Professor Eta Theta for his support as the
 % chair of my committee. Through multiple drafts and many long nights,
 % his guidance has proved to be invaluable.
 
 % I would also like to acknowledge the ``Smith Clan'' of lab~28, without
 % whom my research would have no doubt taken fives times as long. It is
-% their support that helped me in an immeasureable way.
+% their support that helped me in an immeasurable way.
 
 % Chapter 2, in full, is a reprint of the material as it appears in
 % Numerical Grid Generational in Computational Fluid Mechanics~2009.
@@ -274,25 +287,13 @@ TODO
 % \verb!\mainmatter! macro because it should start on page~1.
 \end{dissertationintroduction}
 
-\chapter{Background}
-
 \input{background}
-
-\chapter{Related work}
-
+\input{related-work}
 \input{peacoq}
-
-\chapter{Assisted refactoring in functional languages}
-
 \input{chick}
-
-\chapter{Assisted refactoring in proof assistants}
-
 \chapter{Takeaways}
 
 \appendix
-
-TODO
 
 % Stuff at the end of the dissertation goes in the back matter
 \backmatter

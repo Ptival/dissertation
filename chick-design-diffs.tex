@@ -101,6 +101,8 @@ with the following semantics:
 
 \subsection{List diff} \label{list-diff}
 
+\subsubsection{Syntax}
+
 For lists, we provide a rich selection of diff operations.  The aim is not to
 have a canonical representation, but rather to capture closely the intent of
 the user modifications:
@@ -108,23 +110,23 @@ the user modifications:
 \begin{grammar}
 <$\delta_{\text{list}} \ \tau \ \delta_{\tau}$> ::= \ %trick LaTeX
 \alt \synt{$\delta_{\text{atomic}}\ \tau$} \hfill (atomic modification)
-\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}$\langle\tau\rangle$
+\alt \begin{tabular}{p{0.7cm} >{\centering}p{0.7cm} l}$\langle\tau\rangle$
        & $\MathIns{}{}$
        & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular} \hfill
      (insert a head)
-\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}$\langle\delta_\tau\rangle$
+\alt \begin{tabular}{p{0.7cm} >{\centering}p{0.7cm} l}$\langle\delta_\tau\rangle$
        & $\MathMod{}{}$
        & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular}
      \hfill (modify and keep the head)
 %\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}\quad & $\MathKeep{}$
 %       & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular}
 %     \hfill (keep the head)
-\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}\quad
+\alt \begin{tabular}{p{0.7cm} >{\centering}p{0.7cm} l}\quad
        & $\MathDrop{}$
        & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular}
      \hfill (drop the head)
-\alt \begin{tabular}{p{0.3cm} >{\centering}p{0.6cm} l}\quad
-       & FIXME % $\MathPermute{p}{}$
+\alt \begin{tabular}{p{0.7cm} >{\centering}p{0.7cm} l}\quad
+       & $\MathPermute{p}{}$
        & \synt{$\delta_{\text{list}}\ \tau\ \delta_{\tau}$} \\\end{tabular}
      \hfill (permute according to a permutation $p$)
 \end{grammar}
@@ -199,15 +201,16 @@ abstraction)
 application in our diffs, even though we use an infix space for function
 application in our terms, which is not ideal but should prevent confusion.  For
 our purpose, we biased the diffs on binary operations in the least surprising
-way: deleting an application keeps its left child, i.e. removes the function
-call and keeps the function (see \rulename{\RmApp}), while deleting a
-\coqinline{Pi} keeps its right child, i.e. removes the value being quantified
-but keeps the return type (see \rulename{\RmPi}).  For insertion, we allow
-maximal flexibility by passing the entire old term to all recursive occurrences:
-for instance, the diff $(\MathInsApp{\MathSame}{\MathSame})$ turns any term $t$
-into the self-application $(t\ t)$ (see \rulename{\InsApp}).  However, it is
-often the case that only one recursive occurrence will use the original term,
-while the other ones will replace it: for instance, the diff
+way: deleting a function application keeps its left child, i.e. removes the
+function call and keeps the function (see rule~\rulename{\RmApp}), while
+deleting a \coqinline{Pi} keeps its right child, i.e. removes the value being
+quantified but keeps the return type (see rule~\rulename{\RmPi}).  For
+insertion, we allow maximal flexibility by passing the entire old term to all
+recursive occurrences: for instance, the diff
+$(\MathInsApp{\MathSame}{\MathSame})$ turns any term $t$ into the
+self-application $(t\ t)$ (see rule~\rulename{\InsApp}).  However, it is often
+the case that only one recursive occurrence will use the original term, while
+the other ones will replace it: for instance, the diff
 $(\MathInsApp{\MathSame}{\MathReplace{x}})$ turns any term $t$ into the
 application $(t\ x)$.
 
@@ -225,6 +228,8 @@ application $(t\ x)$.
     {\MathPatches{\tau_{2}}{\delta}{\tau_{2}'}}
     {\MathPatches{\MathPi{\tau_{1}}{x}{\tau_{2}}}{\MathDropPi{\delta}}{\tau_{2}'}}
   }
+
+\\
 
   {
     \inferrule*

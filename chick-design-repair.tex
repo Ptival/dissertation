@@ -1,0 +1,42 @@
+\section{Repairing programs by propagating changes} \label{chick-design-repair}
+
+In this section, we assume that we are given an original program $p$, that is, a
+sequence of vernacular commands as described in
+Section~\ref{chick-design-syntax-programs}, and a diff of that program
+$\delta_p$ as described in Section~\ref{chick-design-diffs}, capturing a partial
+refactoring made by the user.  We assume that the original proof script
+type-checked, and attempt to build a repaired diff $\delta_p'$ such that:
+
+\begin{itemize}
+
+\item $\delta_p'$ contains the changes from $\delta_p$,
+
+\item $\delta_p'$ completes the refactoring started by $\delta_p$, by
+propagating forward the changes from $\delta_p$ to use-sites that must be
+repaired to account for those changes,
+
+\end{itemize}
+%
+where propagating changes forward means:
+
+\begin{itemize}
+
+\item propagating renaming of constants and variables,
+
+\item propagating changes in the number, order, and type of arguments to
+functions, obtained from their definition, to their use-site,
+
+\item propagating changes in the definition of inductive data types to use-sites
+of the type, its constructors, and its eliminators (those will be explained in
+more details in section~\ref{deriving}).
+
+\end{itemize}
+
+We give a top-down description of the repair algorithm, starting at the level of
+whole programs, descending all the way to terms and data type definitions.
+
+\input{chick-design-repair-program}
+
+\input{chick-design-repair-vernacular}
+
+\input{chick-design-repair-term}

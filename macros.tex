@@ -41,8 +41,8 @@
 
 \newcommand{\opcolor}{purple}
 \newcommand{\out}[1]{ \boxed{ \textcolor{teal}{#1} } }
-\newcommand{\MathPatches}[3]{
-  #1 % \overset{#2}{\mathbin{\textcolor{\opcolor}{\rightsquigarrow}}} \out{#3}
+\newcommand{\MathPatches}[3]{%
+#1 \overset{#2}{\mathbin{\textcolor{\opcolor}{\rightsquigarrow}}} \out{#3}%
 }
 
 \newcommand{\App}{\$}
@@ -58,8 +58,12 @@
 \newcommand{\oKeep}{\overset{\mathtt{\Keep}}}
 
 \newcommand{\Cons}{::}
-\newcommand{\permute}[2]{ \overline{#2}^{\overset{#1}{\rightleftarrows} } }
-\newcommand{\permuteOp}[2]{ \overset{\overset{#1}{\rightleftarrows}}{#2} }
+\newcommand{\permute}[2]{%
+\overline{#2}^{\overset{#1}{\rightleftarrows}}%
+}
+\newcommand{\permuteOp}[2]{%
+\overset{\overset{#1}{\rightleftarrows}}{#2}%
+}
 
 \newcommand{\mkMathPiRaw}[4]{#3{\Pi} #4{#1} \rightarrow #2}
 \newcommand{\mkMathPi}[5]{\mkMathPiRaw{(#2 : #1)}{#3}{#4}{#5}}
@@ -90,7 +94,187 @@
 \newcommand{\MathPermutePis}[2]{\permuteOp{#1}{\Pi} #2}
 \newcommand{\MathPi}[3]{\mkMathPi{#1}{#2}{#3}{}{}}
 \newcommand{\MathPis}[4]{\mkMathPi{#1}{#2}{#3}{}{\BarCount{#4}}}
-\newcommand{\MathReplace}[1]{#1} % \thickul{#1}}
+\newcommand{\MathReplace}[1]{\mathds{K}({#1})}
 \newcommand{\MathSame}{\mathds{1}}
 
 \newcommand{\mkMathApp}[3]{#1 #3{ \$ } #2}
+
+%%% REPAIR %%%
+
+\newcommand{\op}[1]{\textcolor{\opcolor}{#1}}
+
+\newcommand{\boundOp}{\op{\text{Bound}}}
+\newcommand{\freshOneOp}{\op{\text{Fresh}_1}}
+\newcommand{\freshTwoOp}{\op{\text{Fresh}_2}}
+\newcommand{\repairIndOp}{\op{R_{I}}}
+\newcommand{\repairProgOp}{\op{R_{P}}}
+\newcommand{\repairTermOneOp}{\op{R_{T_1}}}
+\newcommand{\repairTermTwoOp}{\op{R_{T_2}}}
+\newcommand{\repairTermThreeOp}{\op{R_{T_2}}}
+\newcommand{\repairVernacOp}{\op{R_{V}}}
+\newcommand{\vernacEnvOp}{\op{E_{V}}}
+\newcommand{\repairBranchesOp}{\op{R_{B}}}
+
+\newcommand{\blackbrackets}[1]{\left[ #1 \right]}
+\newcommand{\blackdiff}[2]{\blackbrackets{\genfrac{}{}{0pt}{}{#1}{#2}}}
+\newcommand{\bound}[1]{\boundOp\op{(}#1\op{)}}
+\newcommand{\brackets}[1]{%
+  \color{\opcolor} \left[ \normalcolor #1 \color{\opcolor} \right] \normalcolor%
+}
+\newcommand{\context}[2]{#1 \op{,} #2}
+\newcommand{\dcontext}[4]{\context{\diff{#1}{#2}}{\diff{#3}{#4}}}
+\newcommand{\denv}[2]{\diff{#1}{#2}}
+\newcommand{\diff}[2]{\brackets{\genfrac{}{}{0pt}{}{#1}{#2}}}
+\newcommand{\dtau}[1]{\delta_{\tau_{#1}}}
+\newcommand{\equals}[2]{#1 \mathbin{\textcolor{\opcolor}{=}} #2}
+\newcommand{\freshOne}[3]{\freshOneOp\op{(}\diff{#1}{#2}\op{) =}\ \out{#3}}
+\newcommand{\freshTwo}[3]{\freshTwoOp\op{(}#1\op{,}#2\op{) =}\ \out{#3}}
+\newcommand{\genericrepair}[3]{\mkrepair{\repairTermTwoOp}{#1}{#2}{#3}{\op{?}}}
+\newcommand{\nturnstile}[2]{#1 \mathbin{\textcolor{\opcolor}{\nvdash}} #2}
+\newcommand{\qmark}{\textcolor{\opcolor}{?}}
+\newcommand{\squiggly}[2]{#1 \mathbin{\textcolor{\opcolor}{\rightsquigarrow}} #2}
+\newcommand{\subst}[2]{#1 \leftarrow #2}
+\newcommand{\turnstile}[2]{#1\ \mathbin{\textcolor{\opcolor}{\vdash}}\ #2}
+\newcommand{\repair}[4]{ \mkrepair{\repairTermOneOp}{#1}{#2}{#3}{#4} }
+\newcommand{\repairBranches}[3]{\mksimplerepair{\repairBranchesOp}{#1\op{,}\ #2}{#3}}
+\newcommand{\repairInd}[7]{
+  \mksimplerepair%
+  {\repairIndOp}
+  {\diff{#1}{#2}\op{,}\ \diff{#3}{#4}\op{,}\ \diff{#5}{#6}}
+  {#7}
+}
+\newcommand{\repairProg}[3]{
+  \repairProgOp\op{(}\blackdiff{#1}{#2}\op{)}\ \op{=}\ \out{#3}
+}
+\newcommand{\repairTerm}[4]{\mkrepair{\repairTermOneOp}{#1}{#2}{#3}{#4}}
+\newcommand{\repairTermWithoutType}[2]{\mksimplerepair{\repairTermThreeOp}{#1}{#2}}
+\newcommand{\repairVernac}[3]{
+  \repairVernacOp\op{(}\blackdiff{#1}{#2}\op{)}\ \op{=}\ \out{#3}
+}
+
+\newcommand{\DefinitionText}{\text{Definition}}
+\newcommand{\InductiveText}{\text{Inductive}}
+\newcommand{\ConstructorText}{\text{Constructor}}
+\newcommand{\GlobalDefinitionText}{\text{GlobalDefinition}}
+\newcommand{\GlobalInductiveText}{\text{GlobalInductive}}
+
+\newcommand{\Definition}[4]{ \DefinitionText(\{ #1, #2, #3, #4 \}) }
+\newcommand{\Inductive}[5]{ \InductiveText(\{ #1, #2, #3, #4, #5 \}) }
+\newcommand{\Constructor}[3]{ \ConstructorText(\{ #1, #2, #3 \}) }
+\newcommand{\GlobalDefinition}[3]{ \GlobalDefinitionText(\{ #1, #2, #3 \}) }
+\newcommand{\GlobalInductive}[5]{ \GlobalInductiveText(\{ #1, #2, #3, #4, #5 \}) }
+
+\newcommand{\ModifyDefinition}[4]{ \delta_{\DefinitionText}(\{ #1, #2, #3, #4 \}) }
+\newcommand{\ModifyInductive}[5]{ \delta_{\InductiveText}(\{ #1, #2, #3, #4, #5 \}) }
+\newcommand{\ModifyGlobalDefinition}[3]{ \delta_{\GlobalDefinitionText}(\{ #1, #2, #3 \}) }
+\newcommand{\ModifyGlobalInductive}[5]{ \delta_{\GlobalInductiveText}(\{ #1, #2, #3, #4, #5 \}) }
+
+\newcommand{\GlobalDefinitionAnon}{\GlobalDefinitionText(\{ \ldots \})}
+\newcommand{\GlobalInductiveAnon}{\GlobalInductiveText(\{ \ldots \})}
+
+\newcommand{\DefinitionAnon}{\DefinitionText(\{ \ldots \})}
+\newcommand{\InductiveAnon}{\InductiveText(\{ \ldots \})}
+
+\newcommand{\RepairProg}[1]{R-Prog-#1}
+
+\newcommand{\RProgMod}{\RepairProg{Modify}}
+\newcommand{\RProgKeep}{\RepairProg{Keep}}
+\newcommand{\RProgSameCons}{\RepairProg{Same-Cons}}
+
+\newcommand{\scalefactor}{1}
+\newcommand{\invscalefactor}{1}
+
+\NewEnviron
+    {Rules}[2]
+    {
+      \begin{figure*}
+        %\scalebox{\invscalefactor}{
+          %\begin{minipage}{\scalefactor\textwidth}
+            %\begin{mathpar}
+              \BODY
+            %\end{mathpar}
+          %\end{minipage}
+        %}
+        \caption{#2}
+        \label{#1}
+      \end{figure*}
+    }
+
+\newcommand{\MathSameProg}{\MathSame_P}
+\newcommand{\MathSameVernac}{\MathSame_V}
+\newcommand{\MathSameGlobal}{\MathSame_G}
+
+\newcommand{\MathProp}{\mathtt{Prop}}
+\newcommand{\MathSet} {\mathtt{Set}}
+\newcommand{\MathType}{\mathtt{Type}}
+
+\newcommand{\hasType}[2]{ #1\ \op{:}\ #2 }
+
+\newcommand{\mkrepair}[5]{
+  #1
+  \op{(}
+  \hasType
+  { #2 }
+  { \diff{ #4 }{ #5 } }
+  \op{) =\ }
+  \out{ #3 }
+}
+
+\newcommand{\MathLocalAssum}[2]{ ( #1 : #2 ) }
+\newcommand{\MathLocalDef}[3]{ ( #1 : #2 \coloneqq #3 ) }
+
+\newcommand{\mksimplerepair}[3]{
+  #1
+  \op{(}
+  #2
+  \op{) =\ }
+  \out{ #3 }
+}
+
+\newcommand{\RModPi}{\RepairTerm{Mod-$\Pi$}}
+\newcommand{\RInsPi}{\RepairTerm{Ins-$\Pi$}}
+\newcommand{\RDropPi}{\RepairTerm{Drop-$\Pi$}}
+\newcommand{\RPermutePis}{\RepairTerm{Permute-$\Pi$s}}
+\newcommand{\RReplace}{\RepairTerm{Replace}}
+\newcommand{\RSame}{\RepairTerm{$\MathSame{}$-Other}}
+\newcommand{\RSamePi}{\RepairTerm{$\MathSame{}$-$\Pi$}}
+
+\newcommand{\RepairTermPrefix}{RT1}
+\newcommand{\GenericRepairPrefix}{R-Term-2}
+\newcommand{\UnknownTypeRepairPrefix}{R-Term-2}
+
+\newcommand{\RepairTerm}[1]{\RepairTermPrefix-#1}
+\newcommand{\GenericRepair}[1]{\GenericRepairPrefix-#1}
+\newcommand{\UnknownTypeRepair}[1]{\UnknownTypeRepairPrefix-#1}
+
+\newcommand{\mkMathLam}[4]{#3{\lambda} #4{#1} \rightarrow #2}
+
+\newcommand{\MathModApp}[2]{ \mkMathApp{#1}{#2}{\oMod}{} }
+\newcommand{\MathModLam}[2]{ \mkMathLam{#1}{#2}{\oMod}{} }
+\newcommand{\MathModPi} [3]{ \mkMathPi{#1}{#2}{#3}{\oMod}{} }
+\newcommand{\MathKeepPi}[1]{ \MathKeepPiOp \rightarrow #1 }
+
+\newcommand{\MathAnnot}[2]{#1 : #2}
+
+\newcommand{\UTRApp}{\UnknownTypeRepair{App}}
+\newcommand{\UTRMatch}{\UnknownTypeRepair{Match}}
+\newcommand{\UTRPi}{\UnknownTypeRepair{Pi}}
+\newcommand{\UTRType}{\UnknownTypeRepair{Universe}}
+\newcommand{\UTRVar}{\UnknownTypeRepair{Var}}
+\newcommand{\UTRAnnot}{\UnknownTypeRepair{Annot}}
+\newcommand{\UTRHole}{\UnknownTypeRepair{Hole}}
+\newcommand{\UTROtherwise}{\UnknownTypeRepair{Otherwise}}
+
+\newcommand{\repairArgsOp}{\op{R_{Fn}}}
+
+\newcommand{\repairArgs}[5]{
+  \op{\repairArgsOp(}#1\op{,} #2\op{,} #3\op{,} #4\op{) =}\ \out{#5}
+}
+
+\newcommand{\declDiff}[3]{
+  \hasType
+      { \diff{ #1 }{ \out{#2} } }
+      { \diff{ \op{?} }{ \out{#3} } }
+}
+
+\newcommand{\MathMatch}[2]{ \text{match}\ #1\ \text{with}\ #2 }

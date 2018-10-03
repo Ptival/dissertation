@@ -1,0 +1,50 @@
+\subsection{Repairing terms} \label{chick-design-repair-term}
+
+The repair algorithm for terms is described formally in
+Figures~\ref{fig:repair-term} and~\ref{rules-unknown-repair} using the following
+judgments:
+
+{
+  \[
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      {\repair{t}{\delta_t}{\tau}{\delta_\tau}}
+    }
+  \]
+  % \[
+  %   {\turnstile
+  %     { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+  %     {\genericrepair{t}{\delta_t}{\tau}}
+  %   }
+  % \]
+  \[
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      {\repairTermWithoutType{t}{\delta_t}}
+    }
+  \]
+}%
+%
+The first judgment (Figure~\ref{fig:repair-term}) describes how a term is
+repaired when we know both its old type $\tau$, and how that type got modified
+$\delta_\tau$.  It is syntax-directed by the structure of $\delta_\tau$.  The
+second judgment (Figure~\ref{rules-unknown-repair}) describes how a term is
+repaired when we no longer make decisions based on its old type and type diff:
+this happens for constructs whose type does not inform us about the type of its
+constituents (for instance, function application), and for simple terms (holes,
+universes, variables).
+
+The judgments for repairing terms include a local context $\Gamma$, behaving
+similarly to the global environment $E$ but holding local variables introduced
+by the binding structures of terms.  The first judgment is therefore to be
+understood as: given that a term $t$ had type $\tau$ in the global environment
+$E$ and the local context $\Gamma$, if those latter three respectively undergo
+the modifications $\delta_\tau$, $\delta_E$, and $\delta_\Gamma$, then the term
+$t$ should be repaired according to $\delta_t$.  The other judgment is to be
+read similarly, except the type information is missing.  Importantly, the first
+judgment assumes the diff $\delta_\tau$ is repaired already: it is the
+responsibility of the caller to ensure so.
+
+\input{chick-design-repair-term-diff-directed}
+
+\input{chick-design-repair-term-term-directed}
