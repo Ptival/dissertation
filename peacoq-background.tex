@@ -54,9 +54,9 @@ order to break down a complex goal into specialized sub-goals that can be solved
 separately.  In those sub-cases, one will often need to perform applications and
 rewriting using existing theorems.
 
-The \define{application} of a theorem (or a hypothesis) \coqinline{t : τ} can be
-performed in either a hypothesis or a goal.  To apply it in a hypothesis
-\coqinline{a : α}:
+The \define{application} of a theorem (or a hypothesis) \coqinline{(t : τ)} can
+be performed in either a hypothesis or a goal.  To apply it in a hypothesis
+\coqinline{(a : α)}:
 
 \begin{itemize}
 
@@ -85,8 +85,8 @@ H2 : B
 C
 \end{minted}
 
-applying hypothesis \mintinline{coq}{H1} in hypothesis \mintinline{coq}{H2}
-yields the following two obligations:
+applying hypothesis \coqinline{H1} in hypothesis \coqinline{H2} yields the
+following two obligations:
 
 \begin{minted}{coq}
 (* 1. Hypothesis H2 became the conclusion of H1. *)
@@ -110,8 +110,8 @@ A
 
 Conversely, a theorem or hypothesis can be applied to the goal of the current
 obligation if its conclusion matches the goal.  It yields an obligation for each
-antecedent.  For instance, applying hypothesis \mintinline{coq}{H1} from the
-original context to the goal would yield the following two obligations:
+antecedent.  For instance, applying hypothesis \coqinline{H1} from the original
+context to the goal would yield the following two obligations:
 
 \begin{minted}{coq}
 (* 1. One must prove the first antecedent A. *)
@@ -154,8 +154,8 @@ H2 : P x
 P y
 \end{minted}
 
-rewriting from left to right with hypothesis \mintinline{coq}{H1} in hypothesis
-\mintinline{coq}{H2} yields the two obligations:
+rewriting from left to right with hypothesis \coqinline{H1} in hypothesis
+\coqinline{H2} yields the two obligations:
 
 \begin{minted}{coq}
 (* 1. x has been replaced with y in H2. *)
@@ -179,8 +179,8 @@ H2 : P x
 Q z
 \end{minted}
 
-while rewriting from right to left with hypothesis \mintinline{coq}{H1} in the
-goal yields the two obligations:
+while rewriting from right to left with hypothesis \coqinline{H1} in the goal
+yields the two obligations:
 
 \begin{minted}{coq}
 (* 1. y has been replaced with x in the goal. *)

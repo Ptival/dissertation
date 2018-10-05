@@ -1,27 +1,67 @@
-\subsection{Describing program modifications with diffed data structures}\label{chick-design-diffs}
+\subsection{Describing program modifications with
+diffs}\label{chick-diffs}
 
-We define a family of data types that allows us to capture changes made to
-programs from the language presented in
-section~\ref{chick-design-syntax-programs}.  We will refer to these descriptions
-of changes as \textit{diffs}.  We will usually denote a \textit{diff type}
-$\delta_{\tau}$ if it corresponds to values of the diffed type $\tau$.  For
-instance, the type $\delta_{\text{universe}}$ would capture how values of type
-\coqinline{universe} may have been modified).
+We define a family of data types that allows us to describe changes made to
+programs from the language presented in Section~\ref{chick-syntax-programs}.  We
+will refer to these descriptions of changes as \textit{diffs}.  We will usually
+denote a \textit{diff type} $\delta_{\tau}$ if it corresponds to values of the
+diffed type $\tau$.  Informally, one can think of the type $\delta_{\tau}$ as a
+descriptor for how some value $v_{1}$ of type $\tau$ can be transformed into
+another value $v_{2}$.
 
-Importantly, note that we are not talking about values and types as they appear
-in the user's program, but rather, about the internal values and types of the
-meta-language.  For instance, if a user changes a \coqinline{bool} value in
-their program from \coqinline{true} to \coqinline{false}, we will capture this
-change using $\delta_{\text{term}}$, the diff type for $\synt{term}$; whereas
-values of the diff type $\delta_{\text{bool}}$ would describe changes made to
-boolean flags in the meta-language.
+It is important to clarify how we intend to use those diff types.  We will want
+to describe changes made to the data types in the abstract syntax tree of the
+user's program.  An example will help us avoid some misconception: consider the
+user program and its modification in Figure~\ref{bool-modification}.  While,
+from the program point of view, a value of type \coqinline{bool} was modified
+from the value \coqinline{True} to the value \coqinline{False}, we will
+\emph{not} use the type $\delta_{\coqinline{bool}}$ to describe this change!
+From the point of view of the abstract syntax tree, a value of type
+\coqinline{term} has changed from the original value \coqinline{Var "True"} to
+the value \coqinline{Var "False"}, which we will capture using the diff type
+$\delta_{\coqinline{term}}$.
+
+To be precise, we will have to describe how a \coqinline{Definition} has
+changed, and describe how its name has remained \coqinline{a}, its type has
+remained \coqinline{bool}, but its definition has changed.  This will be
+described as a value of type $\delta_{\coqinline{vernac}}$, containing a diff
+for each of those three components that may change, including the one of diff
+type $\delta_{\coqinline{term}}$.
+
+\begin{figure*}[!htp]
+
+  \noindent%
+  \begin{minipage}[t]{0.50\textwidth}
+    \begin{minted}[linenos=false]{coq}
+Inductive bool : Set :=
+| True  : bool
+| False : bool.
+
+Definition a : bool := True.
+\end{minted}
+\end{minipage}%
+\begin{minipage}[t]{0.50\textwidth}
+  \begin{minted}[escapeinside=@@,linenos=false]{coq}
+Inductive bool : Set :=
+| True  : bool
+| False : bool.
+
+Definition a : bool := @\modified{False}@.
+\end{minted}
+\end{minipage}
+
+\caption{A simple program and its modification.}
+
+\label{bool-modification}
+
+\end{figure*}
 
 When the user makes a change to their program, we will attempt to guess the
 structure of their changes, as a value of one of the program diff type
-$\delta_{\text{program}}$.  To illustrate the kind of changes we are interested
-in describing, let us go back to our motivating example in
-Figure~\ref{listtovec}, where we can observe the following user-provided
-modifications (dashed blue outline):
+$\delta_{\coqinline{program}}$.  To illustrate the kind of changes we are
+interested in describing, let us look back at our motivating example in
+Figure~\ref{listtovec}, where we can observe the following partial attempts at
+refactoring:
 
 \begin{enumerate}
 

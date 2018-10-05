@@ -27,12 +27,14 @@
 \usepackage{amssymb}
 \usepackage[english]{babel}
 \usepackage{calc}
+\usepackage{caption}
 \usepackage{color}
 \usepackage{DejaVuSansMono}
 \usepackage{dsfont}
 \let\textlozenge\relax
 \usepackage[inline]{enumitem}
 \usepackage{environ}
+\usepackage{etoolbox}
 \usepackage{graphicx}
 %\usepackage{gfsdidot}
 \usepackage{mathpartir}
@@ -43,9 +45,12 @@
 \usepackage{syntax}
 \usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz
 \usepackage{tikz}
-\usepackage{ulem}%\uline
 \usepackage{xpatch}
 \usepackage[breaklinks=true,pdfborder={0 0 0}]{hyperref}
+
+\captionsetup{
+  justification=centering,
+}
 
 \usetikzlibrary{arrows, calc, fit, positioning, shapes}
 \graphicspath{ {./images/} }
@@ -54,18 +59,48 @@
 	\settowidth\cvlabelwidth{\cvlabelfont 0000--0000}%
 }
 
-\definecolor{monokaibg}{HTML}{272822}
+% Fix a mdframed bug where skipbelow is ignored
+\makeatletter
+\xpatchcmd{\endmdframed}
+  {\aftergroup\endmdf@trivlist\color@endgroup}
+  {\endmdf@trivlist\color@endgroup\@doendpe}
+  {}{}
+\makeatother
+
+\surroundwithmdframed[
+backgroundcolor=white,
+linecolor=white,
+skipabove=1em,
+skipbelow=-0.5em,
+leftmargin=10pt,
+innertopmargin=1pt,
+innerbottommargin=0pt
+]{minted}
+
 \setminted{
-  bgcolor=monokaibg,
+  % DO NOT use bgcolor, use mdframed instead
+  %bgcolor=white,
   linenos=true,
-  style=monokai,
+  style=xcode,
   breaklines=true,
   encoding=utf8,
-  fontsize=\normalsize,
+  fontsize=\small,
   baselinestretch=1,
 }
-\AtBeginEnvironment{minted}{%
-  \renewcommand{\fcolorbox}[4][]{#4}}
+
+% need bgcolor for the display to be nice in rules
+\newmintinline{coq}{bgcolor=white}
+
+% This works for some styles but not all, instead I hijack the tokens directly
+% in background.tex
+
+% \AtBeginEnvironment{minted}{%
+%   \renewcommand{\fcolorbox}[4][]{#4}}
+% \def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+
+% These do not seem to work...
+% \xpatchcmd{\coqinline}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+% \xpatchcmd{\mintinline}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
 
 \makeatletter
 % \AtBeginEnvironment{minted}{\dontdofcolorbox}
@@ -77,6 +112,39 @@
 %   \def\PYGmonokai@tc##1{\textcolor[rgb]{0.59,0.88,0.31}{##1}}
 %   \def\PYGmonokai@bc##1{\setlength{\fboxsep}{0pt}\colorbox[rgb]{0.88,0.00,0.06}{\strut ##1}}
 % }
+\makeatother
+
+\makeatletter
+\pgfdeclareshape{document}{
+\inheritsavedanchors[from=rectangle] % this is nearly a rectangle
+\inheritanchorborder[from=rectangle]
+\inheritanchor[from=rectangle]{center}
+\inheritanchor[from=rectangle]{north}
+\inheritanchor[from=rectangle]{south}
+\inheritanchor[from=rectangle]{west}
+\inheritanchor[from=rectangle]{east}
+% ... and possibly more
+\backgroundpath{% this is new
+% store lower right in xa/ya and upper right in xb/yb
+\southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+\northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+% compute corner of ‘‘flipped page’’
+\pgf@xc=\pgf@xb \advance\pgf@xc by-10pt % this should be a parameter
+\pgf@yc=\pgf@yb \advance\pgf@yc by-10pt
+% construct main path
+\pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+\pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@yb}}
+\pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yb}}
+\pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yc}}
+\pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@ya}}
+\pgfpathclose
+% add little corner
+\pgfpathmoveto{\pgfpoint{\pgf@xc}{\pgf@yb}}
+\pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yc}}
+\pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yc}}
+\pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yc}}
+}
+}
 \makeatother
 
 % OGS recommends increasing the margins slightly.

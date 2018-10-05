@@ -1,4 +1,4 @@
-\subsection{Syntax of programs}\label{chick-design-syntax-programs}
+\subsection{Syntax of \Chick{} programs}\label{chick-syntax-programs}
 
 Our programs are defined as sequences of commands in the following vernacular
 (to borrow Coq's parlance):
@@ -14,13 +14,13 @@ Our programs are defined as sequences of commands in the following vernacular
 \end{grammar}
 
 Our \define{definition kinds} follow \Coq{}'s \Vernacular{} conventions: a
-\mintinline{coq}{Definition} is \emph{never} recursive, while a
-\mintinline{coq}{Fixpoint} is \emph{allowed} to be recursive.  Declarations are
-ordered, and may only depend on previous declarations.  This will ease the task
-of our repair algorithm, since dependencies are syntactically ordered.  In a
-language where declarations are allowed to depend on other declarations backward
-\emph{and} forward, we would want to repair programs according to the dependency
-tree rather than the syntactic order of declarations.
+\coqinline{Definition} is \emph{never} recursive, while a \coqinline{Fixpoint}
+is \emph{allowed} to be recursive.  Declarations are ordered, and may only
+depend on previous declarations.  This will ease the task of our repair
+algorithm, since dependencies are syntactically ordered.  In a language where
+declarations are allowed to depend on other declarations backward \emph{and}
+forward, we would want to repair programs according to the dependency tree
+rather than the syntactic order of declarations.
 
 Inductive definitions are not mutual, and follow the following syntax:
 
