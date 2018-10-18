@@ -1,4 +1,4 @@
-\section{Repairing programs by propagating changes} \label{chick-design-repair}
+\section{Repairing programs by propagating changes}~\label{chick-design-repair}
 
 In this section, we assume that we are given an original program $p$, that is, a
 sequence of vernacular commands as described in
@@ -28,15 +28,15 @@ functions, obtained from their definition, to their use-site,
 
 \item propagating changes in the definition of inductive data types to use-sites
 of the type, its constructors, and its eliminators (those will be explained in
-more details in section~\ref{deriving}).
+more details in Section~\ref{deriving}).
 
 \end{itemize}
 
 We give a top-down description of the repair algorithm, starting at the level of
 whole programs, descending all the way to terms and data type definitions.
 
-\input{chick-design-repair-program}
+\input{chick-repair-programs}
 
-\input{chick-design-repair-vernacular}
+\input{chick-repair-vernacular}
 
-\input{chick-design-repair-term}
+\input{chick-repair-term}

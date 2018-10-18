@@ -13,68 +13,79 @@ system, or, as a well-typed λ-term.  For instance, the theorem:
 
 can be witnessed by the following logical derivation:
 
-\begin{mathpar}
-  {
-    \inferrule*[Right=$\Pi$-intro]
-    {
-      \inferrule*[Right=$\Pi$-intro]
-      {
-        \inferrule*[Right=$\Pi$-intro]
-        {
-          \inferrule*[Right=$\land$-elim]
-          {
-            {
-              \inferrule*
-              { }
-              {
-                \ldots , H : A \land B \Entails A \land B
-              }
-            }
-            \and
-            {
-              \inferrule*[Right=$\land$-intro]
-              {
-                {
-                  \inferrule*
-                  { }
-                  {
-                    \ldots , H_A : A , H_B : B \Entails A
-                  }
-                }
-                \and
-                {
-                  \inferrule*
-                  { }
-                  {
-                    \ldots , H_A : A , H_B : B \Entails B
-                  }
-                }
-              }
-              {
-                \ldots , H : A \land B , H_A : A , H_B : B \Entails A \land B
-              }
-            }
-          }
-          {
-            \ldots , H : A \land B \Entails B \land A
-          }
-        }
-        {
-          A : \texttt{Prop}, B : \texttt{Prop} \Entails A \land B \rightarrow B \land A
-        }
-      }
-      {
-        A : \texttt{Prop} \Entails \Pi (B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
-      }
-    }
-    {
-      \Entails \Pi (A\ B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
-    }
-  }
-\end{mathpar}
+\begin{figure*}[htp]
 
-A corresponding Coq proof following the same strategy matches the structure of
-the derivation quite closely:
+  \scalebox{0.9}{
+    \begin{minipage}[t]{\textwidth}
+
+      \begin{mathpar}
+        {
+          \inferrule*[Right=$\Pi$-intro]
+          {
+            \inferrule*[Right=$\Pi$-intro]
+            {
+              \inferrule*[Right=$\Pi$-intro]
+              {
+                \inferrule*[Right=$\land$-elim]
+                {
+                  {
+                    \inferrule*
+                    { }
+                    {
+                      \ldots , H : A \land B \Entails A \land B
+                    }
+                  }
+                  \and
+                  {
+                    \inferrule*[Right=$\land$-intro]
+                    {
+                      {
+                        \inferrule*
+                        { }
+                        {
+                          \ldots , H_A : A , H_B : B \Entails A
+                        }
+                      }
+                      \and
+                      {
+                        \inferrule*
+                        { }
+                        {
+                          \ldots , H_A : A , H_B : B \Entails B
+                        }
+                      }
+                    }
+                    {
+                      \ldots , H : A \land B , H_A : A , H_B : B \Entails A \land B
+                    }
+                  }
+                }
+                {
+                  \ldots , H : A \land B \Entails B \land A
+                }
+              }
+              {
+                A : \texttt{Prop}, B : \texttt{Prop} \Entails A \land B \rightarrow B \land A
+              }
+            }
+            {
+              A : \texttt{Prop} \Entails \Pi (B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
+            }
+          }
+          {
+            \Entails \Pi (A\ B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
+          }
+        }
+      \end{mathpar}
+
+    \end{minipage}
+
+  }
+
+\end{figure*}
+
+A corresponding \Coq{} proof following the same strategy matches the structure
+of the derivation quite closely:
 
 \begin{minted}{coq}
 Proof.
@@ -98,6 +109,7 @@ is less obvious to the beginner:
 In fact, the earlier derivation corresponds exactly to the one that the
 type-checker follows when checking the type of this last term:
 
+\noindent
 \scalebox{0.70}{
 
   \begin{minipage}{1.3\textwidth}
@@ -170,9 +182,11 @@ Therefore, there are two equivalent ways to think about tactics:
 
 \begin{itemize}
 
-  \item they add steps in the derivation tree, possibly finishing, prolonging, or splitting branches,
+  \item they add steps in the derivation tree, possibly finishing, prolonging,
+or splitting branches,
 
-  \item equivalently, they add subterms in the partial proof term, possibly filling, continuing, or adding holes.
+  \item equivalently, they add subterms in the partial proof term, possibly
+filling, continuing, or adding holes.
 
 \end{itemize}
 
@@ -181,8 +195,8 @@ assistant, this tree structure is somewhat hidden from the user, who receives
 proof obligations one by one in a traversal of the derivation.  For instance, in
 the previous proof, after calling \coqinline{split.}, the user is left with two
 obligations, originating from the two arguments that the conjunction
-introduction rule must receive.  However, in CoqIDE, the main interface to the
-proof assistant, the resulting state is displayed thus:
+introduction rule must receive.  However, in \CoqIDE{}, the main interface to
+the proof assistant, the resulting state is displayed thus:
 
 \begin{minted}{coq}
 2 subgoals
@@ -195,22 +209,22 @@ ______________________________________(2/2)
 A
 \end{minted}
 
-All remaining subgoals are counted, and displayed sequentially, no matter where
-they come from.  In this simple example, it is quite easy to follow what has
-happened, and remember that this second subgoal must eventually be solved.  In
-more complex examples, the delayed subgoals can accumulate as the proof
-derivation splits into multiple cases, and it is often not immediately clear
-where we are in a large proof after we finish a subgoal.
+All remaining sub-obligations are counted, and displayed sequentially, no matter
+where they come from.  In this simple example, it is quite easy to follow what
+has happened, and to remember that a second sub-obligation must eventually be
+solved.  In more complex examples, the delayed sub-obligations can accumulate as
+the proof derivation splits into multiple cases, and it is often not immediately
+clear where we are in a large proof after we finish a sub-obligation.
 
-The newest versions of Coq include a mechanism to help with this bookkeeping,
+The newest versions of \Coq{} include a mechanism to help with this bookkeeping,
 named \define{bullets}.  By using bullets like \coqinline{+}, \coqinline{-},
 \coqinline{*}, after a splitting point in a proof, the user can indicate their
-intent to focus on the subgoals generated during that last step.  Pre-existing
-subgoals are temporarily hidden, until all newly-generated subgoals are solved,
-at which point the pre-existing ones are restored back into view.  While this
-feature gives the user some agency over the list of proof obligations being
-displayed at any given time, it still requires the user to have a mental map of
-their location in the underlying proof tree.
+intent to focus on the sub-obligations generated during that last step.
+Preexisting sub-obligations are temporarily hidden, until all newly-generated
+sub-obligations are solved, at which point the preexisting ones are restored
+back into view.  While this feature gives the user some agency over the list of
+proof obligations being displayed at any given time, it still requires the user
+to have a mental map of their location in the underlying proof tree.
 
 In order to make this mental map more tangible in the user experience, we
 designed a feature that will display this proof tree, as it is being built and
@@ -218,7 +232,8 @@ navigated, to the user.
 
 \subsubsection{Building the proof-tree view}
 
-Our proof-tree view is a tree whose nodes fall in two categories:
+Our proof-tree view is a tree, as shown in Figure~\ref{proof-tree-view-nodes},
+whose nodes fall in two categories:
 
 \begin{itemize}
 
@@ -228,7 +243,11 @@ Our proof-tree view is a tree whose nodes fall in two categories:
 
 \end{itemize}
 
+\begin{figure*}[!htp]
 \includegraphics[width=\textwidth]{proof-tree}{\parfillskip=0pt\par}
+\caption{Proof-tree view: three obligations nodes and one tactic node}%
+\label{proof-tree-view-nodes}
+\end{figure*}
 
 When the user enters a proof, a single, root obligation node is created.  This
 node corresponds to the current, single proof obligation.  In order to progress,

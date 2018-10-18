@@ -103,7 +103,7 @@ using the relevant patching function for that diff type.  In all of our
 notations, we use a black frame and a teal highlight to indicate that a value is
 an output.
 
-\subsection{Atomic diff}
+\subsubsection{Atomic diff}
 
 There are many data types for which we will only capture changes at an atomic
 granularity: either the value is the same in the new program, or it has been
@@ -116,7 +116,7 @@ given type $\tau$:
 \begin{grammar}
 <$\delta_{atomic}\ \tau$> ::= \ %trick LaTeX
 \alt $\MathSame$                        \hfill (unchanged)
-% \alt $\MathReplace{\langle\tau\rangle}$ \hfill (replaced)
+\alt $\MathReplace{\langle\tau\rangle}$ \hfill (replaced)
 \end{grammar}
 %
 with the following semantics:
@@ -139,9 +139,7 @@ with the following semantics:
 
 \end{mathpar}
 
-\subsection{List diff} \label{list-diff}
-
-\subsubsection{Syntax}
+\subsubsection{List diff} \label{list-diff}
 
 For lists, we provide a rich selection of diff operations.  The aim is not to
 have a canonical representation, but rather to capture closely the intent of
@@ -149,7 +147,7 @@ the user modifications:
 
 \begin{grammar}
 <$\delta_{\text{list}} \ \tau \ \delta_{\tau}$> ::= \ %trick LaTeX
-\alt \synt{$\delta_{\text{atomic}}\ \tau$} \hfill (atomic modification)
+\alt \synt{$\delta_{\text{atomic}}\ \tau$} \hfill (atomic modification of the whole list)
 \alt \begin{tabular}{p{0.7cm} >{\centering}p{0.7cm} l}$\langle\tau\rangle$
        & $\MathIns{}{}$
        & \synt{$\delta_{list}\ \tau\ \delta_{\tau}$} \\\end{tabular} \hfill
@@ -218,7 +216,7 @@ rule~\rulename{Permute}, $\delta$, targets the entire list after the permutation
 is performed, not solely the tail: this is necessary because we will want to
 perform modifications of elements after having shuffled them around.
 
-\subsection{Term diff}
+\subsubsection{Term diff}\label{chick-diffs-term-diff}
 
 The diffs for terms include atomic changes, as well as insertion, modification,
 deletion, and permutation of most constructors.  We illustrate a couple of
@@ -280,10 +278,168 @@ application $(t\ x)$.
 
 \end{mathpar}
 
-\subsection{Other diff types}
+\subsubsection{Other diff types}
 
 We also need diffs for many other internal data types.  Diff types for tuples
 are derived from diff types of their constituents in a straightforward way.
 Inductive data type definitions, as well as constructor definitions, behave
 essentially like a tuple of all their arguments, so their diff type is derived
 accordingly.
+
+\subsubsection{Example of a program diff}
+
+With all of this machinery, we can define the original diff for our running
+example (again, referring to the changes seen on Figure~\ref{listtovec}) as
+shown in Figure~\ref{diff-list-vec}.  Because the diffs for the constructors
+take a lot of space, they are abbreviated as $\delta \coqinline{nil}$ and
+$\delta \coqinline{cons}$, and shown separately in
+Figures~\ref{diff-list-vec-nil} for \coqinline{nil} and~\ref{diff-list-vec-cons}
+for \coqinline{cons}.
+
+\begin{figure*}[!htp]
+
+  \noindent%
+  \begin{minipage}[t]{0.50\textwidth}
+    \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
+Inductive nat : Set :=
+| O : nat
+| S : ∀ (n : nat), nat.
+
+Inductive list (A : Type)
+: Type := ...
+
+(* rest of program *)
+    \end{minted}
+  \end{minipage}%
+  \begin{minipage}[t]{0.50\textwidth}
+    \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
+Inductive nat : Set :=
+| O : nat
+| S : ∀ (n : nat), nat.
+
+Inductive @\modified{vec}@ (A : Type)
+: @\modified{nat →}@ Type := ...
+
+(* identical rest of program *)
+    \end{minted}
+  \end{minipage}
+
+  \vspace{2em}%
+
+  \begin{align*}
+&\MathSame{}_{\InductiveText} \MathMod{}{} && \text{do not modify inductive \coqinline{nat}}\\
+& \delta_{\InductiveText} ( && \text{modify \coqinline{list} into \coqinline{vec}} \\
+& \qquad \MathReplace{\coqinline{vec}}, && \text{modify the name} \\
+& \qquad \MathSame{}_{\text{list}},       && \text{keep the parameter} \\
+& \qquad \MathIns{\coqinline{nat}}{\MathSame{}_{\text{list}}}, && \text{add the \coqinline{nat} index} \\
+& \qquad \MathSame{}_{\text{universe}}, && \text{keep the universe} \\
+& \qquad \MathMod{\delta\coqinline{nil}}{\MathMod{\delta\coqinline{cons}}{\MathSame{}_{\text{list}}}}
+  && \text{modify the constructors (elided)} \\
+& ) \MathMod{}{} && \\
+& \MathSame{}_{\text{list}} && \text{do not modify the rest of the program}
+  \end{align*}
+
+  \caption{Diff for our running example (constructors elided)}
+  \label{diff-list-vec}
+
+\end{figure*}
+
+While the inductive diff should be somewhat straightforward, readers might be
+surprised by $\delta\coqinline{nil}$ in Figure~\ref{diff-list-vec-nil} not
+mentioning the renaming of \coqinline{list} (on the left) into \coqinline{vec}
+on the right.  While this renaming appears syntactically in the concrete syntax,
+it is only a surface-level syntactic requirement that constructors repeat the
+type they inhabit.  In practice, the abstract syntax tree only contains the list
+of indices, and does not repeat the name of the type or the parameters of the
+inductive type.
+
+\begin{figure*}[!htp]
+
+  \noindent%
+  \begin{minipage}[t]{0.50\textwidth}
+    \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
+...
+| nil : list A
+  \end{minted}
+\end{minipage}%
+\begin{minipage}[t]{0.50\textwidth}
+  \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
+...
+| @\modified{vnil}@ : @\modified{vec}@ A @\modified{O}@
+  \end{minted}
+\end{minipage}
+
+  \vspace{2em}%
+
+  \begin{align*}
+& \delta\coqinline{nil} \coloneqq & && \\
+& \qquad \delta_{\ConstructorText} ( && \text{modify the \coqinline{nil} constructor} \\
+& \qquad \qquad \MathReplace{\coqinline{vnil}}, && \text{modify constructor name} \\
+& \qquad \qquad \MathSame{},                    && \text{no change to parameters} \\
+& \qquad \qquad \MathIns{\coqinline{O}}{\MathSame{}}
+  && \text{instantiate the \coqinline{nat} index with value \coqinline{O}} \\
+& \qquad ) && \\
+  \end{align*}
+
+  \caption{Diff for our running example (\coqinline{nil} constructor only)}
+  \label{diff-list-vec-nil}
+
+\end{figure*}
+
+One might also find the modification of the parameter in
+Figure~\ref{diff-list-vec-cons} hard to read.  The diff
+$\MathInsApp{\coqinline{n}}{\MathModApp{\MathReplace{\coqinline{vec}}}{\MathSame{}}}$
+might seem inverted, but it only appears so because function application is
+left-associative.  Therefore, when comparing \coqinline{list A} with
+\coqinline{vec A n}, the outermost application node of the latter does not
+correspond to any application node in the former.  The whole original term,
+\coqinline{list A}, in fact corresponds to the left-child of the outermost
+application node, i.e. \coqinline{vec A}.  Again, the reader might want to refer
+to rule~\rulename{\InsApp} from Section~\ref{chick-diffs-term-diff} for the
+semantics of $\MathInsApp{}{}$.
+
+\begin{figure*}[!htp]
+
+  \noindent%
+  \begin{minipage}[t]{0.50\textwidth}
+    \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
+...
+| cons : A →
+    list A → list A.
+  \end{minted}
+\end{minipage}%
+\begin{minipage}[t]{0.50\textwidth}
+  \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
+...
+| @\modified{vcons}@ : A → @\modified{∀ (n : nat),}@
+    @\modified{vec}@ A @\modified{n}@ → @\modified{vec}@ A @\modified{(S n)}@.
+  \end{minted}
+\end{minipage}
+
+  \vspace{2em}%
+
+  \begin{align*}
+& \delta\coqinline{cons} \coloneqq & && \\
+& \qquad \delta_{\ConstructorText} (  & && \text{modify the \coqinline{cons} constructor} \\
+& \qquad \qquad \MathReplace{\coqinline{vcons}}, & && \text{modify constructor name} \\
+& \qquad \qquad \MathSame{} & \MathMod{}{} && \text{keep the first parameter} \\
+& \qquad \qquad ( \coqinline{n} : \coqinline{nat} ) & \MathIns{}{} && \text{insert a second parameter} \\
+& \qquad \qquad ( \MathSame{}_{\text{binder}} : \MathInsApp{\coqinline{n}}{\MathModApp{\MathReplace{\coqinline{vec}}}{\MathSame{}}} )
+  & \MathMod{}{}
+  && \text{modify \coqinline{list A} into \coqinline{vec A O}} \\
+& & && \text{while keeping binder anonymous} \\
+& \qquad \qquad \MathSame{},                       & && \text{no other parameter} \\
+& \qquad \qquad \MathIns{\coqinline{(S n)}}{\MathSame{}} &
+  && \text{instantiate the \coqinline{nat} index, no other index} \\
+& \qquad ) && \\
+  \end{align*}
+
+  \caption{Diff for our running example (\coqinline{cons} constructor only)}
+  \label{diff-list-vec-cons}
+
+\end{figure*}
+
+Again, the diff shown in Figure~\ref{diff-list-vec} would be the input to our
+repair algorithm, alongside the original program.  The repair algorithm should
+propagate changes in such a way as to generate all the other fixes seen in teal
+in Figure~\ref{listtovec}.

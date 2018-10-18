@@ -61,7 +61,7 @@ unsafe without types.
 \section{Dependent types}
 \label{dependent-types}
 
-This dissertation will often focus on dependent type systems.  A
+This dissertation will mostly focus on \define{dependent} type systems.  A
 \define{dependent} type is a type whose definition depends on a program value.
 Non-dependent type systems can only express lightweight relationships between
 the input and output of functions, as well as lightweight constraints on what
@@ -116,6 +116,7 @@ and
 
 \coqinline{Π(a : X) → Π(b : Y) → Π(c : Y) → Π(d : Z) → R(a, b, c, d)}
 
+\noindent
 are syntactically equivalent, and we will favor the former (shorter) syntax.
 
 % Introduce Π-telescopes
@@ -151,6 +152,25 @@ data BST a = MkBST
 
 \section{Proof assistants}
 
+Our work focuses mostly on programs built using a \define{proof assistant}.  A
+proof assistant is a software tool allowing a user to define mathematical
+structures, with their axioms and rules, and carry mechanized proofs of
+properties of those structures.  By \define{mechanized}, we mean that the
+software has the ability to check that a proof is correct, with respect to a set
+of rules.  Many proof assistants rely on the Curry-Howard
+isomorphism~\cite{howard1980formulae}, bridging the gap between formal logic and
+typed programming.  In those systems, logical propositions can be readily
+expressed as types, in the same formal system within which programs can be
+defined.  Proofs built this way are essentially programs, whose computational
+content is often less interesting than the fact that they are well-typed.
+
+Proof assistants come in a large variety, both from a theoretical point of view,
+and in terms of user experience.  On the theory side, there are many logical
+systems of interest, and different proof assistants tend to focus primarily on
+some classes of those.  For instance, the \Coq{} proof assistant focuses, by
+default, on an intuitionistic fragment of the calculus of (co)-inductive
+constructions, or \Language{CoC}.
+
 \begin{itemize}
 
   \item Define proof assistants
@@ -162,8 +182,6 @@ proof contexts, goals, and tactics
 
           \item Emphasize the distinction between the program text, and the
 program being built by the assistant
-
-          \item X
 
         \end{itemize}
 

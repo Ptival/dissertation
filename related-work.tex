@@ -1,3 +1,184 @@
 \chapter{Related work}
 
-TODO
+\subsection*{Refactoring functional programs}
+
+A main line of work in refactoring functional programs is the work done on the
+Hare refactoring tool for \Haskell{}~\citep{li2005haskell} and subsequently on
+refactoring Erlang programs~\citep{li2006}.  The scope of the former is much
+larger than this paper: they implement a large library of refactoring
+algorithms, including some that this paper covers, for the \Haskell{}
+programming language.  In particular, their tool handles \Haskell{} 98, and
+provides an API to perform refactorings.  They also refactor while preserving
+the user's syntactic choices, which proves challenging in layout-based languages
+like \Haskell{}.  However, their publications do not distill the details of how
+to implement those refactorings, and thus, does not allow for easy
+experimentation, porting to other languages, or verification of their
+techniques.
+
+A very promising ongoing line of work is that of
+\define{ornaments}~\citep{williams2017}.  Their formalism allows to describe
+data type transformations from within the language itself, and perform similar
+transformations to ours.  The ornamentation language is more expressive than our
+language of diffs in many ways, allowing arbitrary mappings between constructors
+before and after modification: for instance, one of their motivating example
+cuts a constructor into two different constructors depending on some Boolean
+condition.  As a result, their technique requires the programmer to describe the
+transformation they wish to carry as an ornament, and the programmer's help is
+required alongside the transformation to indicate to the repair algorithm what
+to do in corner cases.  Our restriction to a simple language of modifications
+allows us to guess the transformation based on the syntactic modification of the
+program itself, and grants us more leverage on automation, at the price of a
+much lower expressiveness.
+
+\subsection*{Refactoring proofs}
+
+One of the few tools that attempts refactoring in the context of the proof
+assistants is the Levity tool by~\citet{ruegenberg2011}.  The refactoring it
+performs is referred to as \define{levitation}, and corresponds to the move of a
+lemma up its dependency chain, to a location that is deemed more relevant.  This
+transformation is hard to perform in many proof assistants, because figuring out
+where the lemma can exist can be challenging and time-consuming, and because the
+action of levitating the lemma might derail other parts of the proof
+development, even when they seem unrelated, because the declaration of a lemma
+might have unintended side-effects through automation mechanisms.
+
+Another main line of work in this domain is the line of work
+of~\citet{whiteside2011}, followed up by~\citet{dietrich2013}.  They define a
+framework for specifying refactoring rules over an idealized proof language
+called Hiproof, and its idealized tactic language called Hitac.  The latter is
+designed to be close to the declarative Isar tactic language of Isabelle.  This
+framework allows them to define many interesting refactorings, and to prove
+their correctness, informally, with low effort.  They acknowledge that it would
+be more difficult to develop the same refactorings for a less declarative tactic
+language like the \Ltac{} language of the \Coq{} proof assistant.
+
+\citet{boite2004} also addresses the problem of modifying an existing inductive
+type definition while reusing existing proofs.  Their technique does not alter
+existing code, rather, they internalize the notion of \define{extension} of an
+inductive data type (that is, the adding of a constructor, or parameters), and
+provide commands that perform such extensions, deriving extended data types and
+extended functions from the original ones.  It would be interesting to have
+proof assistants internalizing and exposing this kind of algebraic manipulations
+of data types.
+
+Finally, recent work by~\citet{ringer2018adapting} builds semantic patches to
+help programmer refactor their proofs.  Their approach does not modify the old
+program into a new program.  Rather, the old program is kept with its proofs,
+alongside the new program, and patches are automatically derived to transport
+proof obligations between the old program and the new program.  Their approach
+seems complementary to ours, depending on the use case for the programmer.
+
+\subsection*{Automatic code generation}
+
+Another exciting line of work consists in removing the friction of performing
+those manual refactorings altogether.
+
+General purpose automation like Isabelle's sledgehammer~\citet{blanchette2011}
+or the recent for on a similar hammer for Coq~\citet{czajka2017} can help reduce
+the work of programmers in those systems by avoiding writing terms entirely.
+Hopefully, doing so removes a lot of brittle tactic calls, but they do not help
+in refactoring data type definitions when the objects of discourse evolve.
+
+The body of work on program synthesis could also prove very beneficial.  For
+instance,~\cite{polikarpova2016} can perform program synthesis from refinement
+types, which could potentially spare the programmer from fixing code that is
+never manually-written, but rather synthesized.  However, the specifications
+themselves could still require refactoring tools, since they are themselves
+terms from a refinement type system.
+
+\subsection*{IDE-based detection of refactoring attempts}
+
+The work of~\citet{foster2012} focuses on detecting when a programmer is trying
+to perform a refactoring in Java programs.  Many times, the programmer will not
+know that refactoring tools exist in their IDE, or will not realize that they
+are performing a task that corresponds to an existing refactoring algorithm.  In
+particular, they use a text-based diff in order to be able to recognize
+refactoring attempts even when the program is in a transient, non-parseable
+state.
+
+\subsection*{Incremental computation}
+
+The literature on incremental computation focuses on the problem of reliably and
+efficiently re-computing data that is the output of some computation after the
+input undergoes a modification, which is similar to our deriving of repairing
+functions from Section~\ref{deriving}.  For instance,~\citet{acar2006},
+\citet{carlsson2002}, as well as~\citet{firsov2016}, all use an abstract data
+type for values that can be efficiently recomputed, and propose a monadic
+interface to build incremental computations while providing the programmer with
+an interface that hides those details behind the scenes.  Similarly,
+\citet{chen2011} automatically transform a non-incremental program to inject
+incremental behavior into it.  While this is similar to what we do in spirit,
+we care about more than just obtaining the result of the incremental
+computation, since we sometimes reuse the diff of one data type to compute a diff
+for another, related data type.  Incremental computation techniques are
+typically not interested in this, and do not usually expose the internals of
+their functioning to the user.
+
+\citet{cai2014} define a general way of using \define{derivatives} of functions
+to compute their reactions to some abstract modifications, and compute those
+derivatives for first-order functions.  They demonstrate it on examples using
+unordered collections.  Our diffs are an instance of their general notion, but
+we depart from it by having more specialized diffs to fit our needs, and by
+supporting a small family of higher-order functions (namely, folds over lists),
+using our deriving technique to help compute their derivative.
+
+
+% \section*{HaRe: a \Haskell{} refactoring tool}
+
+% \mycite{li2005haskell} propose a refactoring tool for \Haskell{} programs that
+% provide several of the benefits of the tool we describe in
+% Chapter~\ref{chick}.
+
+% %TODO
+
+% \section*{Ornaments}
+
+% In order to refactor functional programs, as well as enabling novel methods of
+% programming with data types, the work on \define{ornaments} approaches the
+% treatment of programs as mathematical objects that can be related algebraically.
+
+% \mycite{dagand2017essence} describes a theoretical framework for describing data
+% types in such a way as to be able to express relationships between two data type
+% definitions.  By representing inductive data type definitions with their
+% underlying many-sorted signature, their work allows describing the relationship
+% between two data types, describing one as an extension of the signature of the
+% other one.  \mycite{williams2014ornaments} show how to use ornaments to perform
+% a refactoring in which a data type representation gets reorganized without
+% adding or removing information.
+
+% Their approach is much more general and structured than ours: their work can
+% effectively lift existing code through ornaments, or be used to express the
+% relationship between a surface language and its syntactically-desugared version
+% as an ornament.  However, this power comes with a price: first, the programmer
+% must write their refactoring attempt in terms of an ornament, and then, they
+% must participate in the lifting process by indicating to the algorithm what to
+% do in some corner cases.  In our approach, the limited expressiveness of our
+% diffs allows an algorithm to perform guesses as to what changed between two
+% definitions, relieving the user from having to specify it.  We do, however, have
+% similar limitations to our algorithm's ability to deal with ambiguous
+% refactoring attempts, and we also rely on typed holes to fill blanks where the
+% programmer must provide values to finish the generated code.
+
+% \section*{Patching proof terms}
+
+% \mycite{ringer2018adapting} propose a technique for automatically inferring
+% proof patches based on an example of one patch.  This proves invaluable in
+% refactoring settings, where a user might need to repeatedly apply the same
+% repairing technique to several places in a code base.  By semantically analyzing
+% one instance of such a repair, and performing abstraction techniques to make the
+% repair more general, they can yield a patch that can be instantiated in many
+% places to carry out the refactoring.
+
+% Their current prototype does not support changes that don't preserve shape yet,
+% so they could not be patching examples that ornaments and our technique handles.
+% Their technique seems orthogonal to ours, since their intent is to obtain the
+% new, patched proof as a proof term with the correct type, not as a repaired
+% tactic script.  For repairing programs, this is similar, but for repairing
+% proofs, their approach would yield a repaired proof object, but not a repaired
+% proof text.  With our approach, we'd hope to be able to give tactic repairs, at
+% the syntax level.
+
+% However, the great advantage of their approach comes from the ability to find
+% semantic, meaningful patches from examples.  While this requires some work from
+% the user, they hope that the time saved by applying the patch repeatedly overall
+% outweighs the time investment.

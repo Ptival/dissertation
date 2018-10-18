@@ -1,4 +1,4 @@
-\subsection{Repairing programs} \label{repair-program}
+\subsection{Repairing programs}~\label{repair-program}
 
 The repair algorithm for programs $\repairProgOp$ is described formally in
 Figure~\ref{fig:repair-program} using the following judgment:
@@ -134,7 +134,7 @@ commands. }
             }
             \and
             {\turnstile%
-              { \denv{v \Cons E}{\MathMod{\delta_v'}{\delta_E}} }
+              { \denv{v \Cons{} E}{\MathMod{\delta_v'}{\delta_E}} }
               { \repairProg{p}{\delta_p}{\delta_p'} }
             }
           }
@@ -148,12 +148,12 @@ commands. }
       \inferrule*
           [lab=R-Prog-Drop]
           {
-            {\turnstile
-              { \denv{v \Cons E}{\MathDrop{\delta_E}} }
+            {\turnstile%
+              { \denv{v \Cons{} E}{\MathDrop{\delta_E}} }
               { \repairProg{p}{\delta_p}{\delta_p'} }
             }
           }
-          {\turnstile
+          {\turnstile%
             { \denv{E}{\delta_E} }
             { \repairProg{\MathCons{v}{p}}{\MathDrop{\delta_p}}{\MathDrop{\delta_p'}} }
           }
@@ -165,12 +165,12 @@ commands. }
           {
             { \MathPatches{q}{\MathPermute{p}{}}{q'} }
             \and
-            {\turnstile
+            {\turnstile%
               { \denv{E}{\delta_E} }
               { \repairProg{q'}{\delta}{\delta'} }
             }
           }
-          {\turnstile
+          {\turnstile%
             { \denv{E}{\delta_E} }
             { \repairProg{q}{\MathPermute{p}{\delta}}{\MathPermute{p}{\delta'}} }
           }

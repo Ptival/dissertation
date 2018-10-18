@@ -1,16 +1,18 @@
 \section{Design}
 
-\begin{figure}
+\begin{figure}[!htp]
 
   \centering
-  \begin{tikzpicture}[node distance=0.5cm]
+  \begin{tikzpicture}[node distance=0.8cm]
 
     \tikzstyle{box} = [%
     align=center,
     draw=black,
+    font=\bfseries,
     inner sep=2ex,
+    line width=3pt,
     rectangle,
-    ultra thick,
+    %ultra thick,
     ];
 
     \tikzstyle{doc}=[%
@@ -22,17 +24,19 @@
     thick,
     ]
 
-    \node[doc]                   (original) {Original\\program};
-    \node[doc,below=of original] (modified) {Modified\\program};
-    \node[box,right=of modified] (guess)    {Guess\\diff};
-    \node[doc,right=of guess]    (guessed)  {Partial\\refactoring\\diff};
-    \node[box,right=of guessed]  (repair)   {Repair};
-    \node[doc,right=of repair]   (repaired) {Repaired\\diff};
+    \node[doc]                           (modified) {Partially\\refactored\\program};
+    \node[doc,below=of modified]         (original) {Original\\program};
+    \node[box,right=of modified]         (guess)    {Guess\\diff};
+    \node[doc,right=of guess]            (guessed)  {Partial\\refactoring\\diff};
+    \node[box,right=of guessed]          (repair)   {Repair};
+    \node[doc,right=of repair]           (repaired) {Completed\\refactoring\\diff};
+    \node[box] at (repaired |- original) (patch)    {Patch};
+    \node[doc,below=of patch]            (patched)  {Refactored\\program};
 
     \draw[->,rounded corners,ultra thick]
     (original.east)
-    -- (guess.north |- original.east)
-    -- (guess.north)
+    -- (guess.south |- original.east)
+    -- (guess.south)
     ;
 
     \draw[->,ultra thick] (modified.east) -- (guess.west);
@@ -40,18 +44,49 @@
 
     \draw[->,rounded corners,ultra thick]
     (original.east)
-    -- (repair.north |- original.east)
-    -- (repair.north)
+    -- (repair.south |- original.east)
+    -- (repair.south)
     ;
 
     \draw[->,ultra thick] (guessed.east) -- (repair.west);
     \draw[->,ultra thick] (repair.east)  -- (repaired.west);
 
+    \draw[->,ultra thick] (original.east)  -- (patch.west);
+    \draw[->,ultra thick] (repaired.south) -- (patch.north);
+    \draw[->,ultra thick] (patch.south)    -- (patched.north);
+
   \end{tikzpicture}
 
-  \caption{\Chick{}'s workflow}
+  \caption{\Chick{}'s workflow}~\label{chick-workflow}
 
 \end{figure}
+
+In order to help programmers in dependently-typed languages refactor their
+programs, we built a prototype tool called \Chick{}.  The high-level workflow of
+\Chick{} is given in Figure~\ref{chick-workflow}.  The main idea is to take the
+original, existing program prior to the refactoring attempt, and the modified
+program where a partial refactoring has been performed, and automatically finish
+propagating changes through the rest of the program.
+
+However, we do not perform this operation all at once.  Instead, our workflow
+consists in three phases.  First, we analyze the original program against the
+modified program to build a list of all the differences between the two.  We
+will describe the data type used to represent those differences in
+Section~\ref{chick-diffs}.  We try to capture the intent of the programmer in
+this list of differences; as we will discuss, there can be several ways of
+interpreting the same change, and the repair performed will depend on which
+interpretation is chosen.  We will postpone the details of how we guess until
+Section~\ref{TODO}, and assume the appropriate diff is given for now.
+
+Second, this list of differences is used to compute a repair of the program.
+Here again, we do not directly compute a repaired program (a value of type
+\coqinline{program}), but instead compute a value of type
+$\delta_{\coqinline{program}}$ describing how the program must be modified in
+order to be repaired.  We will cover the benefits of this approach in
+Section~\ref{TODO}.
+
+Finally, the repaired program is obtained by simply applying the repaired diff
+to the original program.
 
 \begin{figure*}[!htp]
 
@@ -127,10 +162,49 @@ Fixpoint map :
   \end{minted}
 \end{minipage}
 
-\caption
+\caption%
 [Running example of a \Chick{} repair.]
-{Running example of a \Chick{} repair.  The user-provided partial refactoring is highlighted in orange.  The computed repairs are highlighted in teal.}
-
-\label{listtovec}
+{Running example of a \Chick{} repair.  The user-provided partial refactoring is highlighted in orange.  The computed repairs are highlighted in teal.}~\label{listtovec}
 
 \end{figure*}
+
+Figure~\ref{listtovec} gives a concrete example of the kind of repair we want to
+propagate.  We will use it as our running example in the following sections.  On
+the left-hand side is an original program, prior to any attempt at refactoring
+it.  In this example, the user defined a data type \coqinline{list}, and a
+couple of definitions and functions over this data type.  Let us now assume they
+would like to replace this type list with a richer type of length-indexed lists.
+This is a bit contrived, but it will bring up many of the feature we would like
+to have.  On the right-hand side of the same figure, the orange part is the
+partial refactoring the user has manually done.  The green parts on the
+right-hand side constitute the rest of the refactoring, as automatically
+produced by our tool.
+
+In the \coqinline{a_list} definition, the type must be renamed, and a type index
+must be added.  While the repair algorithm knows that an index must be inserted,
+it does not know what value to use.  Instead, a typed hole \coqinline{(_ : nat)}
+is inserted.  The user might need to eventually provide a concrete value of type
+\coqinline{nat}, though, there are cases where the type system will infer such
+value without any user assistance.  The term of the definition was also updated,
+to rename the constructor and add a type hole for its new argument.  While this
+change seems trivial, it relies on our ability to match constructors from the
+old inductive definition to constructors in the new inductive definition.  In
+order to guess that \coqinline{nil} and \coqinline{vnil} are related, and that
+\coqinline{cons} and \coqinline{vcons} are related, our analysis must evaluate
+the most likely pairs of matching constructors.  Since a user might also have
+removed a constructor, and created an entirely different one, we also want to
+assess our confidence in matching two constructors.
+
+The definition of \coqinline{length} is updated in a similar way, but notice
+that the function call being updated is a call to the eliminator
+\coqinline{vec_rect}.  This eliminator is never explicitly defined in the user
+code: it is a function that is automatically generated when the \coqinline{vec}
+definition is accepted.  Our tool supports patching such functions, as long as
+we describe to it how those functions change when the inductive definition
+changes.
+
+Finally, in the definition of \coqinline{map}, the patterns of a
+\coqinline{match} construct are updated.  This will require some care since it
+may introduce or remove binders, but for this example, our repair algorithm took
+the conservative approach of not binding the new arguments, using a wildcard
+\coqinline{_} pattern.

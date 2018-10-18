@@ -22,6 +22,9 @@
 
 \usepackage{graphicx}
 
+% Removed for preliminary appointment
+% \usepackage{showframe}
+
 % Valentin
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -38,10 +41,10 @@
 \usepackage{graphicx}
 %\usepackage{gfsdidot}
 \usepackage{mathpartir}
+\usepackage{mathtools} % \coloneqq
 \usepackage{mdframed}
 \usepackage{minted}
 \usepackage[parfill]{parskip}
-\usepackage{showframe}
 \usepackage{syntax}
 \usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz
 \usepackage{tikz}
@@ -169,12 +172,13 @@ innerbottommargin=0pt
 %\cochair{Professor Gamma Delta} % Optional
 % Your committee members (other than the chairs) must be in alphabetical order
 \committee{Professor William Griswold}
-\committee{Professor Ranjit Jhala}
 \committee{Professor James Hollan}
+\committee{Professor Ranjit Jhala}
 \committee{Professor Todd Millstein}
 \degreeyear{2018}
 
 \input{macros}
+\setlength\parindent{0.5in}
 
 % Start the document
 \begin{document}
@@ -238,19 +242,20 @@ innerbottommargin=0pt
 % \listofalgorithms.
 \tableofcontents
 \listoffigures
-\listoftables
+% \listoftables
 
 % Preface
-\begin{preface}
-TODO
-\end{preface}
+%\begin{preface}
+% TODO?
+%\end{preface}
 
 % Your fancy acks here. Keep in mind you need to ack each paper you
 % use. See the examples here. In addition, each chapter ack needs to
 % be repeated at the end of the relevant chapter.
 \begin{acknowledgements}
-I would like to acknowledge Professor Sorin Lerner for his support as the chair
-of my committee.
+
+I would like to thank Professor Sorin Lerner for his support as my advisor and
+the chair of my committee.
 
 Chapter~\ref{peacoq}, in part, has been published in a series of blog
 articles. The dissertation author was the primary investigator and author of
@@ -282,6 +287,7 @@ investigator and author of this material.
 % publication of the material. Smith, Laura; Smith, Jane~D\@. The
 % dissertation author was the primary investigator and author of this
 % material.
+
 \end{acknowledgements}
 
 % Stupid vita goes next
@@ -289,7 +295,10 @@ investigator and author of this material.
 \noindent
 \begin{cv}{}
 \begin{cvlist}{}
-\item[2018] TODO
+\item[2012 - 2018] Doctorate of Philosophy, Computer Science, University of California San Diego
+\item[2008 - 2012] Diploma of Engineering (Master's degree), ENSEIRB-MATMECA
+\item[2006 - 2008] Classe pr\'eparatoir, Lyc\'ee Louis Barthou
+\item[2001 - 2006] Baccalaur\'eat, Science specialization, Lyc\'ee Saint-Cricq
 % \item[1996] Bachelor of Arts, University of California, Berkeley
 % \item[1996--2000] U.S. Marines
 % \item[2000--2002] Teaching Assistant, Department of Mechanical
@@ -329,12 +338,32 @@ June. Automating formal proofs for reactive systems. In ACM SIGPLAN Notices
 
 % Put your maximum 350 word abstract here.
 \begin{dissertationabstract}
-TODO
+
+Dependently-typed functional languages are increasingly popular, but due to the
+complexity of their type systems, there is still a lot of friction in the user
+experience, both for beginners who try to learn the concepts, and expert users
+who must write and maintain complex code bases.  We explore ways to alleviate
+those burdens by providing novel front-end tooling for this class of languages.
+
+In order to help beginners, we explore new visualizations and automation
+techniques, focusing on three pain points we identified in the learning process.
+We evaluate, via a longitudinal user study and an A-B study, their effectiveness
+in terms of learning to use those languages, enjoyment of the learning process,
+and productivity on solving beginner-level exercises.
+
+In order to help experts, we prototype a tool that helps in the refactoring of
+programs, partially eliminating the tedium of propagating changes throughout
+large code bases.  We evaluate this tool over a choice of refactoring
+benchmarks, and show how it can be extended to support other languages than the
+toy language we designed it for.  We evaluate one instance of this extension
+technique to repair programs in the \OCaml{} language, a functional language
+without dependent types, but with more features than our tool was built for.
+
 % The Abstract begins here. The abstract is limited to 350 words for a
 % doctoral dissertation. It should consist of a short statement of the
 % problem, a brief explanation of the methods and procedures employed in
 % generating the data, and a condensed summary of the findings of the
-% study. The abstract may continute onto a second page if necessary. The
+% study. The abstract may continue onto a second page if necessary. The
 % text of the abstract must be double spaced.
 \end{dissertationabstract}
 
