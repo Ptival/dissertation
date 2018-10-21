@@ -1,0 +1,341 @@
+\section{Deriving repair functions}~\label{deriving}
+
+Accounting for changes in inductive definitions requires quite a bit of work:
+
+\begin{itemize}
+
+\item the inductive type itself must be repaired, including its parameters, and
+its indices,
+
+\item each constructor must be repaired, including their parameters, and their
+instantiation of indices,
+
+\item the automatically-generated elimination principles for the type must also
+be repaired accordingly.
+
+\end{itemize}%
+%
+Let us focus on the latter.  In a proof assistant like Coq, when an inductive
+data type \coqinline{t} is defined, the system also defines a family of
+\textit{elimination principles} \coqinline{t_ind}, \coqinline{t_rec}, and
+\coqinline{t_rect}, that essentially encode an induction principle for the given
+type.  For instance, for the types \coqinline{list} and \coqinline{vec}, the
+induction principles are given in Figure~\ref{list-ind-vec-ind}.
+
+\begin{figure*}[!htp]
+
+  \noindent%
+  \begin{minipage}[t]{0.45\textwidth}
+\begin{minted}{coq}
+list_ind :
+  ∀ (A : Type)                   (* 1 *)
+    (P : list A → Prop),         (* 2 *)
+    P (nil A) →                  (* 3 *)
+    (∀ (a : A) (l : list A),     (* 3 *)
+       P l → P (cons A a l)) →
+                                 (* 4 *)
+    ∀ l : list A,                (* 5 *)
+      P l                        (* 6 *)
+\end{minted}
+  \end{minipage}%
+  \begin{minipage}[t]{0.55\textwidth}
+\begin{minted}{coq}
+vec_ind :
+  ∀ (A : Type)                              (* 1 *)
+    (P : ∀ n : nat, vec A n → Prop),        (* 2 *)
+    P 0 (vnil A) →                          (* 3 *)
+    (∀ (a : A) (n : nat) (v : vec A n),     (* 3 *)
+       P n v → P (S n) (vcons A a n v)) →
+    ∀ (n : nat)                             (* 4 *)
+      (v : vec A n),                        (* 5 *)
+      P n v                                 (* 6 *)
+\end{minted}
+  \end{minipage}
+
+  \caption{ Induction principles for \coqinline{list} and \coqinline{vec}.
+\coqinline{δmkEliminatorType} can compute a term diff transforming the former
+into the latter, given the diff turning the \coqinline{list} inductive data type
+declaration into the \coqinline{vec} one.}~\label{list-ind-vec-ind}
+\end{figure*}
+
+The property being returned \coqinline{P} is usually referred to as the
+\textit{motive} of the elimination principle.  The motive is a property about a
+value of the inductive type being eliminated: we will refer to this value as the
+\textit{target} of the motive.  The value being eliminated (the last
+universally-quantified value, respectively \coqinline{l} and \coqinline{v}) are
+usually referred to as the \textit{discriminee}.  The process that computes the
+elimination principle's type from the inductive data type definition
+$\Inductive{n}{\overrightarrow{p}}{\overrightarrow{i}}{u}{\overrightarrow{c}}$
+is involved, but straightforward:
+
+\begin{enumerate}%[label=\protect\circled{\arabic*}]
+
+\item~\label{ind-params} the inductive parameters $\overrightarrow{p}$ are
+universally-quantified over,
+
+\item the motive \coqinline{P} is universally-quantified over, its type being
+computed by:
+
+\begin{itemize}
+
+\item universally-quantifying over the inductive indices $\overrightarrow{i}$,
+
+\item universally-quantifying over a target, i.e.\ an element of the inductive
+type undergoing elimination, fully-instantiated with parameters
+from~\ref{ind-params} and the indices from the previous sub-step,
+
+\item and returning in the appropriate universe for the desired elimination
+principle,
+
+\end{itemize}
+
+\item for each constructor
+$\Constructor{n_c}{\overrightarrow{p_c}}{\overrightarrow{i_c}}$, a case is
+universally-quantified over, whose type is obtained thus:
+
+\begin{itemize}
+
+\item each constructor parameter $\overrightarrow{p_c}$ is
+universally-quantified over, and for each parameter $p_{c_i}$ that is a
+recursive occurrence of the data type being eliminated, a fully-instantiated
+motive, with appropriate arguments so as to target this parameter, is also
+universally-quantified over immediately after this parameter,
+
+\item the return type is also a fully-instantiated motive, where inductive
+indices are instantiated with the constructor indices $\overrightarrow{i_c}$,
+and the motive's target is an instantiation of the constructor $n_c$, with
+inductive parameters from step~\ref{ind-params}, and constructor parameters from
+the previous sub-step,
+
+\end{itemize}
+
+\item~\label{ind-indices} inductive indices $\overrightarrow{i}$ are
+universally-quantified over,
+
+\item the discriminee is universally-quantified over, its type being the
+inductive type applied to inductive parameters from~\ref{ind-params} and
+inductive indices from~\ref{ind-indices},
+
+\item finally, the elimination rule returns a value of the fully-instantiated
+motive, with indices from~\ref{ind-indices}, and the discriminee as target.
+
+\end{enumerate}
+%
+We will use Haskell syntax to describe meta-language implementation details (we
+reserve Coq syntax for programs in the object language).  Our function computing
+the type of an eliminator has the following high-level skeleton:
+
+\noindent
+\begin{minipage}{\textwidth}
+\begin{minted}{haskell}
+eliminatorType ... =
+  quantifyVars  inductiveParameters                 {- 1 -}
+. mkPi          motiveType            motive        {- 2 -}
+. quantifyCases inductiveConstructors               {- 3 -}
+. quantifyVars  inductiveIndices                    {- 4 -}
+. mkPi          discrimineeType       discriminee   {- 5 -}
+$ mkApp         indices               discriminee   {- 6 -}
+  where
+   indices = applyVars inductiveIndices motive
+\end{minted}
+\end{minipage}
+
+\noindent where \coqinline{quantifyVariables}, \coqinline{applyVariables} are
+folding functions that create \coqinline{Pi}s, and \coqinline{App}s,
+respectively, and \coqinline{motiveType} and \coqinline{discrimineeType} are
+computed by additional \coqinline{fold} operations.
+
+Our insight is as follows: while we cannot derive a diff-propagating function
+for any \coqinline{fold} in general, we can describe how a given folding
+operation \coqinline{f} reacts to differences in the input list \coqinline{l} in
+the call \coqinline{(fold f l b)}.  From this description, we can derive the
+diff-propagating function for the whole \coqinline{fold} operation.  To make
+things more concrete, let's focus on \coqinline{quan\-tify\-Variables} and build
+its corresponding, diff-propagating version \coqinline{δquan\-tify\-Variables}.
+The original function is a right-fold that universally quantifies over every
+element encountered. We can describe how it reacts to changes in the input list
+using the following record type:
+
+\begin{minipage}{\textwidth}
+\begin{minted}{haskell}
+data ΔListFold τ δτ δ = ΔListFold
+  { onInsert  ::     τ →     [τ] → δ → δ
+  , onModify  ::    δτ → τ → [τ] → δ → δ
+  , onPermute :: [Int] →     [τ] → δ → δ
+  , onRemove  ::         τ → [τ] → δ → δ
+  , onReplace ::   [τ] →     [τ] → δ → δ
+  , onSame    ::             [τ] → δ → δ
+  }
+\end{minted}
+\end{minipage}
+
+\noindent For each diff operation on lists, we record a transformer on the
+output diff type \coqinline{δ}.  In our example, the fold is building a
+\coqinline{Term}, so the output diff type is \coqinline{ΔTerm}, and we describe
+how the output term is affected by changes to the input list: when an element is
+inserted in the input list, a $\Pi$ is added to the output term, when an element
+is removed from the input list, a $\Pi$ is removed from the output term, etc.
+When the entire list gets replaced, the handler receives the old list
+\coqinline{l} and the new list \coqinline{l'}: the output term will see
+\coqinline{(length l')} $\Pi$s removed, and for each element of \coqinline{l}, a
+corresponding $\Pi$ will be added.  We then have two functions:
+
+\noindent
+\begin{minipage}{\textwidth}
+\begin{minted}{haskell}
+δListFoldLeft, δListFoldRight ::
+  ΔListFold τ δτ δ ->
+  [τ] -> ΔList τ δτ -> Maybe (δ -> δ)
+\end{minted}
+\end{minipage}
+
+\noindent which take such a description, an original list, and a list diff, and
+compute the resulting diff transformer for the output type, as long as the diff
+makes sense for the list.  Receiving the original list lets us check the sanity
+of the list diff at each step (e.g.\ a diff should not ask to drop the head from
+an empty list), and lets us pass the element being modified or removed to the
+handlers who need the information.  With all this machinery ready, we can derive
+\coqinline{δEliminator\-Type} as:
+
+\noindent
+\begin{minipage}{\textwidth}
+\begin{minted}{haskell}
+δEliminatorType ... =
+    δquantifyVars  ips              δips
+<$> CopyPi         δmotiveType      Same
+<$> δquantifyCases cs               δcs
+ $  δquantifyVars  iis              δiis
+ $  CopyPi         δdiscrimineeType Same
+ $  CopyApp        δindices         Same
+  where
+    δindices = δapplyVars iis δiis Same
+\end{minted}
+\end{minipage}
+
+\noindent which matches closely the original definition of
+\coqinline{Eliminator\-Type}.  We use the same mechanism to derive a
+diff-propagating version of the function that computes the type of an inductive
+type family (based on the diff of its parameters and indices lists), and a
+diff-propagating version of the function that computes the type of a constructor
+(based on the diff of its parameters and indices lists).  At a high-level, we
+have the following property:
+
+\[
+  {
+    \inferrule*
+    [width=5em]
+    {
+      {
+        {\MathMkElimType
+          {\Inductive
+            {n}
+            {\overrightarrow{p}}
+            {\overrightarrow{i}}
+            {u}
+            {\overrightarrow{c}}
+          }
+        }
+        \op{\ =\ }
+        \out{e}
+      }
+      \\
+      {\MathPatches
+        {\Inductive
+          {n}
+          {\overrightarrow{p}}
+          {\overrightarrow{i}}
+          {u}
+          {\overrightarrow{c}}
+        }
+        {\delta_i}
+        {\Inductive
+          {n'}
+          {\overrightarrow{p'}}
+          {\overrightarrow{i'}}
+          {u'}
+          {\overrightarrow{c'}}
+        }
+      }
+      \\
+      {
+        {\MathMkΔElimType
+          {\Inductive
+            {n}
+            {\overrightarrow{p}}
+            {\overrightarrow{i}}
+            {u}
+            {\overrightarrow{c}}
+          }
+          {\delta_i}
+        }
+        \op{\ =\ }
+        \out{\delta_e}
+      }
+      \\
+      {
+        {\MathMkElimType
+          {\Inductive
+            {n'}
+            {\overrightarrow{p'}}
+            {\overrightarrow{i'}}
+            {u'}
+            {\overrightarrow{c'}}
+          }
+        }
+        \op{\ =\ }
+        \out{e'}
+      }
+    }
+    {
+      \MathPatches{e}{\delta_e}{e'}
+    }
+  }
+\]
+
+\noindent i.e., \coqinline{δEliminator\-Type} produces the correct diff to
+transport the old eliminator type to the new eliminator type.  In fact, we even
+have the following corollary:
+
+\[
+  {
+    \inferrule*
+    [width=5em]
+    {
+      {{\MathMkElimType{i}} \op{\ =\ } \out{e}}
+      \\
+      {
+        {\MathMkΔElimType
+          {i}
+          {\ModifyInductive
+            {\MathReplace{n}}
+            {\MathReplace{\overrightarrow{p}}}
+            {\MathReplace{\overrightarrow{i}}}
+            {\MathReplace{u}}
+            {\MathReplace{\overrightarrow{c}}}
+          }
+        }
+        \op{\ =\ }
+        \out{\delta_e}
+      }
+      \\
+      {
+        {\MathMkElimType
+          {\Inductive
+            {n}
+            {\overrightarrow{p}}
+            {\overrightarrow{i}}
+            {u}
+            {\overrightarrow{c}}
+          }
+        }
+        \op{\ =\ }
+        \out{e'}
+      }
+    }
+    {\MathPatches{e}{\delta_e}{e'}}
+  }
+\]
+
+\noindent making \coqinline{eliminatorType} redundant as it coincides with a
+modification where each field of the inductive data type definition is replaced
+with a new value.

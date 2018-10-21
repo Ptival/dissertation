@@ -1,3 +1,5 @@
+\newcommand{\coqinlineDEBUG}[1]{#1}
+
 %%%%% General-purpose text macros %%%%%
 \newcommand{\define}[1]{\emph{#1}}
 \newcommand{\mycite}[1]{\citeauthor{#1}~\cite{#1}}
@@ -11,6 +13,7 @@
 \newcommand{\Chick}{\Language{Chick}}
 \newcommand{\Coq}{\Language{Coq}}
 \newcommand{\CoqIDE}{\Tool{CoqIDE}}
+\newcommand{\Erlang}{\Language{Erlang}}
 \newcommand{\Haskell}{\Language{Haskell}}
 \newcommand{\JavaScript}{\Language{JavaScript}}
 \newcommand{\OCaml}{\Language{OCaml}}
@@ -159,8 +162,8 @@
 \newcommand{\DefinitionText}{\text{Definition}}
 \newcommand{\InductiveText}{\text{Inductive}}
 \newcommand{\ConstructorText}{\text{Constructor}}
-\newcommand{\GlobalDefinitionText}{\text{GlobalDefinition}}
-\newcommand{\GlobalInductiveText}{\text{GlobalInductive}}
+\newcommand{\GlobalDefinitionText}{\text{Global\-Definition}}
+\newcommand{\GlobalInductiveText}{\text{Global\-Inductive}}
 
 \newcommand{\Definition}[4]{ \DefinitionText(\{ #1, #2, #3, #4 \}) }
 \newcommand{\Inductive}[5]{ \InductiveText(\{ #1, #2, #3, #4, #5 \}) }
@@ -282,3 +285,8 @@
 }
 
 \newcommand{\MathMatch}[2]{ \text{match}\ #1\ \text{with}\ #2 }
+
+%%% For `deriving`
+
+\newcommand{\MathMkΔElimType}[2]{\op{\text{ΔEliminatorType}(} #1 \op{,\ } #2 \op{)}}
+\newcommand{\MathMkElimType}[1]{\op{\text{EliminatorType}(} #1 \op{)}}

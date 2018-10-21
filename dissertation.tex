@@ -40,6 +40,7 @@
 \usepackage{etoolbox}
 \usepackage{graphicx}
 %\usepackage{gfsdidot}
+\usepackage{ltablex}
 \usepackage{mathpartir}
 \usepackage{mathtools} % \coloneqq
 \usepackage{mdframed}
@@ -179,6 +180,7 @@ innerbottommargin=0pt
 
 \input{macros}
 \setlength\parindent{0.5in}
+%\titleformat\paragraph{\sectioningformatting\normalsize\bfseries}{\theparagraph}{1em}{}
 
 % Start the document
 \begin{document}
@@ -242,7 +244,7 @@ innerbottommargin=0pt
 % \listofalgorithms.
 \tableofcontents
 \listoffigures
-% \listoftables
+\listoftables
 
 % Preface
 %\begin{preface}
@@ -390,7 +392,17 @@ without dependent types, but with more features than our tool was built for.
 \input{chick}
 \chapter{Takeaways}
 
+\section{TODO}
+
+One
+
+\section{TODO}
+
+Two
+
 \appendix
+
+\include{appendix}
 
 % Stuff at the end of the dissertation goes in the back matter
 \backmatter

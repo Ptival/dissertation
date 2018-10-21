@@ -1,5 +1,4 @@
-\subsection{Describing program modifications with
-diffs}\label{chick-diffs}
+\section{Describing program modifications with diffs}\label{chick-diffs}
 
 We define a family of data types that allows us to describe changes made to
 programs from the language presented in Section~\ref{chick-syntax-programs}.  We
@@ -103,7 +102,7 @@ using the relevant patching function for that diff type.  In all of our
 notations, we use a black frame and a teal highlight to indicate that a value is
 an output.
 
-\subsubsection{Atomic diff}
+\subsection{Atomic diff}
 
 There are many data types for which we will only capture changes at an atomic
 granularity: either the value is the same in the new program, or it has been
@@ -139,7 +138,9 @@ with the following semantics:
 
 \end{mathpar}
 
-\subsubsection{List diff} \label{list-diff}
+\paragraph{Note} We sometimes indicate
+
+\subsection{List diff}~\label{list-diff}
 
 For lists, we provide a rich selection of diff operations.  The aim is not to
 have a canonical representation, but rather to capture closely the intent of
@@ -216,7 +217,7 @@ rule~\rulename{Permute}, $\delta$, targets the entire list after the permutation
 is performed, not solely the tail: this is necessary because we will want to
 perform modifications of elements after having shuffled them around.
 
-\subsubsection{Term diff}\label{chick-diffs-term-diff}
+\subsection{Term diff}\label{chick-diffs-term-diff}
 
 The diffs for terms include atomic changes, as well as insertion, modification,
 deletion, and permutation of most constructors.  We illustrate a couple of
@@ -278,7 +279,7 @@ application $(t\ x)$.
 
 \end{mathpar}
 
-\subsubsection{Other diff types}
+\subsection{Other diff types}
 
 We also need diffs for many other internal data types.  Diff types for tuples
 are derived from diff types of their constituents in a straightforward way.
@@ -286,7 +287,7 @@ Inductive data type definitions, as well as constructor definitions, behave
 essentially like a tuple of all their arguments, so their diff type is derived
 accordingly.
 
-\subsubsection{Example of a program diff}
+\subsection{Example of a program diff}
 
 With all of this machinery, we can define the original diff for our running
 example (again, referring to the changes seen on Figure~\ref{listtovec}) as

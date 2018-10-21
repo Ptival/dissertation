@@ -124,30 +124,16 @@ This imposes quite a bit of cognitive load on the users, as they must visually
 inspect one or several proof obligations, trying to understand what changed
 between before and after the tactic execution.
 
-In order to reduce that effort, we developed a visualization that lets a user
-quickly inspect the changes made to a proof context by the execution of a
-tactic.  The idea is to provide a diff-like visualization, where changes are
-highlighted, and items of the proof context that have appeared, disappeared, or
-moved around are visually indicated as such.
+To reduce that effort, we benefit from the visualization presented in
+Section~\ref{peacoq-design-diffs}.  For each tactic we did not filter out, the
+user can align its resulting sub-obligation(s) to the current obligation, and
+get visual information about what has changed.
 
-\includegraphics[width=\textwidth]{peacoq-diffs}{\parfillskip=0pt\par}
-
-In our visualization, each proof obligation remaining after the execution of a
-tactic can be visually aligned against the former proof obligation, and some
-ribbons and highlights will appear to indicate changes made to the proof
-obligation.  Hypotheses that have disappeared are indicated with a red,
-shrinking ribbon, pointing to where they would have been.  Conversely,
-hypotheses that have been introduced are indicated with a green ribbon, emerging
-from where it has been introduced.  Finally, hypotheses that have undergone a
-syntactic change or have moved around are indicated by a blue ribbon between
-their old position and their now position, with additional syntactic
-highlighting for the sub-terms of it that have changed.
-
-Finally, while visual diffs allow the user to quickly inspect the outcome of a
-given tactic, if there are too many tactics that make progress, going through
-them all one by one can still require a lot of time and concentration.  Some
-members of one of our studies indicated the need for grouping the results.  We
-followed a static grouping strategy, where tactics were grouped together based
-on similar intent: apply tactics, case analysis tactics, rewrite tactics,
-terminators, etc.  This let users skip over entire classes of tactics that they
-know are not what they are currently trying to achieve in the proof.
+While visual diffs allow the user to quickly inspect the outcome of a given
+tactic, if there are too many tactics that make progress, going through them all
+one by one can still require a lot of time and concentration.  Some members of
+one of our studies indicated the need for grouping the results.  We followed a
+static grouping strategy, where tactics were grouped together based on similar
+intent: apply tactics, case analysis tactics, rewrite tactics, terminators, etc.
+This let users skip over entire classes of tactics that they know are not what
+they are currently trying to achieve in the proof.

@@ -13,10 +13,10 @@ Figure~\ref{fig:repair-program} using the following judgment:
 }
 
 \noindent To the left of the turnstile are the \textit{global environment} and
-its diff.  The top part, $E$ is the environment in which the original program
-$p$ was originally defined: a list of global term definitions
-$\GlobalDefinitionText$, and global inductive data type definitions
-$\GlobalInductiveText$.  Each vernacular command is type-checked in such a
+its diff.  The top part, $E$, is the environment in which the original program
+$p$ was originally defined: a list of global term definitions , with type
+$\GlobalDefinitionText$, and of global inductive data type definitions, with
+type $\GlobalInductiveText$.  Each vernacular command is type-checked in such a
 global typing environment, and then populates it with some additional
 definitions for the subsequent commands.  The bottom part, $\delta_E$, is a diff
 indicating how the global environment has been changed by the time $p$ is
