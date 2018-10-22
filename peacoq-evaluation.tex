@@ -41,5 +41,75 @@ The 5 groups in the \define{study group} were provided with an instance of
 \PeaCoq{} with the proof tree view, the visual diffs, and automation in the
 background, all enabled.
 
+Both instances were structured identically: the first hour was a general
+presentation of the tool they would use, and of basics of the \Coq{} proof
+assistant.  To be precise, the following was demonstrated:
+
+\begin{itemize}
+
+\item an \emph{inductive datatype definition} \coqinline{day}, with constructors
+\coqinline{monday}, \coqinline{tuesday}, etc.,
+
+\item a \emph{function definition} \coqinline{tomorrow}, defined by
+pattern-matching,
+
+\item a theorem asserting that \coqinline{tomorrow saturday = sunday}, proven
+introducing the tactics \coqinline{simpl} and \coqinline{reflexivity},
+
+\item a recursive data type, \coqinline{natlist}, representing a monomorphic
+list of natural numbers,
+
+\item a \emph{recursive} function, \coqinline{concat}, performing list
+concatenation,
+
+\item another theorem about the concatenation of two concrete lists, displaying
+an instance of associativity, and proven using the same tactics seen so far,
+
+\item a theorem asserting that \coqinline{nil} is a left-unit for
+\coqinline{concat}, proven with the previous tactics, with the addition of the
+\coqinline{intros} tactic to introduce the universally-quantified list
+\coqinline{l},
+
+\item a theorem asserting that \coqinline{nil} is a right-unit for
+\coqinline{concat}, proven by introducing the \coqinline{induction} tactic, and
+also introducing the first \coqinline{rewrite},
+
+\item a theorem asserting the associativity of the \coqinline{concat} operation,
+proven by using \coqinline{induction}, and the other tactics mentioned so far.
+
+\end{itemize}
+
+Subsequently, the participants were introduced to the principle of induction
+over a data structure, and the concept of proving a property inductively by
+solving the base case, and then solving the inductive case with the presence of
+an induction hypothesis.
+
 All the answers provided by participants are anonymously catalogued
 in Appendix~\ref{appendix-peacoq-a-b-study}.
+
+\begin{table}[!htbp]
+  \centering
+  \caption{\PeaCoq{} A-B study exercise timings}
+  \begin{tabular}{l||r|r}
+    \toprule
+    Exercise & A average & B average \\
+    \midrule
+    01. \safecoqinline{rev_snoc                   } &  213s & 609s \\
+    02. \safecoqinline{rev_involutive             } &  571s & 180s \\
+    03. \safecoqinline{concat_cons_snoc           } &  158s & 292s \\
+    04. \safecoqinline{go_somewhere               } &   24s &  14s \\
+    05. \safecoqinline{B_is_enough                } &  134s &  66s \\
+    06. \safecoqinline{more_facts                 } &   34s &  27s \\
+    07. \safecoqinline{A_and_B                    } &   49s &  21s \\
+    08. \safecoqinline{snoc_concat_end            } &  104s & 156s \\
+    09. \safecoqinline{rev_distributes_over_concat} & 1446s & 748s \\
+    11. \safecoqinline{map_commutes               } &  348s & 189s \\
+    12. \safecoqinline{map_fusion                 } &  109s &  76s \\
+    13. \safecoqinline{fold_snoc                  } &   86s & 207s \\
+    14. \safecoqinline{map'_unroll                } &  471s &  13s \\
+    15. \safecoqinline{map_map'                   } &  317s &  80s \\
+    16. \safecoqinline{In_cons                    } &   52s & 160s \\
+    17. \safecoqinline{In_concat_left             } &  492s & 791s \\
+    \bottomrule
+  \end{tabular}{\parfillskip=0pt\par}
+\end{table}

@@ -29,6 +29,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[english]{babel}
+% \usepackage{booktabs}
 \usepackage{calc}
 \usepackage{caption}
 \usepackage{color}
@@ -40,17 +41,32 @@
 \usepackage{etoolbox}
 \usepackage{graphicx}
 %\usepackage{gfsdidot}
-\usepackage{ltablex}
+%\usepackage{ltablex} % Made me sad for appendix tables, where was it used?
+\usepackage{makecell}
 \usepackage{mathpartir}
 \usepackage{mathtools} % \coloneqq
 \usepackage{mdframed}
 \usepackage{minted}
 \usepackage[parfill]{parskip}
 \usepackage{syntax}
+\usepackage{tabularx}
 \usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz
 \usepackage{tikz}
 \usepackage{xpatch}
 \usepackage[breaklinks=true,pdfborder={0 0 0}]{hyperref}
+
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+% defines safecoqinline, a command like coqinline but works in tabular
+% environments
+\makeatletter
+\def\safecoqinline#1{%
+\ifx\@footnotetext\TX@trial@ftn
+\detokenize{#1}%
+\else
+\coqinline{#1}%
+\fi}
+\makeatother
 
 \captionsetup{
   justification=centering,
