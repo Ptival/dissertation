@@ -1,0 +1,33 @@
+\newcommand{\RuleRProgSameNil}{
+  {
+    \inferrule*
+    [lab=R-Prog-Same-Nil]
+    {  }
+    {\turnstile%
+      { \denv{E}{\delta_E} }
+      { \repairProg{[]}{\MathSame}{\MathSame} }
+    }
+  }
+}
+
+\newcommand{\RuleRProgModify}{
+  {
+    \inferrule*
+    [lab=R-Prog-Modify]
+    {
+      {\turnstile%
+        { \denv{E}{\delta_E} }
+        { \repairVernac{v}{\delta_v}{\delta_v'} }
+      }
+      \and
+      {\turnstile%
+        { \denv{v \Cons{} E}{\MathMod{\delta_v'}{\delta_E}} }
+        { \repairProg{p}{\delta_p}{\delta_p'} }
+      }
+    }
+    {\turnstile%
+      { \denv{E}{\delta_E} }
+      { \repairProg{\MathCons{v}{p}}{\MathMod{\delta_v}{\delta_p}}{\MathMod{\delta_v'}{\delta_p'}} }
+    }
+  }
+}

@@ -162,8 +162,12 @@
 \newcommand{\DefinitionText}{\text{Definition}}
 \newcommand{\InductiveText}{\text{Inductive}}
 \newcommand{\ConstructorText}{\text{Constructor}}
-\newcommand{\GlobalDefinitionText}{\text{Global\-Definition}}
-\newcommand{\GlobalInductiveText}{\text{Global\-Inductive}}
+% See below
+\newcommand{\GlobalDefinitionText}{\text{Definition}}
+\newcommand{\GlobalInductiveText}{\text{Inductive}}
+% I don't remember if this difference was very important, it just seems confusing
+% \newcommand{\GlobalDefinitionText}{\text{Global\-Definition}}
+% \newcommand{\GlobalInductiveText}{\text{Global\-Inductive}}
 
 \newcommand{\Definition}[4]{ \DefinitionText(\{ #1, #2, #3, #4 \}) }
 \newcommand{\Inductive}[5]{ \InductiveText(\{ #1, #2, #3, #4, #5 \}) }
@@ -290,3 +294,33 @@
 
 \newcommand{\MathMkΔElimType}[2]{\op{\text{ΔEliminatorType}(} #1 \op{,\ } #2 \op{)}}
 \newcommand{\MathMkElimType}[1]{\op{\text{EliminatorType}(} #1 \op{)}}
+
+%%% For `appendix-chick`
+\newcommand{\Lookup}[1]{Lookup-{#1}}
+\newcommand{\LookupCtxt}{\Lookup{Context}}
+\newcommand{\LookupEnv}{\Lookup{Otherwise-Environment}}
+
+\newcommand{\LC}[1]{Lookup-Context-{#1}}
+\newcommand{\LCSame}{\LC{Same}}
+\newcommand{\LCIns}{\LC{\Ins}}
+\newcommand{\LCMod}[1]{\LC{\Mod-{#1}}}
+\newcommand{\LCKeep}{\LC{\Keep}}
+
+\newcommand{\GE}[1]{Lookup-Env-{#1}}
+\newcommand{\GESame}{\GE{Same}}
+\newcommand{\GEIns}{\GE{\Ins}}
+\newcommand{\GEMod}[1]{\GE{\Mod-{#1}}}
+\newcommand{\GEKeep}{\GE{\Keep}}
+
+\newcommand{\deltaIndTypeOp}{\op{\delta_{\text{Inductive}}}}
+\newcommand{\deltaIndType}[7]{ \deltaIndTypeOp\op{(} \diff{#1}{#2}
+\op{,} \diff{#3}{#4} \op{,} \diff{#5}{#6} \op{) =\ } \out{#7} }
+
+\newcommand{\deltaConstructorOp}{\op{\delta_{\text{Constructor}}}}
+\newcommand{\deltaConstructor}[8]{ \deltaConstructorOp\op{(}
+\diff{#1}{#2} \op{,} \diff{#3}{#4} \op{,} \diff{#5}{#6} \op{,}\ #7 \op{) =\ }
+\out{#8} }
+
+\newcommand{\deltaEliminatorOp}{\op{\delta_{\text{Eliminator}}}}
+\newcommand{\deltaEliminator}[6]{ \deltaEliminatorOp\op{(} #1 \op{,} #2
+\op{,} #3 \op{,} #4 \op{,}\ #5 \op{) =\ } \out{#6} }

@@ -12,37 +12,49 @@ Figure~\ref{fig:repair-program} using the following judgment:
   \]
 }
 
-\noindent To the left of the turnstile are the \textit{global environment} and
-its diff.  The top part, $E$, is the environment in which the original program
-$p$ was originally defined: a list of global term definitions , with type
-$\GlobalDefinitionText$, and of global inductive data type definitions, with
-type $\GlobalInductiveText$.  Each vernacular command is type-checked in such a
-global typing environment, and then populates it with some additional
-definitions for the subsequent commands.  The bottom part, $\delta_E$, is a diff
-indicating how the global environment has been changed by the time $p$ is
-reached by the repair algorithm: it accounts for whether some definitions have
-been added, removed, or modified.  For instance, in our motivating example, by
-the time we reach the inductive definition being modified (\coqinline{list},
-becoming \coqinline{vec}), $E$ would contain the global inductive data type
-definition for the type \coqinline{nat}, and $\delta_E$ would keep it intact.
-After this definition has been processed, $E$ would contain, in order,
-\coqinline{nat} \coqinline{list}, and $\delta_E$ would still keep the former
-intact, but would register the diff turning \coqinline{list} into
-\coqinline{vec}.
+\paragraph{Notation} This judgment can be read as follows:
+\begin{itemize}
+\item \textbf{Top}: If the original program $p$ type-checked in the original environment $E$,
+\item \textbf{Bottom left}: and the environment underwent modification $\delta_{E}$,
+\item \textbf{Bottom center}: and the program underwent modification $\delta_{p}$,
+\item \textbf{Right}: then $\repairProgOp$ proposes to repair the program with modification $\out{\delta'_{p}}$.
+\end{itemize}
+
+To be more precise, $E$ is the environment in which the original program $p$ was
+defined: a list of term definitions, with type $\GlobalDefinitionText$, and of
+inductive data type definitions, with type $\GlobalInductiveText$ (as presented
+in Section~\ref{chick-syntax-programs}).  Each vernacular command is
+type-checked in such a global typing environment, and upon being executed,
+populates it with some additional definitions for the subsequent commands.
+
+$\delta_E$, is a diff indicating how the global environment has been changed by
+the time $p$ is reached by the repair algorithm: it accounts for whether some
+definitions have been added, removed, or modified, in the prefix of the program
+already-repaired preceding $p$.  For instance, in our motivating example, by the
+time we reach the inductive definition being modified (\coqinline{list},
+becoming \coqinline{vec}), $E$ would contain the inductive data type definition
+for the type \coqinline{nat}, and $\delta_E$ would keep it intact.  After this
+definition has been processed, $E$ would contain, in order, \coqinline{nat}, and
+\coqinline{list}, and $\delta_E$ would still keep the former intact, but would
+register the diff turning \coqinline{list} into \coqinline{vec}.
 
 The repair algorithm for programs takes as input the original program $p$, and
-the user-provided modification $\delta_p$.  From those, it outputs a patched
-modification $\delta_p'$, that propagates the changes introduced by $\delta_E$
-and $\delta_p$ to the rest of the program $p$.  The algorithm essentially folds
-over the sequence of vernacular commands, propagating changes from previous
-commands to subsequent ones.
+the user-provided modification $\delta_p$.  From those, it outputs a repaired
+modification $\out{\delta_p'}$, that propagates the changes introduced by
+$\delta_E$ and $\delta_p$ to the rest of the program $p$.  The algorithm
+essentially folds over the sequence of vernacular commands that make up the
+program, propagating changes from previous commands to subsequent ones.
 
-The rule \rulename{\RProgMod} does the bulk of the work, dispatching the repair
-of each vernacular command to the repair algorithm for vernacular commands
-$\repairVernacOp$ (described in Section~\ref{repair-vernacular}).  First, the
-head vernacular command $v$ is repaired (using $\repairVernacOp$), returning a
-repaired diff $\delta_v'$.  Then, we want to repair the rest of the program, but
-the changes made to $v$ will affect the global environment for the subsequent
+\paragraph{\rulename{\RProgMod}}
+
+\[ \RuleRProgModify{} \]
+
+This rule does the bulk of the work, dispatching the repair of each vernacular
+command to the repair algorithm for vernacular commands $\repairVernacOp$
+(described in Section~\ref{repair-vernacular}).  First, the head vernacular
+command $v$ is repaired (using $\repairVernacOp$), returning a repaired diff
+$\out{\delta_v'}$.  Then, we want to repair the rest of the program, but the
+changes made to $v$ may affect the global environment for the subsequent
 commands.  For instance, in our motivating example, the vernacular command
 defining the inductive type \coqinline{list} gets modified to define the
 inductive type \coqinline{vec} instead: when we repair the rest of the program,
@@ -51,35 +63,28 @@ where \coqinline{list} was defined, and that the updated program must replace it
 with \coqinline{vec}.  We therefore repair the rest of the program $p$ in the
 appropriate updated environment and its diff.
 
-Note that, while the rule seems to imply that vernacular commands each add
-exactly one element to the global environment, it is not the case: an inductive
-data type definition adds the inductive type, all its constructors, and all its
-eliminators.  For simplifying diff operations, the whole $\InductiveText$
-effectively acts as a placeholder for all of those when in the global
-environment.  The lookup rules, given in the Appendix~\ref{appendix}, contain
-the complexity of accounting for all these global definitions arising from one
-inductive data type definition.
+\paragraph{Note} While our presentation makes it look like vernacular commands
+each add exactly one element to the global environment, it is not always as
+simple: inductive data type definitions add \begin{enumerate*} \item the
+inductive type (e.g. \coqinline{list}), \item all its constructors
+(e.g. \coqinline{nil}, \coqinline{cons}), \item and all its eliminators
+(e.g. \coqinline{list_rec}, \coqinline{list_ind}, as described later in
+Section~\ref{deriving}) \end{enumerate*}.  For simplifying diff operations, the
+whole $\InductiveText$ effectively acts as a placeholder, in our formalism, for
+all of those at once.  The lookup rules, given in Appendix~\ref{appendix-chick},
+encapsulate the complexity of accounting for all the definitions arising from
+one inductive data type definition.
 
 \rulename{\RProgSameCons} simply defers to \rulename{\RProgMod}: even though it
 processes unchanged commands, they might need repairs to account for changes in
 upstream, accounted for in the global environment.
 
-\begin{Rules}{fig:repair-program}{ Rules for repairing programs
-($\repairProgOp$).  We use $\MathSameProg$ to indicate an identity diff for
-programs, and $\MathSameVernac$ to indicate an identity diff for vernacular
-commands. }
+\begin{Rules}{fig:repair-program}%
+  { Rules for repairing programs ($\repairProgOp$). }
 
   \begin{mathpar}
 
-    {
-      \inferrule*
-          [lab=R-Prog-Same-Nil]
-          {  }
-          {\turnstile%
-            { \denv{E}{\delta_E} }
-            { \repairProg{[]}{\MathSame}{\MathSame} }
-          }
-    }
+    \RuleRProgSameNil{}
 
     {
       \inferrule*
@@ -124,25 +129,7 @@ commands. }
     %       }
     % }
 
-    {
-      \inferrule*
-          [lab=R-Prog-Modify]
-          {
-            {\turnstile%
-              { \denv{E}{\delta_E} }
-              { \repairVernac{v}{\delta_v}{\delta_v'} }
-            }
-            \and
-            {\turnstile%
-              { \denv{v \Cons{} E}{\MathMod{\delta_v'}{\delta_E}} }
-              { \repairProg{p}{\delta_p}{\delta_p'} }
-            }
-          }
-          {\turnstile%
-            { \denv{E}{\delta_E} }
-            { \repairProg{\MathCons{v}{p}}{\MathMod{\delta_v}{\delta_p}}{\MathMod{\delta_v'}{\delta_p'}} }
-          }
-    }
+    \RuleRProgModify{}
 
     {
       \inferrule*
