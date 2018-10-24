@@ -1,1 +1,192 @@
 \section{Lookup rules for diffs}
+
+When encountering a variable in a program under repair, we will often need to
+answer the question ``What has happened to this variable?''.  In order to do so,
+we generalize the usual notion of variable lookup.  In presentations of lambda
+calculi where both a global environment and a local context carry typing
+information, the usual notion of variable lookup first looks in the local
+context (since they are the closest scopes to the variable reference being
+looked up), then, if no binding is found, it looks in the global environment.
+
+We use the following judgments for looking up a variable in the local context:
+
+\[
+  \turnstile{\Gamma}{ \hasType{ v }{ \out{\tau_v} } }
+  \qquad \qquad
+  \turnstile{E}{ \hasType{ v }{ \out{\tau_v} } }
+\]
+
+Our notion of a lookup essentially follows the same strategy, but we are
+\emph{\textbf{not} only} interested in finding the binding for the reference,
+but also know how \emph{both} the binding \emph{and} the binding type have been
+modified.  To do so, we use the following judgment:
+
+{
+  \[
+    \turnstile
+    {\dcontext {E} {\delta_E} {\Gamma} {\delta_\Gamma} }
+    { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+  \]
+}
+
+\paragraph{Notation} This judgment can be read as follows:
+\begin{itemize}
+\item \textbf{Top}: If you are interested in the variable $v$, as bound in the original global environment $E$ and original local context $\Gamma$,
+\item \textbf{Bottom left}: and the global environment underwent modification $\delta_{E}$,
+\item \textbf{Bottom left}: and the local context underwent modification $\delta_{\Gamma}$,
+\item \textbf{Bottom right}: then the variable underwent modification
+$\out{\delta_{v}}$,
+\item \textbf{Bottom right}: and its type underwent modification
+$\out{\delta_{\tau}}$.
+\end{itemize}
+
+The rules in Figure~\ref{rules-lookup} summarize the global strategy of first
+looking up in the local context, and then falling back to the global
+environment:
+
+\begin{Rules}{rules-lookup}{ Lookup rules (local context and global environment) }
+
+\begin{mathpar}
+  {
+    \inferrule*
+    [lab=\LookupCtxt]
+    {\turnstile%
+      { \diff{\Gamma}{\delta_\Gamma} }
+      { \declDiff{ v }{ \delta_v }{ \delta_{\tau} } }
+    }
+    {\turnstile%
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \declDiff{ v }{ \delta_v }{ \delta_{\tau} } }
+    }
+  }
+
+  {
+    \inferrule*
+    [lab=\LookupEnv]
+    {
+      {\turnstile%
+        { \diff{E} {\delta_E} }
+        { \declDiff{ v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+    {\turnstile%
+      { \dcontext{E} {\delta_E} {\Gamma} {\delta_\Gamma} }
+      { \declDiff{ v } { \delta_v } { \delta_{\tau} } }
+    }
+  }
+
+\end{mathpar}
+
+\end{Rules}
+
+TODO Blah blah blah
+
+\begin{Rules}{rules-lookup-context}{ Lookup in the local context }
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=\LCSame]
+      {
+        { \turnstile {\Gamma} {\hasType { v } { \out{\tau_v} } } }
+      }
+      {\turnstile
+        { \diff {\Gamma} {\MathSame} }
+        { \declDiff { v } { \MathSame } { \MathSame } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=\LCIns]
+      {\turnstile
+        { \diff {\Gamma} {\delta_{\Gamma}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+      {\turnstile
+        { \diff {\Gamma} {\MathIns{ \texttt{\_} }{\delta_{\Gamma}}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+    }
+
+    % {
+    % \inferrule*
+    % [lab=\LCKeep]
+    % {\turnstile
+    % { \diff {\Gamma} {\MathMod{\MathSame}{\delta_{\Gamma}}} }
+    % { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+    % }
+    %   {\turnstile
+    %   { \diff {\Gamma} {\MathKeep{\delta_{\Gamma}}} }
+    %   { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+    % }
+    % }
+
+  \end{mathpar}
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=\LCMod{$=$}]
+      {
+      }
+      {\turnstile
+        { \diff {\MathCons{\MathLocalAssum{v}{\tau}}{\Gamma}} {\MathMod{(\delta_v : \delta_{\tau})}{\delta_{\Gamma}}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=\LCMod{$\neq$}]
+      {
+        v' \neq v
+        \and
+        {\turnstile
+          { \diff {\Gamma} {\delta_{\Gamma}} }
+          { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+        }
+      }
+      {\turnstile
+        { \diff {\MathCons{\MathLocalAssum{v'}{\tau}}{\Gamma}} {\MathMod{(\delta_v : \delta_{\tau})}{\delta_{\Gamma}}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+
+  \end{mathpar}
+
+  % \begin{mathpar}
+  %   {
+  %     \inferrule*
+  %     [lab=\LCMod{Def-$=$}]
+  %     {
+  %     }
+  %     {\turnstile
+  %       { \diff {\MathCons{\MathLocalDef{v}{\tau}{t}}{\Gamma}} {\MathMod{\MathLocalDef{\delta_v}{\delta_{\tau}}{\delta_t}}{\delta_{\Gamma}}} }
+  %       { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+  %     }
+  %   }
+
+  %   {
+  %     \inferrule*
+  %     [lab=\LCMod{Def-$\neq$}]
+  %     {
+  %       v' \neq v
+  %       \and
+  %       {\turnstile
+  %         {\diff{\Gamma}{\delta_{\Gamma}}}
+  %         {\declDiff{v}{\delta_v}{\delta_{\tau}}}
+  %       }
+  %     }
+  %     {\turnstile
+  %       {\diff
+  %         {\MathCons{\MathLocalDef{v'}{\tau}{t}}{\Gamma}}
+  %         {\MathMod{\MathLocalDef{\delta_v}{\delta_{\tau}}{\delta_t}}{\delta_{\Gamma}}}
+  %       }
+  %       {\declDiff{v}{\delta_v}{\delta_{\tau}}}
+  %     }
+  %   }
+
+  % \end{mathpar}
+
+\end{Rules}

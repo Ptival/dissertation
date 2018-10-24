@@ -3,7 +3,7 @@
 \PassOptionsToClass{oneside,onecolumn,titlepage,letterpaper}{book}
 \DeclareOption{nocopyright}{\ucsd@copyrightfalse}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
-\ProcessOptions\relax 
+\ProcessOptions\relax
 \LoadClass{book}
 \RequirePackage{fixltx2e}
 \RequirePackage{calc}
@@ -179,7 +179,7 @@
 			\def\linelabel{Chair}%
 			\expandafter\drawlines\@chair\enddrawlines
 		\fi
-		
+
 		\vskip\baselineskip
 		University of California San Diego\par
 		\@degreeyear
@@ -434,7 +434,7 @@ command!}{Uh oh}}
 		\appto#5{\endgroup\newpage}%
 	}%
 }
-\ucsd@setuplistof{chap}{toc}\contentsname\@chapapp\tableofcontents
+\ucsd@setuplistof{chap}{toc}\contentsname\appendixname\tableofcontents
 \ucsd@setuplistof{fig}{lof}\listfigurename\figurename\listoffigures
 \ucsd@setuplistof{tab}{lot}\listtablename\tablename\listoftables
 

@@ -22,65 +22,98 @@ data type \coqinline{t} is defined, the system also defines a family of
 type.  For instance, for the types \coqinline{list} and \coqinline{vec}, the
 induction principles are given in Figure~\ref{list-ind-vec-ind}.
 
+\noindent
 \begin{figure*}[!htp]
 
   \noindent%
   \begin{minipage}[t]{0.45\textwidth}
-\begin{minted}{coq}
+\begin{minted}[linenos=false,escapeinside=@@]{coq}
 list_ind :
-  ∀ (A : Type)                   (* 1 *)
-    (P : list A → Prop),         (* 2 *)
-    P (nil A) →                  (* 3 *)
-    (∀ (a : A) (l : list A),     (* 3 *)
-       P l → P (cons A a l)) →
-                                 (* 4 *)
-    ∀ l : list A,                (* 5 *)
-      P l                        (* 6 *)
+∀ (A : Type)        @\tikzmark{list1}@
+  (P : list A →     @\tikzmark{list2}@
+       Prop),
+  P (nil A) →       @\tikzmark{list31}@
+  (∀ (a : A)        @\tikzmark{list32}@
+     (l : list A),
+     P l →
+     P (cons A a l)
+  ) →
+                    @\tikzmark{list4}@
+  ∀ l : list A,     @\tikzmark{list5}@
+    P l             @\tikzmark{list6}@
 \end{minted}
+\begin{tikzpicture}[remember picture,overlay]
+  % \draw[help lines,xstep=.1,ystep=.1] (0,0) grid (8,10);
+  % \foreach \x in {0,1,...,9} { \node [anchor=north] at (\x,0) {\x}; }
+  % \foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y) {\y}; }
+  \tikzstyle{circlednumber} = [shape=circle,draw,font=\bfseries,inner sep=0pt,thick];
+  \node[circlednumber, above=-0.05 of pic cs:list1 ] {1};
+  \node[circlednumber, above=-0.05 of pic cs:list2 ] {2};
+  \node[circlednumber, above=-0.05 of pic cs:list31] {3};
+  \node[circlednumber, above=-0.05 of pic cs:list32] {3};
+  \node[circlednumber, above=-0.05 of pic cs:list4 ] {4};
+  \node[circlednumber, above=-0.05 of pic cs:list5 ] {5};
+  \node[circlednumber, above=-0.05 of pic cs:list6 ] {6};
+\end{tikzpicture}
   \end{minipage}%
   \begin{minipage}[t]{0.55\textwidth}
-\begin{minted}{coq}
+\begin{minted}[linenos=false,escapeinside=@@]{coq}
 vec_ind :
-  ∀ (A : Type)                              (* 1 *)
-    (P : ∀ n : nat, vec A n → Prop),        (* 2 *)
-    P 0 (vnil A) →                          (* 3 *)
-    (∀ (a : A) (n : nat) (v : vec A n),     (* 3 *)
-       P n v → P (S n) (vcons A a n v)) →
-    ∀ (n : nat)                             (* 4 *)
-      (v : vec A n),                        (* 5 *)
-      P n v                                 (* 6 *)
+∀ (A : Type)                 @\tikzmark{vec1}@
+  (P : ∀ n : nat, vec A n →  @\tikzmark{vec2}@
+         Prop),
+  P 0 (vnil A) →             @\tikzmark{vec31}@
+  (∀ (a : A) (n : nat)       @\tikzmark{vec32}@
+     (v : vec A n),
+     P n v →
+     P (S n) (vcons A a n v)
+  ) →
+  ∀ (n : nat)                @\tikzmark{vec4}@
+    (v : vec A n),           @\tikzmark{vec5}@
+    P n v                    @\tikzmark{vec6}@
 \end{minted}
+\begin{tikzpicture}[remember picture,overlay]
+  % \draw[help lines,xstep=.1,ystep=.1] (0,0) grid (8,10);
+  % \foreach \x in {0,1,...,9} { \node [anchor=north] at (\x,0) {\x}; }
+  % \foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y) {\y}; }
+  \tikzstyle{circlednumber} = [shape=circle,draw,font=\bfseries,inner sep=0pt,thick];
+  \node[circlednumber, above=-0.05 of pic cs:vec1 ] {1};
+  \node[circlednumber, above=-0.05 of pic cs:vec2 ] {2};
+  \node[circlednumber, above=-0.05 of pic cs:vec31] {3};
+  \node[circlednumber, above=-0.05 of pic cs:vec32] {3};
+  \node[circlednumber, above=-0.05 of pic cs:vec4 ] {4};
+  \node[circlednumber, above=-0.05 of pic cs:vec5 ] {5};
+  \node[circlednumber, above=-0.05 of pic cs:vec6 ] {6};
+\end{tikzpicture}
   \end{minipage}
 
-  \caption{ Induction principles for \coqinline{list} and \coqinline{vec}.
-\coqinline{δmkEliminatorType} can compute a term diff transforming the former
-into the latter, given the diff turning the \coqinline{list} inductive data type
-declaration into the \coqinline{vec} one.}~\label{list-ind-vec-ind}
+  \caption{ Induction principles for \coqinline{list} and \coqinline{vec}. }~\label{list-ind-vec-ind}
+
 \end{figure*}
 
 The property being returned \coqinline{P} is usually referred to as the
 \textit{motive} of the elimination principle.  The motive is a property about a
 value of the inductive type being eliminated: we will refer to this value as the
 \textit{target} of the motive.  The value being eliminated (the last
-universally-quantified value, respectively \coqinline{l} and \coqinline{v}) are
+universally quantified value, respectively \coqinline{l} and \coqinline{v}) are
 usually referred to as the \textit{discriminee}.  The process that computes the
 elimination principle's type from the inductive data type definition
 $\Inductive{n}{\overrightarrow{p}}{\overrightarrow{i}}{u}{\overrightarrow{c}}$
 is involved, but straightforward:
 
-\begin{enumerate}%[label=\protect\circled{\arabic*}]
+\begin{enumerate}[label=\protect\circled{\arabic*}]
 
 \item~\label{ind-params} the inductive parameters $\overrightarrow{p}$ are
-universally-quantified over,
+universally quantified over,
 
-\item the motive \coqinline{P} is universally-quantified over, its type being
+\item the motive \coqinline{P} is universally quantified over, its type being
 computed by:
 
 \begin{itemize}
 
-\item universally-quantifying over the inductive indices $\overrightarrow{i}$,
+\item universally quantifying over the inductive indices $\overrightarrow{i}$,
 
-\item universally-quantifying over a target, i.e.\ an element of the inductive
+\item universally quantifying over a target, i.e.\ an element of the inductive
 type undergoing elimination, fully-instantiated with parameters
 from~\ref{ind-params} and the indices from the previous sub-step,
 
@@ -91,15 +124,15 @@ principle,
 
 \item for each constructor
 $\Constructor{n_c}{\overrightarrow{p_c}}{\overrightarrow{i_c}}$, a case is
-universally-quantified over, whose type is obtained thus:
+universally quantified over, whose type is obtained thus:
 
 \begin{itemize}
 
 \item each constructor parameter $\overrightarrow{p_c}$ is
-universally-quantified over, and for each parameter $p_{c_i}$ that is a
+universally quantified over, and for each parameter $p_{c_i}$ that is a
 recursive occurrence of the data type being eliminated, a fully-instantiated
 motive, with appropriate arguments so as to target this parameter, is also
-universally-quantified over immediately after this parameter,
+universally quantified over immediately after this parameter,
 
 \item the return type is also a fully-instantiated motive, where inductive
 indices are instantiated with the constructor indices $\overrightarrow{i_c}$,
@@ -110,9 +143,9 @@ the previous sub-step,
 \end{itemize}
 
 \item~\label{ind-indices} inductive indices $\overrightarrow{i}$ are
-universally-quantified over,
+universally quantified over,
 
-\item the discriminee is universally-quantified over, its type being the
+\item the discriminee is universally quantified over, its type being the
 inductive type applied to inductive parameters from~\ref{ind-params} and
 inductive indices from~\ref{ind-indices},
 
@@ -126,7 +159,6 @@ reserve Coq syntax for programs in the object language).  Our function computing
 the type of an eliminator has the following high-level skeleton:
 
 \noindent
-\begin{minipage}{\textwidth}
 \begin{minted}{haskell}
 eliminatorType ... =
   quantifyVars  inductiveParameters                 {- 1 -}
@@ -138,7 +170,6 @@ $ mkApp         indices               discriminee   {- 6 -}
   where
    indices = applyVars inductiveIndices motive
 \end{minted}
-\end{minipage}
 
 \noindent where \coqinline{quantifyVariables}, \coqinline{applyVariables} are
 folding functions that create \coqinline{Pi}s, and \coqinline{App}s,
@@ -156,7 +187,6 @@ The original function is a right-fold that universally quantifies over every
 element encountered. We can describe how it reacts to changes in the input list
 using the following record type:
 
-\begin{minipage}{\textwidth}
 \begin{minted}{haskell}
 data ΔListFold τ δτ δ = ΔListFold
   { onInsert  ::     τ →     [τ] → δ → δ
@@ -167,7 +197,6 @@ data ΔListFold τ δτ δ = ΔListFold
   , onSame    ::             [τ] → δ → δ
   }
 \end{minted}
-\end{minipage}
 
 \noindent For each diff operation on lists, we record a transformer on the
 output diff type \coqinline{δ}.  In our example, the fold is building a
@@ -181,13 +210,11 @@ When the entire list gets replaced, the handler receives the old list
 corresponding $\Pi$ will be added.  We then have two functions:
 
 \noindent
-\begin{minipage}{\textwidth}
 \begin{minted}{haskell}
 δListFoldLeft, δListFoldRight ::
   ΔListFold τ δτ δ ->
   [τ] -> ΔList τ δτ -> Maybe (δ -> δ)
 \end{minted}
-\end{minipage}
 
 \noindent which take such a description, an original list, and a list diff, and
 compute the resulting diff transformer for the output type, as long as the diff
@@ -198,7 +225,6 @@ handlers who need the information.  With all this machinery ready, we can derive
 \coqinline{δEliminator\-Type} as:
 
 \noindent
-\begin{minipage}{\textwidth}
 \begin{minted}{haskell}
 δEliminatorType ... =
     δquantifyVars  ips              δips
@@ -210,7 +236,6 @@ handlers who need the information.  With all this machinery ready, we can derive
   where
     δindices = δapplyVars iis δiis Same
 \end{minted}
-\end{minipage}
 
 \noindent which matches closely the original definition of
 \coqinline{Eliminator\-Type}.  We use the same mechanism to derive a

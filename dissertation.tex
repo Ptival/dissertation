@@ -12,7 +12,7 @@
 
 \usepackage[NoDate]{currvita}
 \usepackage{array}
-\usepackage{tabularx}
+%\usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage{ragged2e}
 \usepackage{microtype}
@@ -40,7 +40,8 @@
 \usepackage{etoolbox}
 \usepackage{graphicx}
 %\usepackage{gfsdidot}
-%\usepackage{ltablex} % Made me sad for appendix tables, where was it used?
+\usepackage{longtable}
+\usepackage{ltablex} \keepXColumns % Made me sad for appendix tables, where was it used?
 \usepackage{makecell}
 \usepackage{mathpartir}
 \usepackage{mathtools} % \coloneqq
@@ -71,7 +72,7 @@
   justification=centering,
 }
 
-\usetikzlibrary{arrows, calc, fit, positioning, shapes}
+\usetikzlibrary{arrows, calc, fit, positioning, shapes, tikzmark}
 \graphicspath{ {./images/} }
 
 \AtBeginDocument{%
@@ -264,17 +265,74 @@ innerbottommargin=0pt
 \listoftables
 
 % Preface
-%\begin{preface}
-% TODO?
-%\end{preface}
+% \begin{preface}
+% \end{preface}
 
 % Your fancy acks here. Keep in mind you need to ack each paper you
 % use. See the examples here. In addition, each chapter ack needs to
 % be repeated at the end of the relevant chapter.
 \begin{acknowledgements}
-
 I would like to thank Professor Sorin Lerner for his support as my advisor and
 the chair of my committee.
+
+Committing oneself to more than half a decade to a mentally-challenging,
+ill-paying, self-motivated job seems like an awful idea.  Yet, it is the ordeal
+that most graduate students choose, with little to no foresight as to where the
+journey will lead them.  I would like to dedicate the next paragraphs to all
+past, current, and future graduate students.
+
+Throughout my six years as a graduate student, I have only been able to visit my
+family for a total of three months, both my grandparents passed away after I was
+unable to attend a Christmas with them, nor was I able to attend their
+respective funeral.  I have needed to move twice, I have needed to TA seven
+quarters, I have developed repetitive stress injuries in both my arms, and I
+have loaned over \$10.000 to be able to bring this work to completion.
+
+It was not without its worth though.
+
+I have made a solid group of friends without which the journey would have been
+too much to bear.  Zachary Tatlock brought me up to speed and offered me several
+wonderful opportunities over the years.  Alexander Bakst was a great roommate,
+and it was always great to go for a bike ride to go work the night at one of the
+local coffee shops.  Neha Chachra was a great neighbour, and helped me work
+through a lot of mental issues.  Marcela Mendoza also provided a lot of mental
+support, personal growth, and both helped focus on working hard for several
+years, and helped on rejuvenating from the worst grinds by being a great travel
+companion.  Many recent new friends have made the final years of the journey
+wonderful, with lots of music and enjoyable hangouts.  In particular, my partner
+Andrea Frank provided a wonderful emotional support over the past year, and with
+her roommate, John Renner, have provided the hosting without which I would not
+have been financially able to complete my studies.
+
+I would like to thank the rest of the UCSD Programming Systems group, who have
+provided a great environment for research.  In particular, Eric Seidel has
+always been tremendous at listening to my issues and offering the perfect,
+appropriate technical pointers to resolve them.  My work would often have been
+weeks behind without his help.
+
+I would also like to thank the Gallium team of Inria, and in particular my
+former mentor, Xavier Leroy, for his great mentorship and the confidence he
+inspired in me.  Gabriel Scherer, Jonathan Protzenko, and Nicolas Pouillard,
+among many others, have also been excellent lunch and coffee break companions,
+who opened my eyes to many of the great concepts of the programming language
+community.  Working with all of them was a daily delight.
+
+Andrew Kennedy, who accepted me as an intern at Microsoft Research, gave me the
+opportunity to work on a project where I got to improve my understanding of
+\Coq{} at a tremendous speed, and introduced me to a project that I had not
+believed possible.
+
+I would like to thank the employees of Galois, Inc., where I gave a presentation
+of my work earlier this year that was very well received, and followed by great
+feedback.  In particular, David Christiansen pointed me to relevant literature
+that made part of the work much easier.  It is an immense pleasure to have been
+offered a position to work alongside the people I met that day.
+
+Finally, I must thank my mother for her love and support.  This journey must
+have been quite the ordeal for her too, and it was hard to convey the reasons
+why I still had so much left to do before I was done.  Yet, she was
+understanding, and always came through at the most difficult moments, no
+questions asked.  Such care is commendable.
 
 Chapter~\ref{peacoq}, in part, has been published in a series of blog
 articles. The dissertation author was the primary investigator and author of

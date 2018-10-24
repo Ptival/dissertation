@@ -39,24 +39,23 @@ value and the context into which it is passed: this is usually called a
 \define{type error}.  For instance, a function declared to expect a number input
 might not be allowed to receive a string instead.
 
-An other, less obvious, reason for rejecting a syntactically-valid,
-semantically-valid program, is that it makes the static enforcement of rules too
-complicated.  For instance, dependent type systems (covered
-in Section~\ref{dependent-types}) cannot safely ensure their typing discipline in the
-presence of arbitrary recursion.  In order to reject programs before they are
-run, they must restrict the programs they allow to some subsets of ``safe''
-recursive programs.
+An other, less obvious reason for rejecting a syntactically-valid,
+semantically-valid program, is that the static enforcement of typing rules
+cannot, in general, be complete.  For instance, dependent type systems (covered
+in Section~\ref{dependent-types}) cannot safely ensure their typing discipline
+in the presence of arbitrary recursion.  In order to reject all \define{unsafe}
+programs before they are run, they must restrict the programs they allow to some
+conservative subsets of all \define{safe} programs.
 
 While the idea of preventing programmers from running syntactically-valid
 programs might seem like a nuisance, it provides at least two benefits.  From
 the programmer's point of view, a disciplined use of the type system can help
 them catch, before their program is run, conditions that would make the program
 crash were it to be executed.  These conditions can be prevented before they
-happen, and often are indicated at locations close to the source of error.  From
-the programs and programmers receiving the statically-typed code, the typing
-discipline provides information that can be leveraged as documentation, or in
-order to perform code analyses and transformations that would be intractable or
-unsafe without types.
+happen, and often are indicated at locations close to the source of error.  The
+typing discipline can also provide information that can be leveraged as
+documentation, or in order to perform code analyses and transformations that
+would be intractable or unsafe without types.
 
 \section{Dependent types}
 \label{dependent-types}
@@ -73,12 +72,12 @@ concrete values like \coqinline{256}, or program values like the input value of
 the function.
 
 In order to define functions whose output type depend on the value of their
-input, dependent type systems must have a \define{type former} (i.e. a syntactic
-construct) for \define{dependent functions}~\footnotemark.  In the literature,
-the type of functions which accept an input value \coqinline{a} of type
-\coqinline{A}, and return an output value of type \coqinline{B(a)} (where
+input, dependent type systems must have a \define{type former} (i.e.\ a
+syntactic construct) for \define{dependent functions}~\footnotemark.  In the
+literature, the type of functions which accept an input value \coqinline{a} of
+type \coqinline{A}, and return an output value of type \coqinline{B(a)} (where
 \coqinline{B} is a family of types indexed by values of type \coqinline{A}), is
-written as either:
+often written as either:
 
 \footnotetext{ \textit{Dependent functions} are sometimes referred to as
 \textit{dependent products} in the literature.  Unfortunately, the similar but
@@ -102,18 +101,24 @@ strictly adhere to the unambiguous names of \textit{dependent function type} and
         ~\footnote{The $\forall$ symbol is pronounced ``for all''.}
 
   \item \coqinline{Π(a : A) → B(a)} % $\Pi (a : A) \rightarrow B(a)$
+        ~\footnote{The $\Pi$ symbol may also be pronounced ``for all'' in such context, or ``pi''.}
 
 \end{itemize}
 
-We will tend to use the latter, and refer to those types as $\Pi$-types.  When a
-dependent function takes several arguments, we will group them all into a single
-$\Pi$, and coalesce successive values of the same type in groups under the same
-parenthesis.  In practice, this means that the types:
+\noindent
+We will tend to use the latter, and refer to those types as $\Pi$-types.
 
+When a dependent function takes several arguments, we will group them all into a
+single $\Pi$, and coalesce successive values of the same type in groups under
+the same set of parentheses.  In practice, this means that the types:
+
+\noindent
 \coqinline{Π(a : X) (b c : Y) (d : Z) → R(a, b, c, d)}
 
+\noindent
 and
 
+\noindent
 \coqinline{Π(a : X) → Π(b : Y) → Π(c : Y) → Π(d : Z) → R(a, b, c, d)}
 
 \noindent
@@ -121,32 +126,31 @@ are syntactically equivalent, and we will favor the former (shorter) syntax.
 
 % Introduce Π-telescopes
 
-Nested $\Pi$-types can actually depend on the values of previously-quantified
-variables.  We call a \define{$\Pi$-telescope} any sequence of $\Pi$-types
-nested within one another.  We can summarize them in a list of bindings and
-their types, where each type is allowed to, but does not have to, depend on
-previous bindings.  For instance, the type:
+Nested $\Pi$-types can depend on the values of previously-quantified variables.
+We call a \define{$\Pi$-telescope} any sequence of $\Pi$-types directly nested
+within one another.  We can summarize them in a list of bindings and their
+types, where each type is allowed to, but does not have to, depend on previous
+bindings.  For instance, the type:
 
-\coqinline{
-Π(a : X) (b : Y(a)) (c : Z(a)) → R(a, b, c)
-}
+\noindent
+\coqinline{Π(a : X) (b : Y(a)) (c : Z(a)) → R(a, b, c)}
 
+\noindent
 contains a telescope of three bindings (namely, \coqinline{a}, \coqinline{b},
 and \coqinline{c}), and the type of the last two bindings depend on the value of
 the first binding.
 
 Dependent types may also manifest themselves in other forms depending on the
 constructs of the language that integrates them.  For instance, languages with
-records may want to allow dependent records: the type of some fields may depend
-on the value of some other fields.  A typical example is the packing of a plain
+records may allow dependent records, where the type of some fields may depend on
+the value of some other fields.  A typical example is the packing of a plain
 data structure with extra properties that we want it to have, for instance,
-ensuring the binary-search-tree (or \define{BST}) property of an arbitrary
-binary tree:
+ensuring the binary-search-tree (or \define{BST}) property of a binary tree:
 
 \begin{minted}{coq}
-data BST a = MkBST
-  { tree : Tree a
-  , bst  : IsBST tree
+data BinarySearchTree a = MakeBinarySearchTree
+  { tree  : BinaryTree a
+  , isBST : IsBinarySearchTree tree
   }
 \end{minted}
 
@@ -162,14 +166,15 @@ isomorphism~\cite{howard1980formulae}, bridging the gap between formal logic and
 typed programming.  In those systems, logical propositions can be readily
 expressed as types, in the same formal system within which programs can be
 defined.  Proofs built this way are essentially programs, whose computational
-content is often less interesting than the fact that they are well-typed.
+content is often less interesting than the fact that they are well-typed, and as
+such, are \define{witnesses} for the type/proposition they inhabit.
 
 Proof assistants come in a large variety, both from a theoretical point of view,
 and in terms of user experience.  On the theory side, there are many logical
-systems of interest, and different proof assistants tend to focus primarily on
-some classes of those.  For instance, the \Coq{} proof assistant focuses, by
-default, on an intuitionistic fragment of the calculus of (co)-inductive
-constructions, or \Language{CoC}.
+systems of interest, and different proof assistants tend to focus on some
+classes of those.  For instance, the \Coq{} proof assistant focuses, by default,
+on an intuitionistic fragment of the calculus of (co)-inductive constructions,
+or \Language{CoC}.  While it allows itself to be extended TODO TODO TODO
 
 \begin{itemize}
 
