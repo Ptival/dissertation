@@ -1,11 +1,11 @@
-\section{Repairing programs by propagating changes}~\label{chick-design-repair}
+\section{Repairing programs by propagating changes}~\label{chick-repair}
 
 In this section, we assume that we are given an original program $p$, that is, a
 sequence of vernacular commands as described in
-Section~\ref{chick-design-syntax-programs}, and a diff of that program
-$\delta_p$ as described in Section~\ref{chick-design-diffs}, capturing a partial
-refactoring made by the user.  We assume that the original proof script
-type-checked, and attempt to build a repaired diff $\delta_p'$ such that:
+Section~\ref{chick-syntax-programs}, and a diff of that program $\delta_p$ as
+described in Section~\ref{chick-diffs}, capturing a partial refactoring made by
+the user.  We assume that the original proof script type-checked, and attempt to
+build a repaired diff $\delta_p'$ such that:
 
 \begin{itemize}
 

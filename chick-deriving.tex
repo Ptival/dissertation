@@ -28,24 +28,24 @@ induction principles are given in Figure~\ref{list-ind-vec-ind}.
   \begin{minipage}[t]{0.45\textwidth}
 \begin{minted}[linenos=false,escapeinside=@@]{coq}
 list_ind :
-∀ (A : Type)        @\tikzmark{list1}@
-  (P : list A →     @\tikzmark{list2}@
+∀ (A : Type)          @\tikzmark{list1}@
+  (P : list A →       @\tikzmark{list2}@
        Prop),
-  P (nil A) →       @\tikzmark{list31}@
-  (∀ (a : A)        @\tikzmark{list32}@
+  P (nil A) →         @\tikzmark{list31}@
+  (∀ (a : A)          @\tikzmark{list32}@
      (l : list A),
      P l →
      P (cons A a l)
   ) →
-                    @\tikzmark{list4}@
-  ∀ l : list A,     @\tikzmark{list5}@
-    P l             @\tikzmark{list6}@
+                      @\tikzmark{list4}@
+  ∀ l : list A,       @\tikzmark{list5}@
+    P l               @\tikzmark{list6}@
 \end{minted}
 \begin{tikzpicture}[remember picture,overlay]
   % \draw[help lines,xstep=.1,ystep=.1] (0,0) grid (8,10);
   % \foreach \x in {0,1,...,9} { \node [anchor=north] at (\x,0) {\x}; }
   % \foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y) {\y}; }
-  \tikzstyle{circlednumber} = [shape=circle,draw,font=\bfseries,inner sep=0pt,thick];
+  \tikzstyle{circlednumber} = [shape=circle,draw,font=\bfseries,inner sep=1pt,thick];
   \node[circlednumber, above=-0.05 of pic cs:list1 ] {1};
   \node[circlednumber, above=-0.05 of pic cs:list2 ] {2};
   \node[circlednumber, above=-0.05 of pic cs:list31] {3};
@@ -58,24 +58,24 @@ list_ind :
   \begin{minipage}[t]{0.55\textwidth}
 \begin{minted}[linenos=false,escapeinside=@@]{coq}
 vec_ind :
-∀ (A : Type)                 @\tikzmark{vec1}@
-  (P : ∀ n : nat, vec A n →  @\tikzmark{vec2}@
+∀ (A : Type)                   @\tikzmark{vec1}@
+  (P : ∀ n : nat, vec A n →    @\tikzmark{vec2}@
          Prop),
-  P 0 (vnil A) →             @\tikzmark{vec31}@
-  (∀ (a : A) (n : nat)       @\tikzmark{vec32}@
+  P 0 (vnil A) →               @\tikzmark{vec31}@
+  (∀ (a : A) (n : nat)         @\tikzmark{vec32}@
      (v : vec A n),
      P n v →
      P (S n) (vcons A a n v)
   ) →
-  ∀ (n : nat)                @\tikzmark{vec4}@
-    (v : vec A n),           @\tikzmark{vec5}@
-    P n v                    @\tikzmark{vec6}@
+  ∀ (n : nat)                  @\tikzmark{vec4}@
+    (v : vec A n),             @\tikzmark{vec5}@
+    P n v                      @\tikzmark{vec6}@
 \end{minted}
 \begin{tikzpicture}[remember picture,overlay]
   % \draw[help lines,xstep=.1,ystep=.1] (0,0) grid (8,10);
   % \foreach \x in {0,1,...,9} { \node [anchor=north] at (\x,0) {\x}; }
   % \foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y) {\y}; }
-  \tikzstyle{circlednumber} = [shape=circle,draw,font=\bfseries,inner sep=0pt,thick];
+  \tikzstyle{circlednumber} = [shape=circle,draw,font=\bfseries,inner sep=1pt,thick];
   \node[circlednumber, above=-0.05 of pic cs:vec1 ] {1};
   \node[circlednumber, above=-0.05 of pic cs:vec2 ] {2};
   \node[circlednumber, above=-0.05 of pic cs:vec31] {3};

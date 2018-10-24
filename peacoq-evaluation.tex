@@ -18,7 +18,7 @@ other IDEs for working on their homework.  At any moment, they could opt in and
 out of using \PeaCoq{} with no overhead.  This study helped us iron out details
 on the automation and the display, based on students' feedback.
 
-% TODO: find PeaCoq notes and write it up
+% TODO: find UW PeaCoq notes and write it up
 
 \subsection{A-B study}~\label{peacoq-a-b-study}
 
@@ -39,14 +39,27 @@ features of \PeaCoq{} were disabled, except for its syntax highlighting, and
 keyboard shortcuts.
 
 The 5 groups in the \define{study group} were provided with an instance of
-\PeaCoq{} with the proof tree view, the visual diffs, and automation in the
-background, all enabled.
+\PeaCoq{} with the proof tree view always enabled, visual diffs overlaid on top
+of nodes in the proof tree view, and automation running in the background to
+populate the proof tree view with candidate tactics, all enabled.
 
 Neither group was informed about the fact that this was an A-B study, or about
 whether they were testing the real prototype or the control version.  Both
 instances were structured identically: the first hour was a general presentation
-of the tool they would use, and of basics of the \Coq{} proof assistant.  To be
-precise, the following was demonstrated:
+of the tool they would use, and of basics of the \Coq{} proof assistant.  Then,
+each pair of participant was tasked with solving 16 problems of increasing
+difficulty, testing their understanding of what they have seen so far, as well
+as their ability to learn about new proof solving tactics and use them
+effectively.
+
+After the study was over, and before they left, the participants were handed an
+anonymous questionnaire, asking them about some qualitative feedback and
+information about their education level.
+
+\paragraph{Study material}
+
+During the first part of the study, participants were introduced, by the study
+coordinator, to the following concepts:
 
 \begin{itemize}
 
@@ -82,9 +95,129 @@ proven by using \coqinline{induction}, and the other tactics mentioned so far.
 
 \end{itemize}
 
-After the study was over, and before they left, the participants were handed an
-anonymous questionnaire, asking them about some qualitative feedback and
-information about their education level.
+During the second part of the study, they had to try and solve all 16 exercises,
+as listed exhaustively in Appendix~\ref{appendix-peacoq-material}.  The
+exercises can be roughly described as follows:
+
+\begin{enumerate}
+
+  \item \coqinline{rev_snoc}: After introducing a recursive function
+\coqinline{snoc} to append one element to the end of a list, and a recursive
+function \coqinline{rev} to reverse a list, participants were asked to
+demonstrate that a sequence of \coqinline{rev} after \coqinline{snoc} is
+equivalent to a sequence of \coqinline{cons} after \coqinline{rev}.
+
+  \item \coqinline{rev_involutive}: Participants were asked to demonstrate that
+\coqinline{rev} is involutive (i.e.\ applying it twice consecutively yields the
+original input).
+
+  \item \coqinline{concat_cons_snoc}: Participants were asked to prove an
+equality about the interplay of \coqinline{concat} and \coqinline{snoc}.
+
+  \item \coqinline{go_somewhere}: A new concept was introduced: disjunction.
+Two tactics to manipulate this concept were introduced: \coqinline{left} and
+\coqinline{right}.  An example was given of proving the disjunction of a
+falsehood on the left, and a tautology on the right.  Participants were then
+asked to find the only disjunct that was a tautology within a nested disjunction
+of falsehoods.  Finding the only tautology required uses of both
+\coqinline{left} and \coqinline{right}.
+
+  \item \coqinline{B_is_enough}: Participants were introduced to the tactic
+\coqinline{apply}, and asked to prove a disjunction where one disjunct was given
+in the premisses, and one was not.
+
+  \item \coqinline{more_facts}: Participants were introduced to the concept of
+conjunction.  A new tactic, \coqinline{split}, was then introduced to prove
+conjunctions.  They were then asked to prove the conjunction of two tautologies.
+
+  \item \coqinline{A_and_B}: To re-assert the importance of \coqinline{apply},
+participants were asked to prove a conjunction where each conjunct was found in
+the premisses.
+
+  \item \coqinline{snoc_concat_end}: Two harder exercises about list were then
+presented.  The first one, asking about a more complex interplay between
+\coqinline{concat} and \coqinline{snoc},
+
+  \item \coqinline{rev_distributes_over_concat}: the second one, asking to prove
+that \coqinline{rev} distributes over \coqinline{concat}.
+
+  \item \coqinline{map_commutes}: Participants were introduced to the concept of
+the function \coqinline{map} over lists.  They then showed that, if two
+functions commute, then mapping these two functions also commutes.
+
+  \item \coqinline{map_fusion}: Participants were asked to prove the map fusion
+property.
+
+  \item \coqinline{fold_snoc}: Participants were introduced to the concept of a
+\coqinline{fold} over a list.  They then demonstrated an interplay between
+\coqinline{fold} and \coqinline{snoc}.
+
+  \item \coqinline{map'_unroll}: Participants were asked to demonstrate that
+performing the operation \coqinline{map} over a list obtained via
+\coqinline{cons} can be unrolled one step.
+
+  \item \coqinline{map_map'}: Participants were then shown how \coqinline{map}
+can be implemented as a \coqinline{fold}.  The resulting implementation, named
+\coqinline{map'}, was then demonstrated to be functionally equivalent to
+\coqinline{map}.  To help them, we axiomatized a small theorem that they could
+use without needing to prove.
+
+  \item \coqinline{In_cons}: We introduced a recursive predicate,
+\coqinline{In}, asserting the presence of an element in a list.  They were first
+asked to prove that if an element is in a list, it is still present in a list
+with an additional element.
+
+  \item \coqinline{In_concat_left}: Two final concepts were introduced: the
+\coqinline{cases} tactic is a custom tactic that let participants break a
+conjunction in their context into its components, and the
+\coqinline{contradiction} tactic allowing them to point to the presence of
+falsehoods in the context.  Participants were finally asked to prove that if an
+element belongs in a list, it also belongs in the result of concatenating said
+list with an arbitrary other list.
+
+\end{enumerate}
+
+
+\begin{table}[!htbp]
+  \centering
+  \caption{\PeaCoq{} A-B study exercises design}
+  \begin{tabular}{l *{11}{c}}
+    \toprule
+    Exercise & \multicolumn{11}{c}{What tactics were expected?} \\
+    & \rotatebox{90}{\safecoqinline{simpl}}
+    & \rotatebox{90}{\safecoqinline{reflexivity}}
+    & \rotatebox{90}{\safecoqinline{intros}}
+    & \rotatebox{90}{\safecoqinline{induction}}
+    & \rotatebox{90}{\safecoqinline{rewrite}}
+    & \rotatebox{90}{\safecoqinline{left}}
+    & \rotatebox{90}{\safecoqinline{right}}
+    & \rotatebox{90}{\safecoqinline{apply}}
+    & \rotatebox{90}{\safecoqinline{split}}
+    & \rotatebox{90}{\safecoqinline{cases}}
+    & \rotatebox{90}{\safecoqinline{contradiction}}
+    \\
+%                                           Sim Rfx Int Ind Rwt Lft Rgt App Spt Cas Con
+    \midrule
+    01. \safecoqinline{rev_snoc          } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
+    02. \safecoqinline{rev_involutive    } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
+    03. \safecoqinline{concat_cons_snoc  } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
+    04. \safecoqinline{go_somewhere      } &   &\OK&   &   &   &   &\OK&   &   &   & \\
+    05. \safecoqinline{B_is_enough       } &   &\OK&   &   &   &\OK&\OK&   &   &   & \\
+    06. \safecoqinline{more_facts        } &   &\OK&   &   &   &   &\OK&   &\OK&   & \\
+    07. \safecoqinline{A_and_B           } &   &   &\OK&   &   &   &   &\OK&\OK&   & \\
+    08. \safecoqinline{snoc_concat_end   } &   &\OK&\OK&   &\OK&   &   &   &   &   & \\
+    09. \safecoqinline{rev_distributes...} &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
+    10. \safecoqinline{map_commutes      } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
+    11. \safecoqinline{map_fusion        } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
+    12. \safecoqinline{fold_snoc         } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
+    13. \safecoqinline{map'_unroll       } &   &\OK&\OK&   &   &   &   &   &   &   & \\
+    14. \safecoqinline{map_map'          } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
+    15. \safecoqinline{In_cons           } &\OK&   &\OK&   &   &   &\OK&\OK&   &   & \\
+    16. \safecoqinline{In_concat_left    } &\OK&   &\OK&\OK&   &\OK&\OK&\OK&   &\OK&\OK\\
+    \bottomrule
+  \end{tabular}{\parfillskip=0pt\par}
+\end{table}
+
 
 % TODO: show what the actual exercise was
 
@@ -99,8 +232,8 @@ in Appendix~\ref{appendix-peacoq-a-b-study}.
 
 \begin{table}[!htbp]
   \centering
-  \caption{\PeaCoq{} A-B study exercise timings}
-  \begin{tabular}{l||r|r}
+  \caption{\PeaCoq{} A-B study exercises timings}
+  \begin{tabular}{l r r}
     \toprule
     Exercise & A average & B average \\
     \midrule
@@ -113,13 +246,13 @@ in Appendix~\ref{appendix-peacoq-a-b-study}.
     07. \safecoqinline{A_and_B                    } &   49s &  21s \\
     08. \safecoqinline{snoc_concat_end            } &  104s & 156s \\
     09. \safecoqinline{rev_distributes_over_concat} & 1446s & 748s \\
-    11. \safecoqinline{map_commutes               } &  348s & 189s \\
-    12. \safecoqinline{map_fusion                 } &  109s &  76s \\
-    13. \safecoqinline{fold_snoc                  } &   86s & 207s \\
-    14. \safecoqinline{map'_unroll                } &  471s &  13s \\
-    15. \safecoqinline{map_map'                   } &  317s &  80s \\
-    16. \safecoqinline{In_cons                    } &   52s & 160s \\
-    17. \safecoqinline{In_concat_left             } &  492s & 791s \\
+    10. \safecoqinline{map_commutes               } &  348s & 189s \\
+    11. \safecoqinline{map_fusion                 } &  109s &  76s \\
+    12. \safecoqinline{fold_snoc                  } &   86s & 207s \\
+    13. \safecoqinline{map'_unroll                } &  471s &  13s \\
+    14. \safecoqinline{map_map'                   } &  317s &  80s \\
+    15. \safecoqinline{In_cons                    } &   52s & 160s \\
+    16. \safecoqinline{In_concat_left             } &  492s & 791s \\
     \bottomrule
   \end{tabular}{\parfillskip=0pt\par}
 \end{table}
@@ -133,8 +266,8 @@ particular order:
 
   \item The sample size was very small (20 participants total, 10 per instance).
 
-  \item The sample was biased towards graduate students, with only a handful of
-undergraduate students.
+  \item The sample was biased towards graduate students, with only 3
+undergraduate students (1 in the A group, 2 in the B group).
 
   \item The study was fast-paced, with only one hour to learn the rudiments of
 theorem proving, and one hour to start solving exercises.  A typical

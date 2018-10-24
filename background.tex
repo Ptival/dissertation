@@ -148,11 +148,16 @@ data structure with extra properties that we want it to have, for instance,
 ensuring the binary-search-tree (or \define{BST}) property of a binary tree:
 
 \begin{minted}{coq}
-data BinarySearchTree a = MakeBinarySearchTree
+Inductive BinarySearchTree a := MakeBinarySearchTree
   { tree  : BinaryTree a
   , isBST : IsBinarySearchTree tree
-  }
+  }.
 \end{minted}
+
+For the scope of this dissertation, we do not handle such features explicitly,
+but believe that the constructions we present are amenable to the introduction
+of those features: the simplest flavor of dependent records can be simulated
+using a combination of constructs we cover.
 
 \section{Proof assistants}
 
