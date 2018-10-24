@@ -1,24 +1,100 @@
-\section{Lookup rules for diffs}
+\section{Lookup rules}
 
 When encountering a variable in a program under repair, we will often need to
 answer the question ``What has happened to this variable?''.  In order to do so,
 we generalize the usual notion of variable lookup.  In presentations of lambda
 calculi where both a global environment and a local context carry typing
 information, the usual notion of variable lookup first looks in the local
-context (since they are the closest scopes to the variable reference being
-looked up), then, if no binding is found, it looks in the global environment.
+context (since it carries the ``closest'' enclosing scopes), then, if no binding
+is found, it looks in the global environment.
 
-We use the following judgments for looking up a variable in the local context:
+We use the following judgments for looking up a variable in the local context,
+on the left, and in the global environment, on the right:~\footnote{While the
+two judgments share the same syntax, it should always be clear whether the value
+to the left of the turnstile is a local context or a global environment.}
 
 \[
-  \turnstile{\Gamma}{ \hasType{ v }{ \out{\tau_v} } }
+  \turnstile{\Gamma}{ \hasType{ v }{ \out{\tau} } }
   \qquad \qquad
-  \turnstile{E}{ \hasType{ v }{ \out{\tau_v} } }
+  \turnstile{E}{ \hasType{ v }{ \out{\tau} } }
 \]
 
-Our notion of a lookup essentially follows the same strategy, but we are
-\emph{\textbf{not} only} interested in finding the binding for the reference,
-but also know how \emph{both} the binding \emph{and} the binding type have been
+The rules for looking up types are straightforward, as shown in
+Figures~\ref{lookup-type-dispatch},~\ref{lookup-type-context},
+and~\ref{lookup-type-environment}.  In the latter, TODO TODO TODO
+
+\begin{Rules}{lookup-type-dispatch}{ Lookup rules (local context and global environment) }
+
+\begin{mathpar}
+  {
+    \inferrule*
+    [lab=\LookupCtxt]
+    { \turnstile{ \Gamma }{ \hasType{ v }{ \out{\tau} } } }
+    { \turnstile{ \context{E}{\ \Gamma} }{ \hasType{ v }{ \out{\tau} } } }
+  }
+
+  {
+    \inferrule*
+    [lab=\LookupEnv]
+    {
+      \nturnstile{ \Gamma }{ \hasType{ v }{ \out{\tau} } }
+      \and
+      \turnstile{ E }{ \hasType{ v }{ \out{\tau} } }
+    }
+    { \turnstile{ \context{E}{\ \Gamma} }{ \hasType{ v }{ \out{\tau} } } }
+  }
+
+\end{mathpar}
+
+\end{Rules}
+
+\begin{Rules}{lookup-type-context}{ Lookup rules (local context) }
+
+\begin{mathpar}
+  {
+    \inferrule*
+    [lab=TODO]
+    {  }
+    { \turnstile{ \MathCons{\MathLocalAssum{v}{\tau}}{\Gamma} }{ \hasType{ v }{ \out{\tau} } } }
+  }
+
+  {
+    \inferrule*
+    [lab=TODO]
+    { w \neq v \and \turnstile{ \Gamma }{ \hasType{ v }{ \out{\tau} } } }
+    { \turnstile{ \MathCons{\MathLocalAssum{w}{\tau}}{\Gamma} }{ \hasType{ v }{ \out{\tau} } } }
+  }
+
+\end{mathpar}
+
+\end{Rules}
+
+\begin{Rules}{lookup-type-environment}{ Lookup rules (global environment) }
+
+\begin{mathpar}
+
+  {
+    \inferrule*
+    [lab=TODO]
+    { w \neq v \and \turnstile{ E }{ \hasType{ v }{ \out{\tau} } } }
+    { \turnstile{ {\MathCons{\Definition{k}{v}{\tau}{t}}{E}} }{ \hasType{ v }{ \out{\tau} } } }
+  }
+
+\end{mathpar}
+
+\end{Rules}
+
+
+
+
+
+
+
+
+
+Our second notion of a lookup essentially follows the same strategy, but we are
+\emph{\textbf{not}} interested in finding the type of the variable, but rather
+in knowing how \emph{both} the binding \emph{and} the binding type have been
 modified.  To do so, we use the following judgment:
 
 {

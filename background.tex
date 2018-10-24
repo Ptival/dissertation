@@ -1,7 +1,7 @@
 \chapter{Background}
 
-This section describes the various concepts that are necessary to understand the
-rest of the dissertation.
+This section describes, at a somewhat high level, the various concepts that are
+necessary to understand the rest of the dissertation.
 
 \section{Static typing}
 \label{static-typing}
@@ -174,23 +174,221 @@ and in terms of user experience.  On the theory side, there are many logical
 systems of interest, and different proof assistants tend to focus on some
 classes of those.  For instance, the \Coq{} proof assistant focuses, by default,
 on an intuitionistic fragment of the calculus of (co)-inductive constructions,
-or \Language{CoC}.  While it allows itself to be extended TODO TODO TODO
+or \Language{CoC}, but allows itself to be extended with axioms to support
+classical reasoning, or extensional notions of equality, if needed.
+
+A proof assistant is typically composed of several interacting pieces:
 
 \begin{itemize}
 
-  \item Define proof assistants
+  \item a \emph{programming language}, allowing the user to define programs that
+they wish to execute and/or reason about formally,
 
-        \begin{itemize}
+  \item a \emph{specification language}, allowing the user to define properties
+of programs, or general theorems, that they wish to prove,
 
-          \item Present Coq-style proof assistants, introducing concepts of
-proof contexts, goals, and tactics
-
-          \item Emphasize the distinction between the program text, and the
-program being built by the assistant
-
-        \end{itemize}
+  \item a \emph{proof language}, allowing the user to build those proofs.
 
 \end{itemize}
+
+Note that these languages need not be different from one another, and several
+languages can help fulfill one of those purposes.  For instance, in the \Coq{}
+proof assistant, the programming language and the specification language are the
+same language, called \Gallina{}, and the proof language can be either
+\Gallina{} itself, or a proof-building scripting language called \Ltac{}.
+
+Learning to use such a proof assistant therefore requires familiarizing oneself
+with not only a programming language with a complex type system, but also the
+logical foundation of formal proofs, and the idiosyncrasies of the proof
+environment of choice.
+
+For the \Coq{} proof assistant, novice users are generally taught to use \Ltac{}
+to build proofs, since manually building \Gallina{} terms requires more
+expertise and is usually tedious.  An \Ltac{} script is a sequence of commands
+(usually called \define{tactics}) directing the proof assistant as to what
+logical rules to use in order to progress in building the proof term.  These
+tactics include:
+
+\begin{itemize}
+
+  \item \emph{proof-solving tactics}, which attempt to complete a proof
+obligation by constructing the complete proof,
+
+  \item \emph{case-splitting tactics}, which break a proof obligation into
+several sub-obligations, by using some rule of the formal logic with multiple
+antecedents,
+
+  \item \emph{bookkeeping tactics}, which modify the context or the goal of the
+current proof obligation, either by adding/removing/reordering/rewriting in
+hypotheses, or by performing modifications in the goal.
+
+\end{itemize}
+
+A typical proof can therefore be thought of as a tree, branching on
+case-splitting tactics, extending on bookkeeping tactics, and with proof-solving
+tactics as leaves.  The proving process is rarely linear: many proofs will
+require using concepts such as \emph{case analysis} and \emph{induction} in
+order to break down a complex goal into specialized sub-goals that can be solved
+separately.  In those sub-cases, one will often need to perform applications and
+rewriting using existing theorems.
+
+The \define{application} of a theorem (or a hypothesis) \coqinline{(t : τ)} can
+be performed in either a hypothesis or a goal.  To apply it in a hypothesis
+\coqinline{(a : α)}:
+
+\begin{itemize}
+
+  \item the type of the applied term, \coqinline{τ}, must reduce to a Π-telescope:
+
+    \coqinline{Π(t1 : τ1) ... (tn : τn) → tr : τr}
+
+  \item the type of the target hypothesis, \coqinline{α}, must be compatible
+with of one of the \coqinline{τi} (if there are multiple candidates, the first
+such \coqinline{τi} will be considered)
+
+\end{itemize}
+
+It then yields the conclusion of the applied term, \coqinline{τr}, as a
+hypothesis, but also adds new obligations for all the other antecedents in the
+telescope.  Intuitively, the applied term \coqinline{t} was fully-applied, with
+formal parameter \coqinline{τi} receiving argument \coqinline{a}, and all other
+formal parameters receiving arguments to be determined by solving the new
+obligations.  That is, given the context:
+
+\begin{minted}{coq}
+A, B, C : Prop
+H1 : A → B → C
+H2 : B
+==================
+C
+\end{minted}
+
+\noindent applying hypothesis \coqinline{H1} in hypothesis \coqinline{H2} yields
+the following two obligations:
+
+\begin{minted}{coq}
+(* 1. Hypothesis H2 became the conclusion of H1. *)
+A, B, C : Prop
+H1 : A → B → C
+H2 : C
+==================
+C
+\end{minted}
+
+and:
+
+\begin{minted}{coq}
+(* 2. In the original context, one must prove A. *)
+A, B, C : Prop
+H1 : A → B → C
+H2 : B
+==================
+A
+\end{minted}
+
+Conversely, a theorem or hypothesis can be applied to the goal of the current
+obligation if its conclusion matches the goal.  It yields an obligation for each
+antecedent.  For instance, applying hypothesis \coqinline{H1} from the original
+context to the goal would yield the following two obligations:
+
+\begin{minted}{coq}
+(* 1. One must prove the first antecedent A. *)
+A, B, C : Prop
+H1 : A → B → C
+H2 : B
+==================
+A
+\end{minted}
+
+and:
+
+\begin{minted}{coq}
+(* 2. One must prove the second antecedent B. *)
+A, B, C : Prop
+H1 : A → B → C
+H2 : B
+==================
+B
+\end{minted}
+
+\define{Rewriting} with a theorem or a hypothesis is a similar concept, but for
+dealing with equalities (or, more generally, structures that admit equivalence
+relations, called \define{setoids}).  We will focus on the simple case of
+equalities.  Again, one can either use rewrite in a hypothesis, or over the
+goal.  One can rewrite with a theorem or hypothesis as long as its conclusion is
+an equality.  The rewriting consists of replacing one side of the equality with
+the other side, for a given occurrence.  It is a directed operation, either
+replacing the left operand of the binary relation with the right one, or
+vice-versa.
+
+For instance, given this original context:
+
+\begin{minted}{coq}
+P, Q : ℕ → Prop
+x, y, z : ℕ
+H1 : Q z → x = y
+H2 : P x
+==================
+P y
+\end{minted}
+
+rewriting from left to right with hypothesis \coqinline{H1} in hypothesis
+\coqinline{H2} yields the two obligations:
+
+\begin{minted}{coq}
+(* 1. x has been replaced with y in H2. *)
+P, Q : ℕ → Prop
+x, y, z : ℕ
+H1 : Q z → x = y
+H2 : P y
+==================
+P y
+\end{minted}
+
+and:
+
+\begin{minted}{coq}
+(* 2. One must prove the antecedent. *)
+P, Q : ℕ → Prop
+x, y, z : ℕ
+H1 : Q z → x = y
+H2 : P x
+==================
+Q z
+\end{minted}
+
+while rewriting from right to left with hypothesis \coqinline{H1} in the goal
+yields the two obligations:
+
+\begin{minted}{coq}
+(* 1. y has been replaced with x in the goal. *)
+P, Q : ℕ → Prop
+x, y, z : ℕ
+H1 : Q z → x = y
+H2 : P x
+==================
+P x
+\end{minted}
+
+and:
+
+\begin{minted}{coq}
+(* 2. Again, one must prove the antecedent. *)
+P, Q : ℕ → Prop
+x, y, z : ℕ
+H1 : Q z → x = y
+H2 : P x
+==================
+Q z
+\end{minted}
+
+A novice user will need to learn to use these tactics effectively, but will also
+need to learn about the families of theorems that are applicable in their proof
+development.  For instance, the \Coq{} prelude contains 106 equality theorems,
+and importing the module about lists increases this number to 1006.  While there
+are facilities to look up theorems of interest based on the shape of their type,
+this still lacks in ease of discovery, and it is not rare for one to miss or
+re-derive an existing theorem.
 
 \section{Program refactoring}
 

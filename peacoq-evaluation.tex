@@ -30,7 +30,8 @@ academic settings.
 
 The study was done in two instances, totaling 20 participants.  For each
 instance of the study, 10 participants were chosen randomly but based on their
-availability, then participants were randomly paired in 5 groups.
+availability, then participants were randomly paired in 5 groups.  Both groups
+were informed that they would be testing a novel programming environment.
 
 The 5 groups in the \define{control group} were provided with an instance of
 \PeaCoq{} designed to imitate the usual IDEs for \Coq{}: all the special
@@ -41,9 +42,11 @@ The 5 groups in the \define{study group} were provided with an instance of
 \PeaCoq{} with the proof tree view, the visual diffs, and automation in the
 background, all enabled.
 
-Both instances were structured identically: the first hour was a general
-presentation of the tool they would use, and of basics of the \Coq{} proof
-assistant.  To be precise, the following was demonstrated:
+Neither group was informed about the fact that this was an A-B study, or about
+whether they were testing the real prototype or the control version.  Both
+instances were structured identically: the first hour was a general presentation
+of the tool they would use, and of basics of the \Coq{} proof assistant.  To be
+precise, the following was demonstrated:
 
 \begin{itemize}
 
@@ -79,10 +82,17 @@ proven by using \coqinline{induction}, and the other tactics mentioned so far.
 
 \end{itemize}
 
-Subsequently, the participants were introduced to the principle of induction
-over a data structure, and the concept of proving a property inductively by
-solving the base case, and then solving the inductive case with the presence of
-an induction hypothesis.
+After the study was over, and before they left, the participants were handed an
+anonymous questionnaire, asking them about some qualitative feedback and
+information about their education level.
+
+% TODO: show what the actual exercise was
+
+TODO TODO TODO
+
+\paragraph{Study results}
+
+TODO TODO TODO
 
 All the answers provided by participants are anonymously catalogued
 in Appendix~\ref{appendix-peacoq-a-b-study}.
@@ -113,3 +123,30 @@ in Appendix~\ref{appendix-peacoq-a-b-study}.
     \bottomrule
   \end{tabular}{\parfillskip=0pt\par}
 \end{table}
+
+\paragraph{Threats to validity}
+
+We provide a list of the many threats to validity of our results, in no
+particular order:
+
+\begin{itemize}
+
+  \item The sample size was very small (20 participants total, 10 per instance).
+
+  \item The sample was biased towards graduate students, with only a handful of
+undergraduate students.
+
+  \item The study was fast-paced, with only one hour to learn the rudiments of
+theorem proving, and one hour to start solving exercises.  A typical
+\emph{graduate} programming language course would most likely cover the topics
+we saw in three to five lectures.
+
+  \item A bug in \PeaCoq{} slowed down some pairs in group B: they had to wait
+for us to come fix it, and reload the page to go back to where they initially
+were.
+
+  \item Participant $B4_{2}$ vocally explained their dislike for mathematical
+logic.  This can be seen reflected in Appendix~\ref{appendix-peacoq}, where
+their ratings were significantly lower than everyone else's.  We might expect better ratings from users who are willingly trying to learn, but we should also expect similar ratings from users who are forced to learn, for instance in a course setting.
+
+\end{itemize}
