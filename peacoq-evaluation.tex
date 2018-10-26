@@ -50,7 +50,7 @@ of the tool they would use, and of basics of the \Coq{} proof assistant.  Then,
 each pair of participant was tasked with solving 16 problems of increasing
 difficulty, testing their understanding of what they have seen so far, as well
 as their ability to learn about new proof solving tactics and use them
-effectively.
+effectively.  The second part was scheduled to take up to an hour and a half.
 
 After the study was over, and before they left, the participants were handed an
 anonymous questionnaire, asking them about some qualitative feedback and
@@ -177,10 +177,15 @@ list with an arbitrary other list.
 
 \end{enumerate}
 
+Table~\ref{peacoq-a-b-study-tactics} lists, for each of the exercises, which
+tactics were meant to be exercised.  The exercises were roughly sorted in order
+of difficulty, say for two points: the part introducing logical operators was
+much simpler, and \coqinline{rev_distributes_over_concat} was a challenging
+mid-point exercise.
 
 \begin{table}[!htbp]
   \centering
-  \caption{\PeaCoq{} A-B study exercises design}
+  \caption{\PeaCoq{} A-B study exercises design}~\label{peacoq-a-b-study-tactics}
   \begin{tabular}{l *{11}{c}}
     \toprule
     Exercise & \multicolumn{11}{c}{What tactics were expected?} \\
@@ -196,66 +201,174 @@ list with an arbitrary other list.
     & \rotatebox{90}{\safecoqinline{cases}}
     & \rotatebox{90}{\safecoqinline{contradiction}}
     \\
-%                                           Sim Rfx Int Ind Rwt Lft Rgt App Spt Cas Con
+%                                                Sim Rfx Int Ind Rwt Lft Rgt App Spt Cas Con
     \midrule
-    01. \safecoqinline{rev_snoc          } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
-    02. \safecoqinline{rev_involutive    } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
-    03. \safecoqinline{concat_cons_snoc  } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
-    04. \safecoqinline{go_somewhere      } &   &\OK&   &   &   &   &\OK&   &   &   & \\
-    05. \safecoqinline{B_is_enough       } &   &\OK&   &   &   &\OK&\OK&   &   &   & \\
-    06. \safecoqinline{more_facts        } &   &\OK&   &   &   &   &\OK&   &\OK&   & \\
-    07. \safecoqinline{A_and_B           } &   &   &\OK&   &   &   &   &\OK&\OK&   & \\
-    08. \safecoqinline{snoc_concat_end   } &   &\OK&\OK&   &\OK&   &   &   &   &   & \\
-    09. \safecoqinline{rev_distributes...} &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
-    10. \safecoqinline{map_commutes      } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
-    11. \safecoqinline{map_fusion        } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
-    12. \safecoqinline{fold_snoc         } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
-    13. \safecoqinline{map'_unroll       } &   &\OK&\OK&   &   &   &   &   &   &   & \\
-    14. \safecoqinline{map_map'          } &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   & \\
-    15. \safecoqinline{In_cons           } &\OK&   &\OK&   &   &   &\OK&\OK&   &   & \\
-    16. \safecoqinline{In_concat_left    } &\OK&   &\OK&\OK&   &\OK&\OK&\OK&   &\OK&\OK\\
+    01. \safecoqinline{rev_snoc        }      &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   &   \\
+    02. \safecoqinline{rev_involutive  }      &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   &   \\
+    03. \safecoqinline{concat_cons_snoc}      &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   &   \\
+    04. \safecoqinline{go_somewhere    }      &   &\OK&   &   &   &   &\OK&   &   &   &   \\
+    05. \safecoqinline{B_is_enough     }      &   &\OK&   &   &   &\OK&\OK&   &   &   &   \\
+    06. \safecoqinline{more_facts      }      &   &\OK&   &   &   &   &\OK&   &\OK&   &   \\
+    07. \safecoqinline{A_and_B         }      &   &   &\OK&   &   &   &   &\OK&\OK&   &   \\
+    08. \safecoqinline{snoc_concat_end }      &   &\OK&\OK&   &\OK&   &   &   &   &   &   \\
+    09. \safecoqinline{rev_distributes}\ldots &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   &   \\
+    10. \safecoqinline{map_commutes    }      &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   &   \\
+    11. \safecoqinline{map_fusion      }      &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   &   \\
+    12. \safecoqinline{fold_snoc       }      &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   &   \\
+    13. \safecoqinline{map'_unroll     }      &   &\OK&\OK&   &   &   &   &   &   &   &   \\
+    14. \safecoqinline{map_map'        }      &\OK&\OK&\OK&\OK&\OK&   &   &   &   &   &   \\
+    15. \safecoqinline{In_cons         }      &\OK&   &\OK&   &   &   &\OK&\OK&   &   &   \\
+    16. \safecoqinline{In_concat_left  }      &\OK&   &\OK&\OK&   &\OK&\OK&\OK&   &\OK&\OK\\
     \bottomrule
   \end{tabular}{\parfillskip=0pt\par}
 \end{table}
-
-
-% TODO: show what the actual exercise was
-
-TODO TODO TODO
 
 \paragraph{Study results}
 
-TODO TODO TODO
+Table~\ref{peacoq-a-b-study-timings} lists the average timings of both groups on
+each exercise, as well as a rough estimate of the difficulty of each exercise.
+Figure~\ref{peacoq-a-b-study-cumulative} reports the cumulative time spent on
+each exercise.  Note that users were allowed to take breaks between exercises,
+and we do not report the time spent on the last exercises for those people who
+did not finish all exercises: this explains why all bars do not end at the same
+location.
 
-All the answers provided by participants are anonymously catalogued
-in Appendix~\ref{appendix-peacoq-a-b-study}.
+\PeaCoq{} users were much slower on the first exercise.  Even though it was an
+easy exercise, the automation offered several possibilities, which could have
+been overwhelming: we noticed several participants spent a long time
+scrutinizing different options before committing to one.  In the control group,
+participants were left to their own volition, and followed the previous proofs
+as examples.  Since the exercise exhibited the same pattern, it was a good
+strategy.
+
+\PeaCoq{} users were going much faster on the logic exercises
+(\coqinline{go_somewhere} through \coqinline{A_and_B}).  For these, \PeaCoq{}
+only provided a handful of options that were easily browsed through, so
+participants of group B did not waste much time.
 
 \begin{table}[!htbp]
   \centering
-  \caption{\PeaCoq{} A-B study exercises timings}
-  \begin{tabular}{l r r}
+  \caption{\PeaCoq{} A-B study exercises timings per group}~\label{peacoq-a-b-study-timings}
+  All times are reported in seconds.\\
+  \participant{} indicates how many pairs of participants finished the proof.
+  \begin{tabular}{l l | r c | r c}
     \toprule
-    Exercise & A average & B average \\
+    Exercise & Difficulty & \multicolumn{2}{c|}{Group A} & \multicolumn{2}{c}{Group B} \\
+    & & \makecell{Mean\\(Std. Dev.)} & \# & \makecell{Mean\\(Std. Dev.)} & \# \\
     \midrule
-    01. \safecoqinline{rev_snoc                   } &  213s & 609s \\
-    02. \safecoqinline{rev_involutive             } &  571s & 180s \\
-    03. \safecoqinline{concat_cons_snoc           } &  158s & 292s \\
-    04. \safecoqinline{go_somewhere               } &   24s &  14s \\
-    05. \safecoqinline{B_is_enough                } &  134s &  66s \\
-    06. \safecoqinline{more_facts                 } &   34s &  27s \\
-    07. \safecoqinline{A_and_B                    } &   49s &  21s \\
-    08. \safecoqinline{snoc_concat_end            } &  104s & 156s \\
-    09. \safecoqinline{rev_distributes_over_concat} & 1446s & 748s \\
-    10. \safecoqinline{map_commutes               } &  348s & 189s \\
-    11. \safecoqinline{map_fusion                 } &  109s &  76s \\
-    12. \safecoqinline{fold_snoc                  } &   86s & 207s \\
-    13. \safecoqinline{map'_unroll                } &  471s &  13s \\
-    14. \safecoqinline{map_map'                   } &  317s &  80s \\
-    15. \safecoqinline{In_cons                    } &   52s & 160s \\
-    16. \safecoqinline{In_concat_left             } &  492s & 791s \\
-    \bottomrule
+    01. \safecoqinline{rev_snoc      }       & \easy{}   & \makecell{ 213 \\  (74.6)} & \ptcpfive{}  & \makecell{609 \\ (495.8) } & \ptcpfive{}  \\ \hline
+    02. \safecoqinline{rev_involutive}       & \medium{} & \makecell{ 571 \\ (234.6)} & \ptcpfive{}  & \makecell{180 \\ (179.1) } & \ptcpfive{}  \\ \hline
+    03. \safecoqinline{concat_cons_sn}\ldots & \medium{} & \makecell{ 158 \\  (63.6)} & \ptcpfive{}  & \makecell{292 \\ (146.0) } & \ptcpfive{}  \\ \hline
+    04. \safecoqinline{go_somewhere  }       & \easy{}   & \makecell{  24 \\  (18.7)} & \ptcpfive{}  & \makecell{ 14 \\   (3.8) } & \ptcpfive{}  \\ \hline
+    05. \safecoqinline{B_is_enough   }       & \easy{}   & \makecell{ 134 \\ (122.9)} & \ptcpfive{}  & \makecell{ 66 \\  (31.8) } & \ptcpfive{}  \\ \hline
+    06. \safecoqinline{more_facts    }       & \easy{}   & \makecell{  34 \\  (25.7)} & \ptcpfive{}  & \makecell{ 27 \\  (15.4) } & \ptcpfive{}  \\ \hline
+    07. \safecoqinline{A_and_B       }       & \easy{}   & \makecell{  49 \\  (20.1)} & \ptcpfive{}  & \makecell{ 21 \\  (11.6) } & \ptcpfive{}  \\ \hline
+    08. \safecoqinline{snoc_concat_en}\ldots & \medium{} & \makecell{ 104 \\  (36.1)} & \ptcpfive{}  & \makecell{156 \\ (133.3) } & \ptcpfive{}  \\ \hline
+    09. \safecoqinline{rev_distribute}\ldots & \hard{}   & \makecell{ 446 \\ (437.4)} & \ptcpfive{}  & \makecell{748 \\ (540.6) } & \ptcpfive{}  \\ \hline
+    10. \safecoqinline{map_commutes  }       & \medium{} & \makecell{ 348 \\ (134.7)} & \ptcpfive{}  & \makecell{189 \\ (118.2) } & \ptcpfive{}  \\ \hline
+    11. \safecoqinline{map_fusion    }       & \medium{} & \makecell{ 109 \\  (47.8)} & \ptcpfive{}  & \makecell{ 76 \\  (47.9) } & \ptcpfive{}  \\ \hline
+    12. \safecoqinline{fold_snoc     }       & \medium{} & \makecell{  86 \\  (39.2)} & \ptcpfour{}  & \makecell{207 \\ (182.8) } & \ptcpfive{}  \\ \hline
+    13. \safecoqinline{map'_unroll   }       & \easy{}   & \makecell{ 471 \\ (186.4)} & \ptcpfour{}  & \makecell{ 13 \\   (9.9) } & \ptcpfive{}  \\ \hline
+    14. \safecoqinline{map_map'      }       & \medium{} & \makecell{ 317 \\ (239.0)} & \ptcpthree{} & \makecell{ 80 \\  (83.0) } & \ptcpfive{}  \\ \hline
+    15. \safecoqinline{In_cons       }       & \easy{}   & \makecell{  52 \\   (0.0)} & \ptcpone{}   & \makecell{160 \\  (93.0) } & \ptcpfive{}  \\ \hline
+    16. \safecoqinline{In_concat_left}       & \hard{}   & \makecell{ 492 \\   (0.0)} & \ptcpone{}   & \makecell{791 \\ (256.2) } & \ptcpthree{} \\ \hline
   \end{tabular}{\parfillskip=0pt\par}
 \end{table}
+
+\footnotetext{While \coqinline{map'_unroll} was expected to be an easy theorem
+(the two sides of the equality are equal, so the theorem can be proved
+immediately with \coqinline{reflexivity}!), }
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    xbar stacked,
+    legend style={
+      legend columns=3,
+      at={(0.5,-0.15)},
+      anchor=north,
+      draw=none
+    },
+    ytick=data,
+    axis y line*=none,
+    axis x line*=bottom,
+    tick label style={font=\footnotesize},
+    legend style={font=\footnotesize},
+    label style={font=\footnotesize},
+    xtick={0,500,1000,1500,2000,2500,3000,3500,4000,4500,5000, 5400},
+    width=.9\textwidth,
+    bar width=6mm,
+    xlabel={Time in seconds},
+    yticklabels={$A1$, $A2$, $A3$, $A4$, $A5$, $B1$, $B2$, $B3$, $B4$, $B5$},
+    xmin=0,
+    xmax=5400,
+    area legend,
+    y=8mm,
+    y dir=reverse,
+    enlarge y limits={abs=0.625},
+]
+
+% A: 11:20 -> 12:50
+% B:  1:12 ->  2:42
+
+\addplot[black,fill=color01] coordinates
+{(  93,0) ( 191,1) ( 216,2) ( 322,3) (245,4) (187,5) (1076,6) (1300,7) (444,8) ( 36,9)};
+\addplot[black,fill=color02] coordinates
+{( 453,0) ( 792,1) ( 855,2) ( 545,3) (209,4) ( 89,5) (  82,6) ( 536,7) (122,8) ( 69,9)};
+\addplot[black,fill=color03] coordinates
+{( 134,0) ( 283,1) ( 134,2) ( 104,3) (135,4) (114,5) ( 277,6) ( 253,7) (560,8) (256,9)};
+\addplot[black,fill=color04] coordinates
+{(  60,0) (  22,1) (  13,2) (   9,3) (14 ,4) ( 15,5) (  19,6) (  11,7) ( 15,8) (  8,9)};
+\addplot[black,fill=color05] coordinates
+{( 377,0) (  80,1) (  69,2) (  43,3) (101,4) ( 23,5) (  78,6) ( 105,7) ( 89,8) ( 34,9)};
+\addplot[black,fill=color06] coordinates
+{(  85,0) (  27,1) (  26,2) (  17,3) (17 ,4) ( 38,5) (  49,6) (  28,7) (  9,8) ( 11,9)};
+\addplot[black,fill=color07] coordinates
+{(  82,0) (  32,1) (  26,2) (  59,3) (47 ,4) ( 13,5) (  21,6) (  25,7) ( 41,8) (  7,9)};
+\addplot[black,fill=color08] coordinates
+{( 117,0) ( 162,1) ( 106,2) (  57,3) (76 ,4) ( 99,5) (  99,6) ( 418,7) (118,8) ( 45,9)};
+\addplot[black,fill=color09] coordinates
+{(1761,0) (1563,1) (1671,2) (1654,3) (580,4) (368,5) ( 615,6) ( 162,7) (877,8) (717,9)};
+\addplot[black,fill=color10] coordinates
+{( 304,0) ( 174,1) ( 555,2) ( 442,3) (265,4) (172,5) ( 114,6) ( 419,7) (149,8) ( 92,9)};
+\addplot[black,fill=color11] coordinates
+{( 102,0) (  64,1) ( 201,2) (  92,3) (85 ,4) ( 95,5) ( 149,6) (  88,7) ( 19,8) ( 27,9)};
+\addplot[black,fill=color12] coordinates
+{(  53,0) ( 150,1) (   0,2) (  86,3) (55 ,4) (175,5) ( 143,6) (  49,7) (563,8) (106,9)};
+\addplot[black,fill=color13] coordinates
+{( 205,0) ( 605,1) (   0,2) ( 392,3) (681,4) ( 26,5) (  23,6) (   6,7) (  2,8) (  6,9)};
+\addplot[black,fill=color14] coordinates
+{( 152,0) ( 655,1) (   0,2) (   0,3) (144,4) ( 33,5) (  57,6) (  26,7) (245,8) ( 41,9)};
+\addplot[black,fill=color15] coordinates
+{(   0,0) (   0,1) (   0,2) (   0,3) (52 ,4) (191,5) ( 245,6) ( 261,7) ( 30,8) ( 71,9)};
+\addplot[black,fill=color16] coordinates
+{(   0,0) (   0,1) (   0,2) (   0,3) (492,4) (470,5) (1097,6) (   0,7) (  0,8) (805,9)};
+
+\addlegendentry{\coqinline{rev_snoc      }};
+\addlegendentry{\coqinline{rev_involutive}};
+\addlegendentry{\coqinline{concat_cons_sn}\ldots};
+\addlegendentry{\coqinline{go_somewhere  }};
+\addlegendentry{\coqinline{B_is_enough   }};
+\addlegendentry{\coqinline{more_facts    }};
+\addlegendentry{\coqinline{A_and_B       }};
+\addlegendentry{\coqinline{snoc_concat_en}\ldots};
+\addlegendentry{\coqinline{rev_distribute}\ldots};
+\addlegendentry{\coqinline{map_commutes  }};
+\addlegendentry{\coqinline{map_fusion    }};
+\addlegendentry{\coqinline{fold_snoc     }};
+\addlegendentry{\coqinline{map'_unroll   }};
+\addlegendentry{\coqinline{map_map'      }};
+\addlegendentry{\coqinline{In_cons       }};
+\addlegendentry{\coqinline{In_concat_left}};
+\end{axis}
+\end{tikzpicture}
+\caption{\PeaCoq{} A-B study timings per participant pair}
+\label{peacoq-a-b-study-cumulative}
+\end{figure}
+
+All the answers provided by participants to the post-study survey are
+anonymously catalogued in Appendix~\ref{appendix-peacoq-a-b-study}.
 
 \paragraph{Threats to validity}
 
@@ -265,12 +378,16 @@ particular order:
 \begin{itemize}
 
   \item The sample size was very small (20 participants total, 10 per instance).
+Unfortunately, the groups also had a very high variance, as can be seen by
+looking at the standard deviations.  Often times, skilled groups finished
+exercises extremely fast, while struggling groups spent very long amounts of
+time stuck.
 
   \item The sample was biased towards graduate students, with only 3
 undergraduate students (1 in the A group, 2 in the B group).
 
   \item The study was fast-paced, with only one hour to learn the rudiments of
-theorem proving, and one hour to start solving exercises.  A typical
+theorem proving, and an hour and a half to solve exercises.  A typical
 \emph{graduate} programming language course would most likely cover the topics
 we saw in three to five lectures.
 

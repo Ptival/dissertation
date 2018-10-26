@@ -4,6 +4,13 @@
 \newcommand*\circled[1]{\tikz[baseline=(C.base)]\node[draw,circle,inner sep=1.2pt,line width=0.2mm,](C) {\small #1};\!}
 \newcommand*\OK{\ding{51}}
 
+\newcommand{\participant}{\begin{tikz}\node[graduate,monitor,minimum size=0.1cm] {};\end{tikz}}
+\newcommand{\ptcpone}{  \participant{} $\times 1$}
+\newcommand{\ptcptwo}{  \participant{} $\times 2$}
+\newcommand{\ptcpthree}{\participant{} $\times 3$}
+\newcommand{\ptcpfour}{ \participant{} $\times 4$}
+\newcommand{\ptcpfive}{ \participant{} $\times 5$}
+
 \newcommand{\define}[1]{\emph{#1}}
 \newcommand{\mycite}[1]{\citeauthor{#1}~\cite{#1}}
 
@@ -327,3 +334,7 @@
 \newcommand{\deltaEliminatorOp}{\op{\delta_{\text{Eliminator}}}}
 \newcommand{\deltaEliminator}[6]{ \deltaEliminatorOp\op{(} #1 \op{,} #2
 \op{,} #3 \op{,} #4 \op{,}\ #5 \op{) =\ } \out{#6} }
+
+\newcommand{\easy}{ \faStar \faStarO \faStarO }
+\newcommand{\medium}{ \faStar \faStar \faStarO }
+\newcommand{\hard}{ \faStar \faStar \faStar }

@@ -1,0 +1,78 @@
+\section{Guessing diffs}~\label{chick-guess}
+
+\begin{tikzpicture}
+
+  \tikzstyle{ast} = [%
+  align=center,
+  draw=black,
+  font=\bfseries,
+  inner sep=10pt,
+  line width=3pt,
+  rectangle,
+  ultra thick,
+  ];
+
+  \tikzset{level distance=45pt};
+  \tikzset{edge from parent/.style=
+    {
+      draw,
+      edge from parent path={(\tikzparentnode.south)
+        -- +(0,-10pt)
+        -| (\tikzchildnode.north)},
+      ultra thick,
+    }
+  }
+
+  \Tree
+  [.\node[ast]{→};
+    [.\node[ast]{→};
+      [.\node[ast,fill=color01]{A}; ]
+      [.\node[ast]{→};
+        [.\node[ast,fill=color02]{C};]
+        [.\node[ast,fill=color03]{D};]
+      ]
+    ]
+    [.\node[ast]{→};
+      [.\node[ast,fill=color01]{A}; ]
+      [.\node[ast]{→};
+        [.\node[ast,fill=color02]{C};]
+        [.\node[ast,fill=color03]{D};]
+      ]
+    ]
+  ]
+
+\end{tikzpicture}
+
+\begin{forest}
+  for tree={
+    align=center,
+    draw=black,
+    edge={
+      ultra thick,
+    },
+    edge path={
+      \noexpand\path[\forestoption{edge}]
+      (!u.parent anchor)
+      -- +(0,-10pt)
+      -| (.child anchor)
+      \forestoption{edge label};
+    },
+    font=\bfseries,
+    %inner sep=10pt,
+    %line width=2pt,
+    minimum width=20pt,
+    parent anchor=south,
+    rectangle,
+    ultra thick,
+  }
+  [→
+    [→
+      [A]
+      [→ [C] [D]]
+    ]
+    [→
+      [A]
+      [→ [C] [D]]
+    ]
+  ]
+\end{forest}
