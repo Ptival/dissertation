@@ -85,6 +85,33 @@
 \definecolor{color21}{HTML}{FFFFFF}
 \definecolor{color22}{HTML}{000000}
 
+\forestset{
+  default preamble={
+    for tree={
+      align=center,
+      draw=black,
+      edge={
+        ultra thick,
+      },
+      edge path={
+        \noexpand\path[\forestoption{edge}]
+        (!u.parent anchor)
+        -- +(0,-10pt)
+        -| (.child anchor)
+        \forestoption{edge label};
+      },
+      font=\bfseries,
+      inner sep=0pt,
+      % line width=2pt,
+      minimum height=20pt,
+      minimum width=30pt,
+      parent anchor=south,
+      rectangle,
+      ultra thick,
+    }
+  }
+}
+
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 
 % defines safecoqinline, a command like coqinline but works in tabular
@@ -103,6 +130,15 @@
 }
 
 \usetikzlibrary{arrows, calc, fit, positioning, shapes, tikzmark}
+
+\tikzstyle{RoundedRedRectangle}=[
+dashed,
+draw,
+red,
+rounded corners=10pt,
+ultra thick,
+]
+
 \graphicspath{ {./images/} }
 
 \AtBeginDocument{%
@@ -492,9 +528,9 @@ without dependent types, but with more features than our tool was built for.
 \end{dissertationintroduction}
 
 \input{background}
-\input{related-work}
 \input{peacoq}
 \input{chick}
+\input{related-work}
 \chapter{Takeaways}
 
 \appendix

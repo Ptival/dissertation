@@ -1,78 +1,186 @@
 \section{Guessing diffs}~\label{chick-guess}
 
-\begin{tikzpicture}
+We showed how our algorithm could take an initial program, and a diff describing
+how to obtain the partial refactoring, in order to generate a repaired diff with
+the refactoring carried out.  However, we had postponed the discussion of how
+this original diff was obtained.
 
-  \tikzstyle{ast} = [%
-  align=center,
-  draw=black,
-  font=\bfseries,
-  inner sep=10pt,
-  line width=3pt,
-  rectangle,
-  ultra thick,
-  ];
+Automatically generating this diff turns out to be a hard problem.  It is
+equivalent to the tree difference problem: given two abstract syntax trees, we
+want to find a mapping of pairs of nodes from the old tree and the new tree,
+such that we have high confidence that they are related nodes.
 
-  \tikzset{level distance=45pt};
-  \tikzset{edge from parent/.style=
-    {
-      draw,
-      edge from parent path={(\tikzparentnode.south)
-        -- +(0,-10pt)
-        -| (\tikzchildnode.north)},
-      ultra thick,
-    }
-  }
+There is a bit of literature on the subject.  We chose to use the
+\define{GumTree} algorithm, for two reasons.  First, its has a worst-case time
+complexity of $O(n^{2})$, where the worst time is unlikely to happen in real
+abstract syntax trees.  Second, it works by ranking candidate pairs according to
+some heuristic similarity metric, which is useful in order to compute not just
+the most likely answer, but, possibly, a list of likely answers ranked by the
+heuristic likelihood.
 
-  \Tree
-  [.\node[ast]{→};
-    [.\node[ast]{→};
-      [.\node[ast,fill=color01]{A}; ]
-      [.\node[ast]{→};
-        [.\node[ast,fill=color02]{C};]
-        [.\node[ast,fill=color03]{D};]
-      ]
-    ]
-    [.\node[ast]{→};
-      [.\node[ast,fill=color01]{A}; ]
-      [.\node[ast]{→};
-        [.\node[ast,fill=color02]{C};]
-        [.\node[ast,fill=color03]{D};]
-      ]
-    ]
-  ]
+Unfortunately, our early attempts of using the algorithm with our data types
+proved unsuccessful.  Let us illustrate where the algorithm fails in our
+setting, by first giving a broad overview of how it works:
 
-\end{tikzpicture}
+\begin{itemize}
 
+  \item First, all leaves are distinguished based on their identity.  In our
+figures, we will denote nodes that are considered similar using colors.  After
+this first pass, all leaves should be colored, such that they are similar to
+equal leaves.
+
+  \item Then, all pairs of old internal nodes and new internal nodes are
+compared (in an efficient order) for similarity of their children.  The
+similarity $S$ between two nodes is defined in Figure~\ref{similarity}.
+
+  \item As items are found to be isomorphic, they are added to a relation $n_{1}
+\approx n_{2}$.  Then, remaining pairs of nodes are considered by decreasing
+similarity, and added to the same relation.
+
+\end{itemize}
+
+\begin{figure}
+\centering
+\[
+    \text{S}(n_{1}, n_{2}) =
+    \frac
+    { 2 \times \bigm| \{ c_{1} \in C(n_{1}) | \exists c_{2} \in C(n_{2}), c_{1} \approx c_{2} \} \bigm| }
+    { \bigm| \{ c \in C(n_{1}) \} | + | \{ c \in C(n_{2}) \} \bigm| }
+\]
+
+where $C(n)$ is the set of children of $n$
+\\
+and $c_{1} \approx c_{2}$ means that the algorithm considers that $a$ should map to $b$
+\caption{Similarity between two nodes}~\label{similarity}
+\end{figure}
+
+Let us now see where this algorithm underperforms in our setting.  Consider the
+abstract syntax trees in Figure~\ref{chick-sub-trees-equal-similarity}.  In it,
+we highlight three identical sub-trees, $T_{1}$, $T_{2}$, and $T_{3}$, in red
+dashed rounded rectangles.  Due to being exactly the same sub-trees, their
+similarity score will be equal.  Yet, to a human being, $T_{2} \approx T_{3}$
+seems more likely than $T_{1} \approx T_{3}$: they are roughly in a similar
+location in the abstract syntax tree.
+
+\begin{figure}[htp!]
+\centering
 \begin{forest}
-  for tree={
-    align=center,
-    draw=black,
-    edge={
-      ultra thick,
-    },
-    edge path={
-      \noexpand\path[\forestoption{edge}]
-      (!u.parent anchor)
-      -- +(0,-10pt)
-      -| (.child anchor)
-      \forestoption{edge label};
-    },
-    font=\bfseries,
-    %inner sep=10pt,
-    %line width=2pt,
-    minimum width=20pt,
-    parent anchor=south,
-    rectangle,
-    ultra thick,
-  }
   [→
     [→
-      [A]
-      [→ [C] [D]]
+      [A,fill=color01]
+      [→,tikz={\node[RoundedRedRectangle,fit=()(!1)(!l)](T1){};\node[below=1pt of T1]{$T_{1}$};}
+        [C,fill=color02]
+        [D,fill=color03]
+      ]
     ]
     [→
-      [A]
-      [→ [C] [D]]
+      [A,fill=color01]
+      [→,tikz={\node[RoundedRedRectangle,fit=()(!1)(!l)](T2){};\node[below=1pt of T2]{$T_{2}$};}
+        [C,fill=color02]
+        [D,fill=color03]
+      ]
     ]
   ]
 \end{forest}
+\hspace{10pt}
+\begin{forest}
+  [→
+    [→
+      [C,fill=color03]
+      [→
+        [B]
+        [→
+          [A,fill=color01]
+          [D,fill=color03]
+        ]
+      ]
+    ]
+    [→
+      [A,fill=color01]
+      [→
+        [B]
+        [→,tikz={\node[RoundedRedRectangle,fit=()(!1)(!l)](T3){};\node[below=1pt of T3]{$T_{3}$};}
+          [C,fill=color02]
+          [D,fill=color03]
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+\caption{Example of sub-trees with equal similarity}\label{chick-sub-trees-equal-similarity}
+\end{figure}
+
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [→
+    [→
+      [A,fill=color01]
+      [C,fill=color02]
+      [D,fill=color03]
+    ]
+    [A,fill=color01]
+    [C,fill=color02]
+    [D,fill=color03]
+  ]
+\end{forest}
+\hspace{10pt}
+\begin{forest}
+  [→
+    [→
+      [C,fill=color03]
+      [B]
+      [A,fill=color01]
+      [D,fill=color03]
+    ]
+    [A,fill=color01]
+    [B]
+    [C,fill=color02]
+    [D,fill=color03]
+  ]
+\end{forest}
+\caption{Example of squashed telescopes}\label{chick-squashed-telescopes}
+\end{figure}
+
+% \begin{tikzpicture}
+
+%   \tikzstyle{ast} = [%
+%   align=center,
+%   draw=black,
+%   font=\bfseries,
+%   inner sep=10pt,
+%   line width=3pt,
+%   rectangle,
+%   ultra thick,
+%   ];
+
+%   \tikzset{level distance=45pt};
+%   \tikzset{edge from parent/.style=
+%     {
+%       draw,
+%       edge from parent path={(\tikzparentnode.south)
+%         -- +(0,-10pt)
+%         -| (\tikzchildnode.north)},
+%       ultra thick,
+%     }
+%   }
+
+%   \Tree
+%   [.\node[ast]{→};
+%     [.\node[ast]{→};
+%       [.\node[ast,fill=color01]{A}; ]
+%       [.\node[ast]{→};
+%         [.\node[ast,fill=color02]{C};]
+%         [.\node[ast,fill=color03]{D};]
+%       ]
+%     ]
+%     [.\node[ast]{→};
+%       [.\node[ast,fill=color01]{A}; ]
+%       [.\node[ast]{→};
+%         [.\node[ast,fill=color02]{C};]
+%         [.\node[ast,fill=color03]{D};]
+%       ]
+%     ]
+%   ]
+
+% \end{tikzpicture}
