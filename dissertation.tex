@@ -101,7 +101,8 @@
         \forestoption{edge label};
       },
       font=\bfseries,
-      inner sep=0pt,
+      % inner sep=10pt,
+      l sep=30pt,
       % line width=2pt,
       minimum height=20pt,
       minimum width=30pt,
@@ -131,11 +132,27 @@
 
 \usetikzlibrary{arrows, calc, fit, positioning, shapes, tikzmark}
 
-\tikzstyle{RoundedRedRectangle}=[
+\tikzstyle{RoundedDottedPath}=[
+dotted,
+color05,
+line width=3pt,
+rounded corners=10pt,
+]
+
+\tikzstyle{RoundedRectangle}=[
 dashed,
 draw,
-red,
+line width=3pt,
 rounded corners=10pt,
+]
+
+\tikzstyle{NodeLabel}=[
+black,
+circle,
+draw,
+fill=white,
+font=\bfseries,
+inner sep=1pt,
 ultra thick,
 ]
 

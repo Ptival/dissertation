@@ -31,11 +31,15 @@ equal leaves.
 
   \item Then, all pairs of old internal nodes and new internal nodes are
 compared (in an efficient order) for similarity of their children.  The
-similarity $S$ between two nodes is defined in Figure~\ref{similarity}.
+similarity $S$ between two nodes is defined in Figure~\ref{similarity}, and
+ranges between 0 (no shared children) to 1 (all children are shared).  Note that
+it does not account for the order of the children.
 
-  \item As items are found to be isomorphic, they are added to a relation $n_{1}
-\approx n_{2}$.  Then, remaining pairs of nodes are considered by decreasing
-similarity, and added to the same relation.
+  \item As items are found to be similar, they are added to a relation $n_{1}
+\approx n_{2}$.  A custom threshold allows us to tweak how similar two nodes
+need to be in order for our algorithm to consider them similar.  Then, remaining
+pairs of nodes are considered by decreasing similarity, and added to the same
+relation.
 
 \end{itemize}
 
@@ -68,14 +72,22 @@ location in the abstract syntax tree.
   [→
     [→
       [A,fill=color01]
-      [→,tikz={\node[RoundedRedRectangle,fit=()(!1)(!l)](T1){};\node[below=1pt of T1]{$T_{1}$};}
+      [→,name=spec n1,tikz={
+        \node[RoundedRectangle,red,fit=()(!1)(!l)](T1){};
+        \node[below=1pt of T1]{$T_{1}$};
+        \node[NodeLabel] at (spec n1.south east) {$l_{1}$};
+        }
         [C,fill=color02]
         [D,fill=color03]
       ]
     ]
     [→
       [A,fill=color01]
-      [→,tikz={\node[RoundedRedRectangle,fit=()(!1)(!l)](T2){};\node[below=1pt of T2]{$T_{2}$};}
+      [→,name=spec n2,tikz={
+        \node[RoundedRectangle,red,fit=()(!1)(!l)](T2){};
+        \node[below=1pt of T2]{$T_{2}$};
+        \node[NodeLabel] at (spec n2.south east) {$l_{2}$};
+      }
         [C,fill=color02]
         [D,fill=color03]
       ]
@@ -86,7 +98,7 @@ location in the abstract syntax tree.
 \begin{forest}
   [→
     [→
-      [C,fill=color03]
+      [C,fill=color02]
       [→
         [B]
         [→
@@ -99,7 +111,11 @@ location in the abstract syntax tree.
       [A,fill=color01]
       [→
         [B]
-        [→,tikz={\node[RoundedRedRectangle,fit=()(!1)(!l)](T3){};\node[below=1pt of T3]{$T_{3}$};}
+        [→,name=spec n3,tikz={
+          \node[RoundedRectangle,red,fit=()(!1)(!l)](T3){};
+          \node[below=1pt of T3]{$T_{3}$};
+          \node[NodeLabel] at (spec n3.south east) {$r$};
+          }
           [C,fill=color02]
           [D,fill=color03]
         ]
@@ -107,14 +123,29 @@ location in the abstract syntax tree.
     ]
   ]
 \end{forest}
+\[
+  S(l_{1},r) = 1 \hspace{2cm} S(l_{2},r) = 1
+\]
 \caption{Example of sub-trees with equal similarity}\label{chick-sub-trees-equal-similarity}
 \end{figure}
+
+In order to improve the algorithm's detection of such cases, we modify our
+abstract syntax trees by ``squashing'' sequences of binary operators together
+into n-ary nodes.  We show how this affects the same two trees in
+Figure~\ref{chick-squashed-telescopes}.  Thanks to the squashing, the four
+internal nodes $l_{1}$, $l_{2}$, $r_{1}$, and $r_{2}$ now display different
+similarities with each other.  The algorithm will now consider that $l_{2}$ and
+$r_{2}$ are most likely to be similar, and mark them as such.
 
 \begin{figure}[htp!]
 \centering
 \begin{forest}
-  [→
-    [→
+  [→,name=spec l1,tikz={
+      \node[NodeLabel] at (spec l1.south east) {$l_{1}$};
+      }
+    [→,name=spec l2,tikz={
+      \node[NodeLabel] at (spec l2.south east) {$l_{2}$};
+      }
       [A,fill=color01]
       [C,fill=color02]
       [D,fill=color03]
@@ -126,9 +157,13 @@ location in the abstract syntax tree.
 \end{forest}
 \hspace{10pt}
 \begin{forest}
-  [→
-    [→
-      [C,fill=color03]
+  [→,name=spec r1,tikz={
+      \node[NodeLabel] at (spec r1.south east) {$r_{1}$};
+      }
+    [→,name=spec r2,tikz={
+      \node[NodeLabel] at (spec r2.south east) {$r_{2}$};
+      }
+      [C,fill=color02]
       [B]
       [A,fill=color01]
       [D,fill=color03]
@@ -139,7 +174,290 @@ location in the abstract syntax tree.
     [D,fill=color03]
   ]
 \end{forest}
+\begin{align*}
+  S(l_{1},r_{1}) = \frac{6}{9} = 0.67 & \hspace{2cm} & S(l_{1},r_{2}) = \frac{6}{8} = 0.75\\
+  S(l_{2},r_{1}) = \frac{6}{8} = 0.75 & \hspace{2cm} & S(l_{2},r_{2}) = \frac{6}{7} = 0.86\\
+\end{align*}
 \caption{Example of squashed telescopes}\label{chick-squashed-telescopes}
+\end{figure}
+
+Once this is done, it will recompute similarities for the remaining, unmatched
+internal nodes.  Here, $l_{1}$ and $r_{1}$, the only remaining nodes, will now
+have an increased similarity of $\frac{8}{9}$, or $0.89$, due to $l_{2}$ and
+$r_{2}$ being considered similar.  This should exceed our custom threshold and
+allow these nodes to be considered similar, resulting in the matching shown in
+Figure\ref{chick-guess-squashed-result}.
+
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [→,fill=color05
+    [→,fill=color04
+      [A,fill=color01]
+      [C,fill=color02]
+      [D,fill=color03]
+    ]
+    [A,fill=color12]
+    [C,fill=color13]
+    [D,fill=color14]
+  ]
+\end{forest}
+\hspace{10pt}
+\begin{forest}
+  [→,fill=color05
+    [→,fill=color04
+      [C,fill=color02]
+      [B]
+      [A,fill=color01]
+      [D,fill=color03]
+    ]
+    [A,fill=color12]
+    [B]
+    [C,fill=color13]
+    [D,fill=color14]
+  ]
+\end{forest}
+\caption{Guess for matching with squashed telescopes}\label{chick-guess-squashed-result}
+\end{figure}
+
+However, we now need to unsquash the tree and figure out the proper relationship
+between the previously squashed nodes.  This yields the syntax trees as shown in
+Figure~\ref{chick-unsquashed-unresolved}, where several nodes share the same
+coloring.  In order to produce a diff, we would like to have unique pairings
+between the two trees.
+
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [→,fill=color05
+    [→,fill=color04
+      [A]
+      [→,fill=color04,tikz={\node[RoundedRectangle,color04,fit=()(!u)]{};}
+        ,tikz={\draw[RoundedDottedPath,color04]
+          (.north east) -- (!u.north east)
+          -- (!u.north west) -- (!u.south west)
+          -- (.south west) -- (.south east) -- (.north east)
+          ;}
+        [C]
+        [D]
+      ]
+    ]
+    [→,fill=color05
+      [A]
+      [→,fill=color05,tikz={\node[RoundedRectangle,color05,fit=()(!u)(!uu)]{};}
+        ,tikz={\draw[RoundedDottedPath,color05]
+          (.north east) -- (!u.north east) -- (!uu.north east)
+          -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
+          -- (.south west) -- (.south east) -- (.north east)
+          ;}
+        [C]
+        [D]
+      ]
+    ]
+  ]
+\end{forest}
+\hspace{10pt}
+\begin{forest}
+  [→,fill=color05
+    [→,fill=color04
+      [C]
+      [→,fill=color04
+        [B]
+        [→,fill=color04,tikz={\node[RoundedRectangle,color04,fit=()(!u)(!uu)]{};}
+        ,tikz={\draw[RoundedDottedPath,color04]
+          (.north east) -- (!u.north east) -- (!uu.north east)
+          -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
+          -- (.south west) -- (.south east) -- (.north east)
+          ;}
+          [A,]
+          [D]
+        ]
+      ]
+    ]
+    [→,fill=color05
+      [A]
+      [→,fill=color05
+        [B]
+        [→,fill=color05,tikz={\node[RoundedRectangle,color05,fit=()(!u)(!uu)(!uuu)]{};}
+        ,tikz={\draw[RoundedDottedPath,color05]
+          (.north east) -- (!u.north east) -- (!uu.north east) -- (!uuu.north east)
+          -- (!uuu.north west) -- (!uuu.south west) -- (!uu.south west) -- (!u.south west)
+          -- (.south west) -- (.south east) -- (.north east)
+          ;}
+          [C]
+          [D]
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+\caption{Guess for matching unsquashed, unresolved}\label{chick-unsquashed-unresolved}
+\end{figure}
+
+Since \coqinline{→} is a right-associative operation, we resolve the pairings by
+comparing the left children of the remaining nodes first, then by comparing
+similarity on the remaining nodes.  This yields our final guess, as shown on
+Figure~\ref{chick-unsquashed-resolved}.  The outlines highlight those nodes we
+considered similar due to their left child.  The root nodes have different left
+child, but their similarity is $\frac{1}{2}$, or $0.5$, due to having similar
+right children, so they are also considered similar.
+
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [→,fill=color06
+    [→,fill=color07
+    ,tikz={\draw[RoundedDottedPath,color07]
+      (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+      -- (!1.south east) -- (.south east)
+      ;}
+      [A]
+      [→,fill=color08
+      ,tikz={\draw[RoundedDottedPath,color08]
+        (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+        -- (!1.south east) -- (.south east)
+        ;}
+        [C]
+        [D]
+      ]
+    ]
+    [→,fill=color09
+    ,tikz={\draw[RoundedDottedPath,color09]
+      (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+      -- (!1.south east) -- (.south east)
+      ;}
+      [A]
+      [→,fill=color10
+      ,tikz={\draw[RoundedDottedPath,color10]
+        (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+        -- (!1.south east) -- (.south east)
+        ;}
+        [C]
+        [D]
+      ]
+    ]
+  ]
+\end{forest}
+\hspace{10pt}
+\begin{forest}
+  [→,fill=color06
+    [→,fill=color08
+      ,tikz={\draw[RoundedDottedPath,color08]
+        (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+        -- (!1.south east) -- (.south east)
+        ;}
+      [C]
+      [→
+        [B]
+        [→,fill=color07
+        ,tikz={\draw[RoundedDottedPath,color07]
+          (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+          -- (!1.south east) -- (.south east)
+          ;}
+          [A]
+          [D]
+        ]
+      ]
+    ]
+    [→,fill=color09
+    ,tikz={\draw[RoundedDottedPath,color09]
+      (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+      -- (!1.south east) -- (.south east)
+      ;}
+      [A]
+      [→
+        [B]
+        [→,fill=color10
+        ,tikz={\draw[RoundedDottedPath,color10]
+          (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+          -- (!1.south east) -- (.south east)
+          ;}
+          [C]
+          [D]
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+\caption{Guess for matching unsquashed, resolved}\label{chick-unsquashed-resolved}
+\end{figure}
+
+Now that we have identified similar nodes between the old tree and the new tree,
+the final step is to build an actual diff from this information.  The algorithm
+is a fairly straightforward tree recursion.
+
+\begin{figure}[htp!]
+\centering
+\MatchingToDiff (
+\begin{forest}
+  begin draw/.code={\begin{tikzpicture}[baseline=(current bounding box.center)]},
+    [→,fill=color06
+      [→,fill=color07,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+        [,phantom]
+      ]
+      [→,fill=color09,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+        [,phantom]
+      ]
+    ]
+  \end{forest},
+  \begin{forest}
+    [→,fill=color06
+      [→,fill=color08,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+        [,phantom]
+      ]
+      [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+        [,phantom]
+      ]
+    ]
+  ]
+\end{forest}
+) = 0
+\caption{Run of the algorithm for turning a matching into a diff}\label{chick-guess-to-diff}
+\end{figure}
+
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [,phantom
+    [→,fill=color06
+      [→,fill=color07,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+       [A]
+        [→,fill=color08
+         [C]
+          [D]
+        ]
+      ]
+      [→,fill=color09,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+       [A]
+        [→,fill=color10
+         [C]
+          [D]
+        ]
+      ]
+    ]
+    [→,fill=color06
+      [→,fill=color08,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+       [C]
+        [→
+          [B]
+           [A]
+            [D]
+          ]
+        ]
+      [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+        [A]
+        [→
+          [B]
+          [→,fill=color10
+           [C]
+            [D]
+          ]
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+\caption{Run of the algorithm for turning a matching into a diff}\label{chick-guess-to-diff}
 \end{figure}
 
 % \begin{tikzpicture}
