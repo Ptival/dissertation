@@ -299,7 +299,7 @@ comparing the left children of the remaining nodes first, then by comparing
 similarity on the remaining nodes.  This yields our final guess, as shown on
 Figure~\ref{chick-unsquashed-resolved}.  The outlines highlight those nodes we
 considered similar due to their left child.  The root nodes have different left
-child, but their similarity is $\frac{1}{2}$, or $0.5$, due to having similar
+children, but their similarity is $\frac{1}{2}$, or $0.5$, due to having similar
 right children, so they are also considered similar.
 
 \begin{figure}[htp!]
@@ -384,50 +384,122 @@ right children, so they are also considered similar.
 
 Now that we have identified similar nodes between the old tree and the new tree,
 the final step is to build an actual diff from this information.  The algorithm
-is a fairly straightforward tree recursion.
+is a fairly straightforward tree recursion.  We highlight how it works on three
+relevant examples.
+
+% \begin{figure}[htp!]
+% \centering
+% \begin{align*}
+% \MatchingToDiff (
+% \begin{forest}
+%   begin draw/.code={\begin{tikzpicture}[baseline=(current bounding box.center)]},
+%     [→,fill=color06
+%       [→,fill=color07,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+%         [,phantom]
+%       ]
+%       [→,fill=color09,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+%         [,phantom]
+%       ]
+%     ]
+% \end{forest},
+% \begin{forest}
+%   begin draw/.code={\begin{tikzpicture}[baseline=(current bounding box.center)]},
+%     [→,fill=color06
+%       [→,fill=color08,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+%         [,phantom]
+%       ]
+%       [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+%         [,phantom]
+%       ]
+%     ]
+%   ]
+% \end{forest}
+% ) = \MathModPi%
+% {
+%   \MatchingToDiff{}(
+%   \begin{forest}
+%     begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+%     [→,fill=color07]
+%   \end{forest},
+%   \begin{forest}
+%     begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+%     [→,fill=color09]
+%   \end{forest}
+%   )
+% }
+% {\MathSame{}}
+% {
+%   \MatchingToDiff{}(
+%   \begin{forest}
+%     begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+%     [→,fill=color08]
+%   \end{forest},
+%   \begin{forest}
+%     begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+%     [→,fill=color10]
+%   \end{forest}
+%   )
+% }
+% \end{align*}
+% \caption{Run of the algorithm for turning a matching into a diff}\label{chick-guess-to-diff}
+% \end{figure}
+
+% \[
+% \textcolor{color06}{
+%   \MathModPi%
+%   {\textcolor{black}{
+%       \MathPermutePis%
+%       {[0,1]}
+%       {\textcolor{color08}{
+%           \MathModPi%
+%           {\MathSame{} % orange
+%           }
+%           {\MathSame{}}
+%           {\MathInsPi%
+%             {B}
+%             {\_}
+%             {\textcolor{color07}{\MathSame{}}} % light-blue
+%           }
+%         }
+%       }
+%     }
+%   }
+%   {\MathSame{}}
+%   {\MathModPi%
+%     {\MathSame{}} % red
+%     {\MathSame{}}
+%     {\MathInsPi
+%       {B}
+%       {\_}
+%       {\MathSame{}}
+%     }
+%   }
+% }
+% \]
+
+\paragraph{Example 1} When the nodes on either side are equal, as is the case
+with the root nodes of the two trees we've been considering so far, we can
+\textbf{keep} the node (here, a $\Pi$ node, using $\MathModPiOp{}$), and
+recursively compute the diffs between its sub-trees.  This is shown in
+Figure~\ref{chick-guess-to-diff-1}.
 
 \begin{figure}[htp!]
 \centering
-\MatchingToDiff (
 \begin{forest}
-  begin draw/.code={\begin{tikzpicture}[baseline=(current bounding box.center)]},
-    [→,fill=color06
-      [→,fill=color07,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
-        [,phantom]
-      ]
-      [→,fill=color09,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
-        [,phantom]
-      ]
-    ]
-  \end{forest},
-  \begin{forest}
-    [→,fill=color06
-      [→,fill=color08,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
-        [,phantom]
-      ]
-      [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
-        [,phantom]
-      ]
-    ]
-  ]
-\end{forest}
-) = 0
-\caption{Run of the algorithm for turning a matching into a diff}\label{chick-guess-to-diff}
-\end{figure}
-
-\begin{figure}[htp!]
-\centering
-\begin{forest}
-  [,phantom
-    [→,fill=color06
-      [→,fill=color07,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+  [,phantom,tikz={\draw[Matching] (!1) -- (!l);},
+    [→,fill=color06,
+       tikz={\node[NodeLabel] at (.south east) {L};},
+      [→,fill=color07,
+         tikz={\node[NodeLabel] at (.south east) {L};},
+         for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
        [A]
-        [→,fill=color08
+        [→,fill=color08,
          [C]
           [D]
         ]
       ]
-      [→,fill=color09,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+      [→,fill=color09,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+        tikz={\node[NodeLabel] at (.south east) {L};},
        [A]
         [→,fill=color10
          [C]
@@ -435,16 +507,22 @@ is a fairly straightforward tree recursion.
         ]
       ]
     ]
-    [→,fill=color06
-      [→,fill=color08,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
-       [C]
+    [,phantom[,phantom[,phantom]]]
+    [→,fill=color06,
+       tikz={\node[NodeLabel] at (.south east) {R};},
+      [→,fill=color08,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+         tikz={\node[NodeLabel] at (.south east) {R};},
+        [C]
         [→
           [B]
-           [A]
+          [→,fill=color07,
+            [A]
             [D]
           ]
         ]
-      [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}}
+      ]
+      [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+      tikz={\node[NodeLabel] at (.south east) {R};},
         [A]
         [→
           [B]
@@ -457,7 +535,241 @@ is a fairly straightforward tree recursion.
     ]
   ]
 \end{forest}
-\caption{Run of the algorithm for turning a matching into a diff}\label{chick-guess-to-diff}
+\\
+\vspace{20pt}
+$\delta(
+\begin{forest}
+  begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+    [→,fill=color06,tikz={\node[NodeLabel] at (.south east) {L};},]
+  \end{forest}
+  ,
+  \begin{forest}
+    begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+      [→,fill=color06,tikz={\node[NodeLabel] at (.south east) {R};},]
+  \end{forest}
+  )
+= \out{
+  \MathModPi
+  {
+    \textcolor{black}{\delta(
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color07,tikz={\node[NodeLabel] at (.south east) {L};},]
+    \end{forest}
+    ,
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color08,tikz={\node[NodeLabel] at (.south east) {R};},]
+    \end{forest}
+    )}
+  }
+  {\MathSame{}}
+  {
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,black,fill=color09,tikz={\node[NodeLabel] at (.south east) {L};},]
+    \end{forest}
+    \hspace{1pt}
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,black,tikz={\node[NodeLabel] at (.south east) {R};},]
+    \end{forest}
+  }
+}
+$
+\caption{Run of the algorithm for turning a matching into a diff (example 1)}\label{chick-guess-to-diff-1}
+\end{figure}
+
+\paragraph{Example 2} When the nodes on either side are \textbf{not} equal, as
+is the case with the left sub-trees of the trees we previously considered, we
+must figure out whether the node on the left has been removed, or moved around,
+and if the node on the right has been added, or moved around.  This is shown in
+Figure~\ref{chick-guess-to-diff-2}.  In this case, the left node has a similar
+node in the right sub-tree, \textbf{and} the right node has a similar node in
+the left sub-tree.  In order to resolve this crossing of nodes, we must
+introduce a \textbf{permutation}.  Our algorithm figures out a minimal
+permutation that will re-order all the nodes in the left telescope, such that
+all such crossings are resolved at once.  In this case, the permutation is
+simply switching the first and second elements of the telescope, indicated by
+the permutation $\MathPermutePis{[1, 0]}$.  We then proceed recursively with the
+permuted tree on the left, and the exact same tree on the right.
+
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [,phantom,tikz={
+    \draw[Matching,color07] (!1) -- (!lll);
+    \draw[Matching,color08] (!1l) -- (!l);
+  },
+    [→,fill=color07,
+       tikz={
+         \draw[RoundedDottedPath,color07]
+         (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+         -- (!1.south east) -- (.south east)
+         ;
+         \node[NodeLabel] at (.south east) {L};
+       },
+      [A,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+      ]
+      [→,fill=color08,
+         tikz={
+           \draw[RoundedDottedPath,color08]
+           (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+           -- (!1.south east) -- (.south east)
+          ;
+          \node[NodeLabel] at (.south east) {L};
+        },
+         for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+        [C]
+        [D]
+      ]
+    ]
+    [,phantom[,phantom]]
+    [→,fill=color08,
+       tikz={\node[NodeLabel] at (.south east) {R};},
+       [C,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+       ]
+       [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+          tikz={\node[NodeLabel] at (.south east) {R};},
+         [B]
+         [→,fill=color07,
+           [A]
+           [D]
+         ]
+       ]
+    ]
+  ]
+\end{forest}
+\\
+\vspace{20pt}
+$\delta(
+\begin{forest}
+  begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+    [→,fill=color07,tikz={\node[NodeLabel] at (.south east) {L};},]
+  \end{forest}
+  ,
+  \begin{forest}
+    begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+      [→,fill=color08,tikz={\node[NodeLabel] at (.south east) {R};},]
+  \end{forest}
+  )
+= \out{
+  \MathPermutePis{[1,0]}
+  {
+    \textcolor{black}{\delta(
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color08,
+           tikz={
+             \draw[RoundedDottedPath,color08]
+             (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+             -- (!1.south east) -- (.south east)
+             ;
+             \node[NodeLabel] at (.south east) {L};
+           },
+           [C,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+           ]
+           [→,fill=color07,
+             for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+             tikz={
+               \draw[RoundedDottedPath,color07]
+               (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+               -- (!1.south east) -- (.south east)
+               ;
+               \node[NodeLabel] at (.south east) {L};
+             },
+            [A]
+            [D]
+          ]
+        ]
+    \end{forest}
+    ,
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color08,tikz={\node[NodeLabel] at (.south east) {R};},]
+    \end{forest}
+    )}
+  }
+}
+$
+\caption{Run of the algorithm for turning a matching into a diff (example 2)}\label{chick-guess-to-diff-2}
+\end{figure}
+
+\paragraph{Example 3} Another case where the nodes considered do not match each
+other is shown in Figure~\ref{chick-guess-to-diff-3}.  There, the right sub-tree
+contains a matching node for the left node, but the left sub-tree does
+\textbf{not} contain a matching node for the right node.  This tells us that the
+right node must have been \textbf{inserted}.  We output an insertion with
+$\MathInsPiOp{}$, and recursively process the entire left tree against the right
+sub-tree of the right node.
+
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [,phantom,tikz={
+    \draw[Matching,color07] (!1) -- (!ll);
+  },
+    [→,fill=color07,
+       tikz={
+         \node[NodeLabel] at (.south east) {L};
+       },
+       [C,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+       ]
+       [D,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+       ]
+    ]
+    [,phantom[,phantom]]
+    [→,
+       tikz={\node[NodeLabel] at (.south east) {R};},
+       [B,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+       ]
+       [→,fill=color07,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+          tikz={\node[NodeLabel] at (.south east) {R};},
+         [A]
+         [D]
+       ]
+    ]
+  ]
+\end{forest}
+\\
+\vspace{20pt}
+$\delta(
+\begin{forest}
+  begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+    [→,fill=color07,tikz={\node[NodeLabel] at (.south east) {L};},]
+  \end{forest}
+  ,
+  \begin{forest}
+    begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+      [→,tikz={\node[NodeLabel] at (.south east) {R};},]
+  \end{forest}
+  )
+= \out{
+  \MathInsPi{B}{\_}
+  {
+    \textcolor{black}{\delta(
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color07,
+           tikz={\node[NodeLabel] at (.south east) {L};},
+           [A,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},]
+           [D,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},]
+        ]
+    \end{forest}
+    ,
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+       [→,fill=color07,
+          tikz={\node[NodeLabel] at (.south east) {R};},
+         [A,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},]
+         [D,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},]
+       ]
+    \end{forest}
+    )}
+  }
+}
+$
+\caption{Run of the algorithm for turning a matching into a diff (example 3)}\label{chick-guess-to-diff-3}
 \end{figure}
 
 % \begin{tikzpicture}

@@ -132,8 +132,14 @@
 
 \usetikzlibrary{arrows, calc, fit, positioning, shapes, tikzmark}
 
+\tikzstyle{Matching}=[
+black,
+dashed,
+line width=3pt,
+]
+
 \tikzstyle{RoundedDottedPath}=[
-dotted,
+densely dotted,
 color05,
 line width=3pt,
 rounded corners=10pt,
@@ -457,7 +463,7 @@ investigator and author of this material.
 \begin{cvlist}{}
 \item[2012 - 2018] Doctorate of Philosophy, Computer Science, University of California San Diego
 \item[2008 - 2012] Diploma of Engineering (Master's degree), ENSEIRB-MATMECA
-\item[2006 - 2008] Classe pr\'eparatoir, Lyc\'ee Louis Barthou
+\item[2006 - 2008] Classe pr\'eparatoire, Lyc\'ee Louis Barthou
 \item[2001 - 2006] Baccalaur\'eat, Science specialization, Lyc\'ee Saint-Cricq
 % \item[1996] Bachelor of Arts, University of California, Berkeley
 % \item[1996--2000] U.S. Marines
@@ -544,15 +550,17 @@ without dependent types, but with more features than our tool was built for.
 % \verb!\mainmatter! macro because it should start on page~1.
 \end{dissertationintroduction}
 
-\input{background}
-\input{peacoq}
+% Too much
+%\input{background}
+%\input{peacoq}
 \input{chick}
-\input{related-work}
+%\input{related-work}
+
 \chapter{Takeaways}
 
 \appendix
 
-\include{appendix}
+%\include{appendix}
 
 % Stuff at the end of the dissertation goes in the back matter
 \backmatter
