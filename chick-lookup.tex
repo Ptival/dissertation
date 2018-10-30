@@ -193,13 +193,13 @@ $\out{\delta_{\tau}}$.
 
 \end{itemize}
 
-\paragraph{Output types} Note that the type of $\out{\delta_{v}}$
-
 The rules in Figure~\ref{lookup-diff-dispatch} summarize the global strategy of
 first looking up in the local context, and then falling back to the global
 environment, analogously to the process in Figure~\ref{lookup-type-dispatch}.
 
-\begin{Rules}{lookup-diff-dispatch}{ Diff lookup rules (local context and global environment) }
+\begin{Rules}
+  {lookup-diff-dispatch}
+  { Diff lookup rules (local context and global environment) }
 
 \begin{mathpar}
   {
@@ -234,8 +234,31 @@ environment, analogously to the process in Figure~\ref{lookup-type-dispatch}.
 
 \end{Rules}
 
-Figure~\ref{lookup-diff-context} shows how we proceed to lookup for a diff in
-the local context.
+Figure~\ref{lookup-diff-context} shows how we proceed to lookup for the diff of
+a variable from the original program in the local context.  Note that, since we
+assume the original program type-checked, when we look up variables, we can
+assume that they are properly bound: were it not the case, we would need
+additional rules to account for the absence of a variable, and to change the
+output types to allow for failure.
+
+When the context hasn't changed, we can obtain its type from the old environment
+(Rule~\rulename{Diff-\LCSame}).  When some variable has been inserted, we can
+ignore it with no effort, since we only care about shadowing in the original
+program (Rule~\rulename{Diff-\LCIns}).
+
+When we find the target variable in the local context, there are only two
+remaining possibilities for the diff: either it is a $\MathModPiOp$, or a
+$\MathDropPiOp$.  When it has been modified, we have found exactly the
+information we were looking for, so we can simply output it
+(Rule~\rulename{Diff-\LCMod-Here}).  If it has been dropped, then there is no
+satisfactory result, the variable is no longer in the program.  In order to make
+sure the user notices, we rename the variable using the helper
+$\op{\text{Deprecate}}$, and make its diff as uninformative as possible using a
+hole (Rule~\rulename{Diff-\LCMod-There}).
+
+The last case to handle (Rule~\rulename{Diff-\LCDrop}) is that of a variable
+other than our target being modified, in which case we simply keep looking
+recursively into the context.
 
 \begin{Rules}{lookup-diff-context}{ Diff lookup rules (local context) }
 
@@ -296,14 +319,14 @@ the local context.
     {
       \inferrule*
       [lab=Diff-\LCDrop]
-      {
+      { v' = \op{\text{Deprecate}(} v \op{)}
       }
       {\turnstile%
         { \diff%
           { \MathCons{\MathLocalAssum{v}{\tau}}{\Gamma} }
           { \MathDrop{\delta_{\Gamma}} }
         }
-        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+        { \declDiff { v } { \MathReplace{v'} } { \MathReplace{\MathHole{}} } }
       }
     }
 
