@@ -1,4 +1,4 @@
-\section{Lookup rules}
+\section{Lookup rules}~\label{chick-lookup-rules}
 
 When encountering a variable in a program under repair, we will often need to
 answer the question ``What has happened to this variable?''.  In order to do so,
@@ -6,12 +6,13 @@ we generalize the usual notion of variable lookup.  In presentations of lambda
 calculi where both a global environment and a local context carry typing
 information, the usual notion of variable lookup first looks in the local
 context (since it carries the ``closest'' enclosing scopes), then, if no binding
-is found, it looks in the global environment.
+is found, looks in the global environment.
 
-We use the following judgments for looking up a variable in the local context,
-on the left, and in the global environment, on the right:~\footnote{While the
-two judgments share the same syntax, it should always be clear whether the value
-to the left of the turnstile is a local context or a global environment.}
+We use the following judgments for looking up a variable in the local context
+$\Gamma$ (on the left), and in the global environment $E$ (on the
+right):~\footnote{While the two judgments share the same syntax, it should
+always be clear whether the value to the left of the turnstile is a local
+context or a global environment.}
 
 \[
   \turnstile{\Gamma}{ \hasType{ v }{ \out{\tau} } }
@@ -21,7 +22,15 @@ to the left of the turnstile is a local context or a global environment.}
 
 The rules for looking up types are straightforward, as shown in
 Figures~\ref{lookup-type-dispatch},~\ref{lookup-type-context},
-and~\ref{lookup-type-environment}.  In the latter, TODO TODO TODO
+and~\ref{lookup-type-environment}.  In the latter, we handle the complexity of
+inductive data type definitions.  For those, a system like \Coq{} will introduce
+not only a name for the inductive type being defined, but also one name per
+elimination principles it generates, and finally one name per the constructor of
+the data type.  This is captured in the lookup rules, where we check those in
+order before looking in the rest of the environment.  Unfortunately,
+rule~\rulename{\LookupEnv-There} has to be quite bloated, but its premises only
+ensure that we look in the rest of the environment only when neither of the
+three previous rules hold.
 
 \begin{Rules}{lookup-type-dispatch}{ Lookup rules (local context and global environment) }
 
@@ -53,14 +62,14 @@ and~\ref{lookup-type-environment}.  In the latter, TODO TODO TODO
 \begin{mathpar}
   {
     \inferrule*
-    [lab=TODO]
+    [lab=\LookupCtxt-Here]
     {  }
     { \turnstile{ \MathCons{\MathLocalAssum{v}{\tau}}{\Gamma} }{ \hasType{ v }{ \out{\tau} } } }
   }
 
   {
     \inferrule*
-    [lab=TODO]
+    [lab=\LookupCtxt-There]
     { w \neq v \and \turnstile{ \Gamma }{ \hasType{ v }{ \out{\tau} } } }
     { \turnstile{ \MathCons{\MathLocalAssum{w}{\tau}}{\Gamma} }{ \hasType{ v }{ \out{\tau} } } }
   }
@@ -75,27 +84,86 @@ and~\ref{lookup-type-environment}.  In the latter, TODO TODO TODO
 
   {
     \inferrule*
-    [lab=TODO]
-    { w \neq v \and \turnstile{ E }{ \hasType{ v }{ \out{\tau} } } }
+    [lab=\LookupEnv-Definition-Here]
+    {  }
     { \turnstile{ {\MathCons{\Definition{k}{v}{\tau}{t}}{E}} }{ \hasType{ v }{ \out{\tau} } } }
+  }
+
+  {
+    \inferrule*
+    [lab=\LookupEnv-Definition-There]
+    { w \neq v \and \turnstile{ E }{ \hasType{ v }{ \out{\tau} } } }
+    { \turnstile{ {\MathCons{\Definition{k}{w}{\tau}{t}}{E}} }{ \hasType{ v }{ \out{\tau} } } }
+  }
+
+  {
+    \inferrule*
+    [lab=\LookupEnv-Inductive-Type-Here]
+    {
+      I =\Inductive{n}{\overline{p}}{\overline{i}}{u}{\overline{c}}
+      \and
+      \tau = \op{\text{InductiveType}(} I \op{)}
+    }
+    { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ n }{ \out{\tau} } } }
+  }
+
+  {
+    \inferrule*
+    [lab=\LookupEnv-Inductive-Eliminator-Here]
+    {
+      I =\Inductive{n}{\overline{p}}{\overline{i}}{u}{\overline{c}}
+      \\
+      v = \op{\text{EliminatorName}(} I \op{,\ } u_{e} \op{)}
+      \and
+      \tau = \op{\text{EliminatorType}(} I \op{,\ } u_{e} \op{)}
+    }
+    { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ v }{ \out{\tau} } } }
+  }
+
+  {
+    \inferrule*
+    [lab=\LookupEnv-Constructor]
+    {
+      I =\Inductive{n_{\text{ind}}}{\overline{p_{\text{ind}}}}{\overline{i_{\text{ind}}}}{u}{
+        \overline{c}
+      }
+      \\
+      \exists\ C \in \overline{c} \text{\ such that\ }
+      C = \Constructor{n_{\text{ctor}}}{\overline{p_{\text{ctor}}}}{\overline{i_{\text{ctor}}}}
+      \\
+      \tau = \op{\text{ConstructorType}(} I \op{,\ } C \op{,\ } u_{e} \op{)}
+    }
+    { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ n_{\text{ctor}} }{ \out{\tau} } } }
+  }
+
+  {
+    \inferrule*
+    [lab=\LookupEnv-There]
+    {
+      I =\Inductive{n_{\text{ind}}}{\overline{p_{\text{ind}}}}{\overline{i_{\text{ind}}}}{u}{
+        \overline{c}
+      }
+      \\\\
+      v \neq n_{\text{ind}}
+      \and
+      \forall u_{e}, v \neq \op{\text{EliminatorName}(} I \op{,\ } u_{e} \op{)}
+      \\
+      \forall\ \Constructor{n_{\text{ctor}}}{\overline{p_{\text{ctor}}}}{\overline{i_{\text{ctor}}}}
+      \in \overline{c}, v \neq n_{\text{ctor}}
+      \\\\
+      \turnstile{ E }{ \hasType{v}{\out{\tau}} }
+    }
+    { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ v }{ \out{\tau} } } }
   }
 
 \end{mathpar}
 
 \end{Rules}
 
-
-
-
-
-
-
-
-
 Our second notion of a lookup essentially follows the same strategy, but we are
 \emph{\textbf{not}} interested in finding the type of the variable, but rather
-in knowing how \emph{both} the binding \emph{and} the binding type have been
-modified.  To do so, we use the following judgment:
+in knowing \textbf{how} \emph{both} the binding \emph{and} the binding type have
+been modified.  To do so, we use the following judgment:
 
 {
   \[
@@ -107,25 +175,36 @@ modified.  To do so, we use the following judgment:
 
 \paragraph{Notation} This judgment can be read as follows:
 \begin{itemize}
-\item \textbf{Top}: If you are interested in the variable $v$, as bound in the original global environment $E$ and original local context $\Gamma$,
-\item \textbf{Bottom left}: and the global environment underwent modification $\delta_{E}$,
-\item \textbf{Bottom left}: and the local context underwent modification $\delta_{\Gamma}$,
-\item \textbf{Bottom right}: then the variable underwent modification
-$\out{\delta_{v}}$,
-\item \textbf{Bottom right}: and its type underwent modification
+
+\item \textbf{Top}: If you are interested in the variable $v$, as bound in the
+original global environment $E$ and original local context $\Gamma$,
+
+\item \textbf{Bottom left}: and the global environment underwent modification
+$\delta_{E}$,
+
+\item \textbf{Bottom left}: and the local context underwent modification
+$\delta_{\Gamma}$,
+
+\item \textbf{Bottom right}: then, references to the variable must undergo
+modification $\out{\delta_{v}}$,
+
+\item \textbf{Bottom right}: and the variable's type has undergone modification
 $\out{\delta_{\tau}}$.
+
 \end{itemize}
 
-The rules in Figure~\ref{rules-lookup} summarize the global strategy of first
-looking up in the local context, and then falling back to the global
-environment:
+\paragraph{Output types} Note that the type of $\out{\delta_{v}}$
 
-\begin{Rules}{rules-lookup}{ Lookup rules (local context and global environment) }
+The rules in Figure~\ref{lookup-diff-dispatch} summarize the global strategy of
+first looking up in the local context, and then falling back to the global
+environment, analogously to the process in Figure~\ref{lookup-type-dispatch}.
+
+\begin{Rules}{lookup-diff-dispatch}{ Diff lookup rules (local context and global environment) }
 
 \begin{mathpar}
   {
     \inferrule*
-    [lab=\LookupCtxt]
+    [lab=Diff-\LookupCtxt]
     {\turnstile%
       { \diff{\Gamma}{\delta_\Gamma} }
       { \declDiff{ v }{ \delta_v }{ \delta_{\tau} } }
@@ -138,7 +217,7 @@ environment:
 
   {
     \inferrule*
-    [lab=\LookupEnv]
+    [lab=Diff-\LookupEnv]
     {
       {\turnstile%
         { \diff{E} {\delta_E} }
@@ -155,14 +234,15 @@ environment:
 
 \end{Rules}
 
-TODO Blah blah blah
+Figure~\ref{lookup-diff-context} shows how we proceed to lookup for a diff in
+the local context.
 
-\begin{Rules}{rules-lookup-context}{ Lookup in the local context }
+\begin{Rules}{lookup-diff-context}{ Diff lookup rules (local context) }
 
   \begin{mathpar}
     {
       \inferrule*
-      [lab=\LCSame]
+      [lab=Diff-\LCSame]
       {
         { \turnstile {\Gamma} {\hasType { v } { \out{\tau_v} } } }
       }
@@ -174,36 +254,20 @@ TODO Blah blah blah
 
     {
       \inferrule*
-      [lab=\LCIns]
+      [lab=Diff-\LCIns]
       {\turnstile
         { \diff {\Gamma} {\delta_{\Gamma}} }
         { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
       }
       {\turnstile
-        { \diff {\Gamma} {\MathIns{ \texttt{\_} }{\delta_{\Gamma}}} }
+        { \diff {\Gamma} {\MathIns{ (\delta_w : \delta_{\tau_{w}}) }{\delta_{\Gamma}}} }
         { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
       }
     }
 
-    % {
-    % \inferrule*
-    % [lab=\LCKeep]
-    % {\turnstile
-    % { \diff {\Gamma} {\MathMod{\MathSame}{\delta_{\Gamma}}} }
-    % { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
-    % }
-    %   {\turnstile
-    %   { \diff {\Gamma} {\MathKeep{\delta_{\Gamma}}} }
-    %   { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
-    % }
-    % }
-
-  \end{mathpar}
-
-  \begin{mathpar}
     {
       \inferrule*
-      [lab=\LCMod{$=$}]
+      [lab=Diff-\LCMod-Here]
       {
       }
       {\turnstile
@@ -214,9 +278,9 @@ TODO Blah blah blah
 
     {
       \inferrule*
-      [lab=\LCMod{$\neq$}]
+      [lab=Diff-\LCMod-There]
       {
-        v' \neq v
+        w \neq v
         \and
         {\turnstile
           { \diff {\Gamma} {\delta_{\Gamma}} }
@@ -224,45 +288,25 @@ TODO Blah blah blah
         }
       }
       {\turnstile
-        { \diff {\MathCons{\MathLocalAssum{v'}{\tau}}{\Gamma}} {\MathMod{(\delta_v : \delta_{\tau})}{\delta_{\Gamma}}} }
+        { \diff {\MathCons{\MathLocalAssum{w}{\tau}}{\Gamma}} {\MathMod{(\delta_v : \delta_{\tau})}{\delta_{\Gamma}}} }
         { \declDiff { v } { \delta_v } { \delta_{\tau} } }
       }
     }
 
-  \end{mathpar}
+    {
+      \inferrule*
+      [lab=Diff-\LCDrop]
+      {
+      }
+      {\turnstile%
+        { \diff%
+          { \MathCons{\MathLocalAssum{v}{\tau}}{\Gamma} }
+          { \MathDrop{\delta_{\Gamma}} }
+        }
+        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
 
-  % \begin{mathpar}
-  %   {
-  %     \inferrule*
-  %     [lab=\LCMod{Def-$=$}]
-  %     {
-  %     }
-  %     {\turnstile
-  %       { \diff {\MathCons{\MathLocalDef{v}{\tau}{t}}{\Gamma}} {\MathMod{\MathLocalDef{\delta_v}{\delta_{\tau}}{\delta_t}}{\delta_{\Gamma}}} }
-  %       { \declDiff { v } { \delta_v } { \delta_{\tau} } }
-  %     }
-  %   }
-
-  %   {
-  %     \inferrule*
-  %     [lab=\LCMod{Def-$\neq$}]
-  %     {
-  %       v' \neq v
-  %       \and
-  %       {\turnstile
-  %         {\diff{\Gamma}{\delta_{\Gamma}}}
-  %         {\declDiff{v}{\delta_v}{\delta_{\tau}}}
-  %       }
-  %     }
-  %     {\turnstile
-  %       {\diff
-  %         {\MathCons{\MathLocalDef{v'}{\tau}{t}}{\Gamma}}
-  %         {\MathMod{\MathLocalDef{\delta_v}{\delta_{\tau}}{\delta_t}}{\delta_{\Gamma}}}
-  %       }
-  %       {\declDiff{v}{\delta_v}{\delta_{\tau}}}
-  %     }
-  %   }
-
-  % \end{mathpar}
+\end{mathpar}
 
 \end{Rules}

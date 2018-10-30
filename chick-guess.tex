@@ -48,13 +48,13 @@ relation.
 \[
     \text{S}(n_{1}, n_{2}) =
     \frac
-    { 2 \times \bigm| \{ c_{1} \in C(n_{1}) | \exists c_{2} \in C(n_{2}), c_{1} \approx c_{2} \} \bigm| }
-    { \bigm| \{ c \in C(n_{1}) \} | + | \{ c \in C(n_{2}) \} \bigm| }
+    { 2 \times \bigm| \{ c_{1} \in C(n_{1}) \text{ such that } \exists c_{2} \in C(n_{2}), c_{1} \approx c_{2} \} \bigm| }
+    { \bigm| \{ c \in C(n_{1}) \} \bigm| + \bigm| \{ c \in C(n_{2}) \} \bigm| }
 \]
 
 where $C(n)$ is the set of children of $n$
 \\
-and $c_{1} \approx c_{2}$ means that the algorithm considers that $a$ should map to $b$
+and $c_{1} \approx c_{2}$ means that $c_{1}$ is considered similar to $c_{2}$
 \caption{Similarity between two nodes}~\label{similarity}
 \end{figure}
 
@@ -69,6 +69,7 @@ location in the abstract syntax tree.
 \begin{figure}[htp!]
 \centering
 \begin{forest}
+[,phantom
   [→
     [→
       [A,fill=color01]
@@ -93,9 +94,7 @@ location in the abstract syntax tree.
       ]
     ]
   ]
-\end{forest}
-\hspace{10pt}
-\begin{forest}
+  [,phantom[,phantom[,phantom]]]
   [→
     [→
       [C,fill=color02]
@@ -122,6 +121,7 @@ location in the abstract syntax tree.
       ]
     ]
   ]
+]
 \end{forest}
 \[
   S(l_{1},r) = 1 \hspace{2cm} S(l_{2},r) = 1
@@ -186,7 +186,7 @@ internal nodes.  Here, $l_{1}$ and $r_{1}$, the only remaining nodes, will now
 have an increased similarity of $\frac{8}{9}$, or $0.89$, due to $l_{2}$ and
 $r_{2}$ being considered similar.  This should exceed our custom threshold and
 allow these nodes to be considered similar, resulting in the matching shown in
-Figure\ref{chick-guess-squashed-result}.
+Figure~\ref{chick-guess-squashed-result}.
 
 \begin{figure}[htp!]
 \centering
@@ -229,38 +229,37 @@ between the two trees.
 \begin{figure}[htp!]
 \centering
 \begin{forest}
+[,phantom
   [→,fill=color05
     [→,fill=color04
-      [A]
+      [A,fill=color01]
       [→,fill=color04,tikz={\node[RoundedRectangle,color04,fit=()(!u)]{};}
         ,tikz={\draw[RoundedDottedPath,color04]
           (.north east) -- (!u.north east)
           -- (!u.north west) -- (!u.south west)
           -- (.south west) -- (.south east) -- (.north east)
           ;}
-        [C]
-        [D]
+        [C,fill=color02]
+        [D,fill=color03]
       ]
     ]
     [→,fill=color05
-      [A]
+      [A,fill=color12]
       [→,fill=color05,tikz={\node[RoundedRectangle,color05,fit=()(!u)(!uu)]{};}
         ,tikz={\draw[RoundedDottedPath,color05]
           (.north east) -- (!u.north east) -- (!uu.north east)
           -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
           -- (.south west) -- (.south east) -- (.north east)
           ;}
-        [C]
-        [D]
+        [C,fill=color13]
+        [D,fill=color14]
       ]
     ]
   ]
-\end{forest}
-\hspace{10pt}
-\begin{forest}
+  [,phantom[,phantom[,phantom]]]
   [→,fill=color05
     [→,fill=color04
-      [C]
+      [C,fill=color02]
       [→,fill=color04
         [B]
         [→,fill=color04,tikz={\node[RoundedRectangle,color04,fit=()(!u)(!uu)]{};}
@@ -269,13 +268,13 @@ between the two trees.
           -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
           -- (.south west) -- (.south east) -- (.north east)
           ;}
-          [A,]
-          [D]
+          [A,fill=color01]
+          [D,fill=color03]
         ]
       ]
     ]
     [→,fill=color05
-      [A]
+      [A,fill=color12]
       [→,fill=color05
         [B]
         [→,fill=color05,tikz={\node[RoundedRectangle,color05,fit=()(!u)(!uu)(!uuu)]{};}
@@ -284,12 +283,13 @@ between the two trees.
           -- (!uuu.north west) -- (!uuu.south west) -- (!uu.south west) -- (!u.south west)
           -- (.south west) -- (.south east) -- (.north east)
           ;}
-          [C]
-          [D]
+          [C,fill=color13]
+          [D,fill=color14]
         ]
       ]
     ]
   ]
+]
 \end{forest}
 \caption{Guess for matching unsquashed, unresolved}\label{chick-unsquashed-unresolved}
 \end{figure}
@@ -305,79 +305,79 @@ right children, so they are also considered similar.
 \begin{figure}[htp!]
 \centering
 \begin{forest}
+[,phantom
   [→,fill=color06
     [→,fill=color07
-    ,tikz={\draw[RoundedDottedPath,color07]
+    ,tikz={\draw[RoundedDottedPath,bicolor={color07}{color01}]
       (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
       -- (!1.south east) -- (.south east)
       ;}
-      [A]
+      [A,fill=color01]
       [→,fill=color08
-      ,tikz={\draw[RoundedDottedPath,color08]
+      ,tikz={\draw[RoundedDottedPath,bicolor={color08}{color02}]
         (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
         -- (!1.south east) -- (.south east)
         ;}
-        [C]
-        [D]
+        [C,fill=color02]
+        [D,fill=color03]
       ]
     ]
     [→,fill=color09
-    ,tikz={\draw[RoundedDottedPath,color09]
+    ,tikz={\draw[RoundedDottedPath,bicolor={color09}{color12}]
       (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
       -- (!1.south east) -- (.south east)
       ;}
-      [A]
+      [A,fill=color12]
       [→,fill=color10
-      ,tikz={\draw[RoundedDottedPath,color10]
+      ,tikz={\draw[RoundedDottedPath,bicolor={color10}{color13}]
         (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
         -- (!1.south east) -- (.south east)
         ;}
-        [C]
-        [D]
+        [C,fill=color13]
+        [D,fill=color14]
       ]
     ]
   ]
-\end{forest}
-\hspace{10pt}
-\begin{forest}
+  [,phantom[,phantom[,phantom]]]
   [→,fill=color06
     [→,fill=color08
-      ,tikz={\draw[RoundedDottedPath,color08]
+      ,tikz={\draw[RoundedDottedPath,bicolor={color08}{color02}]
         (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
         -- (!1.south east) -- (.south east)
         ;}
-      [C]
+      [C,fill=color02]
       [→
         [B]
         [→,fill=color07
-        ,tikz={\draw[RoundedDottedPath,color07]
+        ,tikz={\draw[RoundedDottedPath,bicolor={color07}{color01}]
           (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
           -- (!1.south east) -- (.south east)
           ;}
-          [A]
-          [D]
+          [A,fill=color01]
+          [D,fill=color03]
         ]
       ]
     ]
     [→,fill=color09
-    ,tikz={\draw[RoundedDottedPath,color09]
+    ,tikz={\draw[RoundedDottedPath,bicolor={color09}{color12}]
       (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
       -- (!1.south east) -- (.south east)
       ;}
-      [A]
+      [A,fill=color12]
       [→
         [B]
         [→,fill=color10
-        ,tikz={\draw[RoundedDottedPath,color10]
+        ,tikz={\draw[RoundedDottedPath,bicolor={color10}{color13}]
           (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
           -- (!1.south east) -- (.south east)
           ;}
-          [C]
-          [D]
+          [C,fill=color13]
+          [D,fill=color14]
         ]
       ]
     ]
   ]
+]
 \end{forest}
 \caption{Guess for matching unsquashed, resolved}\label{chick-unsquashed-resolved}
 \end{figure}
@@ -444,39 +444,6 @@ relevant examples.
 % \caption{Run of the algorithm for turning a matching into a diff}\label{chick-guess-to-diff}
 % \end{figure}
 
-% \[
-% \textcolor{color06}{
-%   \MathModPi%
-%   {\textcolor{black}{
-%       \MathPermutePis%
-%       {[0,1]}
-%       {\textcolor{color08}{
-%           \MathModPi%
-%           {\MathSame{} % orange
-%           }
-%           {\MathSame{}}
-%           {\MathInsPi%
-%             {B}
-%             {\_}
-%             {\textcolor{color07}{\MathSame{}}} % light-blue
-%           }
-%         }
-%       }
-%     }
-%   }
-%   {\MathSame{}}
-%   {\MathModPi%
-%     {\MathSame{}} % red
-%     {\MathSame{}}
-%     {\MathInsPi
-%       {B}
-%       {\_}
-%       {\MathSame{}}
-%     }
-%   }
-% }
-% \]
-
 \paragraph{Example 1} When the nodes on either side are equal, as is the case
 with the root nodes of the two trees we've been considering so far, we can
 \textbf{keep} the node (here, a $\Pi$ node, using $\MathModPiOp{}$), and
@@ -492,19 +459,13 @@ Figure~\ref{chick-guess-to-diff-1}.
       [→,fill=color07,
          tikz={\node[NodeLabel] at (.south east) {L};},
          for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
-       [A]
-        [→,fill=color08,
-         [C]
-          [D]
-        ]
+         [...,draw=none]
+         [...,draw=none]
       ]
       [→,fill=color09,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
-        tikz={\node[NodeLabel] at (.south east) {L};},
-       [A]
-        [→,fill=color10
-         [C]
-          [D]
-        ]
+         tikz={\node[NodeLabel] at (.south east) {L};},
+         [...,draw=none]
+         [...,draw=none]
       ]
     ]
     [,phantom[,phantom[,phantom]]]
@@ -512,25 +473,13 @@ Figure~\ref{chick-guess-to-diff-1}.
        tikz={\node[NodeLabel] at (.south east) {R};},
       [→,fill=color08,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
          tikz={\node[NodeLabel] at (.south east) {R};},
-        [C]
-        [→
-          [B]
-          [→,fill=color07,
-            [A]
-            [D]
-          ]
-        ]
+         [...,draw=none]
+         [...,draw=none]
       ]
       [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
-      tikz={\node[NodeLabel] at (.south east) {R};},
-        [A]
-        [→
-          [B]
-          [→,fill=color10
-           [C]
-            [D]
-          ]
-        ]
+         tikz={\node[NodeLabel] at (.south east) {R};},
+         [...,draw=none]
+         [...,draw=none]
       ]
     ]
   ]
@@ -565,15 +514,17 @@ $\delta(
   }
   {\MathSame{}}
   {
+    \textcolor{black}{\delta(
     \begin{forest}
       begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
         [→,black,fill=color09,tikz={\node[NodeLabel] at (.south east) {L};},]
     \end{forest}
-    \hspace{1pt}
+    ,
     \begin{forest}
       begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
         [→,black,tikz={\node[NodeLabel] at (.south east) {R};},]
     \end{forest}
+    )}
   }
 }
 $
@@ -624,7 +575,7 @@ permuted tree on the left, and the exact same tree on the right.
         [D]
       ]
     ]
-    [,phantom[,phantom]]
+    [,phantom[,phantom[,phantom]]]
     [→,fill=color08,
        tikz={\node[NodeLabel] at (.south east) {R};},
        [C,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
@@ -713,7 +664,7 @@ sub-tree of the right node.
        tikz={
          \node[NodeLabel] at (.south east) {L};
        },
-       [C,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+       [A,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
        ]
        [D,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
        ]
@@ -771,6 +722,122 @@ $\delta(
 $
 \caption{Run of the algorithm for turning a matching into a diff (example 3)}\label{chick-guess-to-diff-3}
 \end{figure}
+
+The final result of our algorithm on our running example is given in
+Figure~\ref{chick-guess-result}
+
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+[,phantom
+  [→,fill=color06
+    [→,fill=color07,
+      [A,fill=color01]
+      [→,fill=color08,
+        [C,fill=color02]
+        [D,fill=color03]
+      ]
+    ]
+    [→,fill=color09,
+      [A,fill=color12]
+      [→,fill=color10,
+        [C,fill=color13]
+        [D,fill=color14]
+      ]
+    ]
+  ]
+  [,phantom[,phantom[,phantom]]]
+  [→,fill=color06
+    [→,fill=color08
+      [C,fill=color02]
+      [→,fill=color15
+        [B]
+        [→,fill=color07
+          [A,fill=color01]
+          [D,fill=color03]
+        ]
+      ]
+    ]
+    [→,fill=color09
+      [A,fill=color12]
+      [→,fill=color16
+        [B]
+        [→,fill=color10
+          [C,fill=color13]
+          [D,fill=color14]
+        ]
+      ]
+    ]
+  ]
+]
+\end{forest}
+\\
+\vspace{20pt}
+\scalebox{1.5}{
+  \tcbhighmath[size=fbox,boxrule=2pt,colframe=color06,colback=white]{
+    \begin{tabular}{c}
+      $
+      \MathModPi%
+      {
+        \MathPermutePis%
+        {[0,1]}
+        {
+          \tcbhighmath[size=fbox,boxrule=2pt,colframe=color08,colback=white]{
+            \MathModPi%
+            {
+              \tcbhighmath[size=fbox,boxrule=2pt,colframe=color02,colback=white]{
+                \MathSame{}
+              }
+            }
+            {\MathSame{}}
+            {
+              \tcbhighmath[size=fbox,boxrule=2pt,colframe=color15,colback=white]{
+                \MathInsPi%
+                {B}
+                {\_}
+                {
+                  \tcbhighmath[size=fbox,boxrule=2pt,colframe=color07,colback=white]{
+                    \MathSame{}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      {\MathSame{}}
+      {  } % left empty so that it can be on two lines
+      $
+      \tabularnewline
+      $
+        \tcbhighmath[size=fbox,boxrule=2pt,colframe=color09,colback=white]{
+          \MathModPi%
+          {
+            \tcbhighmath[size=fbox,boxrule=2pt,colframe=color12,colback=white]{
+              \MathSame{}
+            }
+          }
+          {\MathSame{}}
+          {
+            \tcbhighmath[size=fbox,boxrule=2pt,colframe=color16,colback=white]{
+              \MathInsPi%
+              {B}
+              {\_}
+              {
+                \tcbhighmath[size=fbox,boxrule=2pt,colframe=color10,colback=white]{
+                  \MathSame{}
+                }
+              }
+            }
+          }
+        }
+      $
+    \end{tabular}
+  }
+}
+\caption{Final guess}\label{chick-guess-result}
+\end{figure}
+
 
 % \begin{tikzpicture}
 

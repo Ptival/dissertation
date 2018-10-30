@@ -54,8 +54,10 @@
 \usepackage[parfill]{parskip}
 \usepackage{pgfplots}
 \usepackage{pifont} % \ding
+\usepackage{soul}
 \usepackage{syntax}
 \usepackage{tabularx}
+\usepackage[skins,theorems]{tcolorbox}
 \usepackage{tikz}
 \usepackage{tikzpeople}
 \usepackage{tikz-qtree}
@@ -84,6 +86,8 @@
 \definecolor{color20}{HTML}{808080}
 \definecolor{color21}{HTML}{FFFFFF}
 \definecolor{color22}{HTML}{000000}
+
+\def\mathunderline#1#2{\color{#1}\underline{{\color{black}#2}}\color{black}}
 
 \forestset{
   default preamble={
@@ -131,6 +135,13 @@
 }
 
 \usetikzlibrary{arrows, calc, fit, positioning, shapes, tikzmark}
+
+\tikzset{
+bicolor/.style 2 args={
+  dashed,dash pattern=on 4pt off 4pt,#1,
+  postaction={draw,dashed,dash pattern=on 4pt off 4pt,#2,dash phase=4pt}
+  },
+}
 
 \tikzstyle{Matching}=[
 black,
