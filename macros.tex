@@ -66,13 +66,12 @@
 \newcommand{\Mod}{Mod}
 \newcommand{\Drop}{Drop}
 \newcommand{\Ins}{Ins}
-\newcommand{\Keep}{Keep}
 \newcommand{\Lam}{\lambda}
+\newcommand{\Permute}{Permute}
 
 \newcommand{\oMod}{\overset{\mathtt{\Mod}}}
 \newcommand{\oDrop}{\overset{\mathtt{\Drop}}}
 \newcommand{\oIns}{\overset{\mathtt{\Ins}}}
-\newcommand{\oKeep}{\overset{\mathtt{\Keep}}}
 
 \newcommand{\Cons}{::}
 \newcommand{\permute}[2]{%
@@ -102,7 +101,6 @@
 \newcommand{\MathInsPiOp}{\oIns{\Pi}}
 \newcommand{\MathLam}[2]{\mkMathLam{#1}{#2}{}{}}
 \newcommand{\MathLams}[3]{\mkMathLam{#1}{#2}{}{\BarCount{#3}}}
-\newcommand{\MathKeepPiOp}{\oKeep{\Pi}}
 \newcommand{\MathMod}[2]{#1 \oMod{\Cons} #2}
 \newcommand{\MathModAppOp}{\oMod{\App}}
 \newcommand{\MathModLamOp}{\oMod{\Lam}}
@@ -200,7 +198,6 @@
 \newcommand{\RepairProg}[1]{R-Prog-#1}
 
 \newcommand{\RProgMod}{\RepairProg{Modify}}
-\newcommand{\RProgKeep}{\RepairProg{Keep}}
 \newcommand{\RProgSameCons}{\RepairProg{Same-Cons}}
 
 \newcommand{\scalefactor}{1}
@@ -274,7 +271,6 @@
 \newcommand{\MathModApp}[2]{ \mkMathApp{#1}{#2}{\oMod}{} }
 \newcommand{\MathModLam}[2]{ \mkMathLam{#1}{#2}{\oMod}{} }
 \newcommand{\MathModPi} [3]{ \mkMathPi{#1}{#2}{#3}{\oMod}{} }
-\newcommand{\MathKeepPi}[1]{ \MathKeepPiOp \rightarrow #1 }
 
 \newcommand{\MathAnnot}[2]{#1 : #2}
 
@@ -315,14 +311,13 @@
 \newcommand{\LCSame}{\LC{Same}}
 \newcommand{\LCIns}{\LC{\Ins}}
 \newcommand{\LCMod}[1]{\LC{\Mod{#1}}}
-\newcommand{\LCKeep}{\LC{\Keep}}
 \newcommand{\LCDrop}{\LC{\Drop}}
+\newcommand{\LCPermute}{\LC{\Permute}}
 
 \newcommand{\GE}[1]{Lookup-Env-{#1}}
 \newcommand{\GESame}{\GE{Same}}
 \newcommand{\GEIns}{\GE{\Ins}}
 \newcommand{\GEMod}[1]{\GE{\Mod-{#1}}}
-\newcommand{\GEKeep}{\GE{\Keep}}
 
 \newcommand{\deltaIndTypeOp}{\op{\delta_{\text{Inductive}}}}
 \newcommand{\deltaIndType}[7]{ \deltaIndTypeOp\op{(} \diff{#1}{#2}

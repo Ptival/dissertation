@@ -330,6 +330,25 @@ recursively into the context.
       }
     }
 
+    {
+      \inferrule*
+      [lab=Diff-\LCPermute]
+      {\turnstile%
+        { \diff%
+          { \permuteOp{p}{\Gamma} }
+          { \delta_{\Gamma} }
+        }
+        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+      }
+      {\turnstile%
+        { \diff%
+          { \Gamma }
+          { \MathPermute{p}{\delta_{\Gamma}} }
+        }
+        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+      }
+    }
+
 \end{mathpar}
 
 \end{Rules}
