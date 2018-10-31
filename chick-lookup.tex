@@ -84,7 +84,6 @@ three previous rules hold.
 \begin{Rules}{lookup-type-environment}{ Lookup rules (global environment) }
 
 \begin{mathpar}
-
   {
     \inferrule*
     [lab=\LookupEnv-Definition-Here]
@@ -113,22 +112,21 @@ three previous rules hold.
       }
       \\
       {
-        \text{either}
         \begin{cases}
           v = n_{ind}
-          & \text{and\ } \op{\text{InductiveType}(} I \op{)} = \out{\tau} \\
-          \text{or}\\
+          & \text{\ and\ } \op{\text{InductiveType}(} I \op{)} = \out{\tau} \\
+          \text{\ or\ }\\
           \exists u_{\text{elim}} \text{\ such that\ } \\
           \quad v = \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}
-          & \text{and\ }
+          & \text{\ and\ }
           \op{\text{EliminatorType}(} I \op{,\ } u_{\text{elim}} \op{)} = \out{\tau} \\
-          \text{or}\\
+          \text{\ or\ }\\
           \exists\ C \in \overline{c} \text{\ such that\ } \\
           \quad C = \Constructor%
           {v}
           {\overline{p_{\text{ctor}}}}
           {\overline{i_{\text{ctor}}}}
-          & \text{and\ }
+          & \text{\ and\ }
           \op{\text{ConstructorType}(} I \op{,\ } C \op{)}
           = \out{\tau}
         \end{cases}
@@ -150,13 +148,12 @@ three previous rules hold.
       }
       \\
       {
-        \text{all of}
         \begin{cases}
           v \neq n_{\text{ind}} & \\
-          \text{and}\\
+          \text{\ and\ }\\
           \forall u_{\text{elim}},
           v \neq \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}\\
-          \text{and}\\
+          \text{\ and\ }\\
           \forall \Constructor%
           {n_{\text{ctor}}}
           {\overline{p_{\text{ctor}}}}
@@ -375,12 +372,11 @@ and keep looking recursively.
 \subsubsection{Lookup rules for diffs in the global environment}
 
 \begin{Rules}
-{rules-lookup-environment}
-{Lookup in the global environment}
+{rules-lookup-environment-1}
+{Lookup in the global environment (part 1)}
 
   \begin{mathpar}
-
-    {
+    { % don't break this line or things get out of center
       \inferrule*
       [lab=Diff-\GESame]
       {
@@ -394,8 +390,35 @@ and keep looking recursively.
 
     {
       \inferrule*
-      [lab=Diff-\GEDrop-Definition-Here]
+      [lab=Diff-\GEDrop-Here]
       {
+        {
+          \begin{cases}
+            e = \Definition{k}{v}{\tau}{t} \\
+            \text{\ or\ } \\
+            e = \Inductive%
+            {n_{\text{ind}}}
+            {\overline{p_{\text{ind}}}}
+            {\overline{i_{\text{ind}}}}
+            {u}
+            {\overline{c}}
+            \text{\ and\ }\\
+         \quad
+        \begin{cases}
+          v = n_{ind}\\
+          \text{\ or\ }\\
+          \exists u_{\text{elim}} \text{\ such that\ }
+          v = \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}\\
+          \text{\ or\ }\\
+          \exists\ C \in \overline{c} \text{\ such that\ }
+          C = \Constructor%
+          {v}
+          {\overline{p_{\text{ctor}}}}
+          {\overline{i_{\text{ctor}}}}
+        \end{cases}
+          \end{cases}
+        }
+        \\
         {
           \op{\text{Deprecate}(} v \op{)} = \out{v'}
         }
@@ -405,7 +428,7 @@ and keep looking recursively.
         { \diff%
           {
             \MathCons%
-            {\Definition{k}{v}{\tau}{t}}
+            {e}
             {E}
           }
           {\MathDrop{\delta_{E}}} }
@@ -415,10 +438,35 @@ and keep looking recursively.
 
     {
       \inferrule*
-      [lab=Diff-\GEDrop-Definition-There]
+      [lab=Diff-\GEDrop-There]
       {
-        { w \neq v }
-        \and
+        {
+          \begin{cases}
+            e = \Definition{k}{w}{\tau}{t} \text{\ and\ } v \neq w \\
+            \text{\ or\ } \\
+            e = \Inductive%
+            {n_{\text{ind}}}
+            {\overline{p_{\text{ind}}}}
+            {\overline{i_{\text{ind}}}}
+            {u}
+            {\overline{c}}
+            \text{\ and\ }\\
+            \quad
+            \begin{cases}
+            v \neq n_{\text{ind}} & \\
+            \text{\ and\ }\\
+            \forall u_{\text{elim}},
+            v \neq \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}\\
+            \text{\ and\ }\\
+            \forall \Constructor%
+            {n_{\text{ctor}}}
+            {\overline{p_{\text{ctor}}}}
+            {\overline{i_{\text{ctor}}}}
+            \in \overline{c}, v \neq n_{\text{ctor}}
+          \end{cases}
+          \end{cases}
+        }
+        \\
         {
           \turnstile%
           { \diff%
@@ -433,7 +481,7 @@ and keep looking recursively.
         { \diff%
           {
             \MathCons%
-            {\Definition{k}{w}{\tau}{t}}
+            {e}
             {E}
           }
           {\MathDrop{\delta_{E}}} }
@@ -467,7 +515,15 @@ and keep looking recursively.
       }
     }
 
-    {
+  \end{mathpar}
+\end{Rules}
+
+\begin{Rules}
+{rules-lookup-environment-2}
+{Lookup in the global environment (part 2)}
+
+  \begin{mathpar}
+    { % don't break this line or things get out of center
       \inferrule*
       [lab=Diff-\GEMod{Defn}]
       {
@@ -591,7 +647,6 @@ reading these rules is not particularly interesting or enlightening.
 {Lookup in the global environment (constructor rules)}
 
   \begin{mathpar}
-
     % Possibilities:
     % (v + cs), (δv +mod δcs)
     % (v + cs), (-drop δcs)
@@ -603,7 +658,6 @@ reading these rules is not particularly interesting or enlightening.
     % (v' + cs), (+keep δcs)
     % (v' + cs), (permute p δcs)
     % (v' + cs), (v'' +ins δcs)
-
     {
       \inferrule*
       [lab=Diff-\GEMod{Constructor}]
