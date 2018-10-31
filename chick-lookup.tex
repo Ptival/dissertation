@@ -8,6 +8,7 @@ information, the usual notion of variable lookup first looks in the local
 context (since it carries the ``closest'' enclosing scopes), then, if no binding
 is found, looks in the global environment.
 
+
 We use the following judgments for looking up a variable in the local context
 $\Gamma$ (on the left), and in the global environment $E$ (on the
 right):~\footnote{While the two judgments share the same syntax, it should
@@ -19,6 +20,8 @@ context or a global environment.}
   \hspace{1cm}
   \turnstile{E}{ \hasType{ v }{ \out{\tau} } }
 \]
+
+\subsection{Lookup rules for types}
 
 The rules for looking up types are straightforward, as shown in
 Figures~\ref{lookup-type-dispatch},~\ref{lookup-type-context},
@@ -100,58 +103,69 @@ three previous rules hold.
     \inferrule*
     [lab=\LookupEnv-Inductive-Type-Here]
     {
-      I =\Inductive{n}{\overline{p}}{\overline{i}}{u}{\overline{c}}
-      \and
-      \tau = \op{\text{InductiveType}(} I \op{)}
-    }
-    { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ n }{ \out{\tau} } } }
-  }
-
-  {
-    \inferrule*
-    [lab=\LookupEnv-Inductive-Eliminator-Here]
-    {
-      I =\Inductive{n}{\overline{p}}{\overline{i}}{u}{\overline{c}}
+      {
+        I = \Inductive%
+        {n_{\text{ind}}}
+        {\overline{p_{\text{ind}}}}
+        {\overline{i_{\text{ind}}}}
+        {u}
+        {\overline{c}}
+      }
       \\
-      v = \op{\text{EliminatorName}(} I \op{,\ } u_{e} \op{)}
-      \and
-      \tau = \op{\text{EliminatorType}(} I \op{,\ } u_{e} \op{)}
+      {
+        \text{either}
+        \begin{cases}
+          v = n_{ind}
+          & \text{and\ } \op{\text{InductiveType}(} I \op{)} = \out{\tau} \\
+          \text{or}\\
+          \exists u_{\text{elim}} \text{\ such that\ } \\
+          \quad v = \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}
+          & \text{and\ }
+          \op{\text{EliminatorType}(} I \op{,\ } u_{\text{elim}} \op{)} = \out{\tau} \\
+          \text{or}\\
+          \exists\ C \in \overline{c} \text{\ such that\ } \\
+          \quad C = \Constructor%
+          {v}
+          {\overline{p_{\text{ctor}}}}
+          {\overline{i_{\text{ctor}}}}
+          & \text{and\ }
+          \op{\text{ConstructorType}(} I \op{,\ } C \op{)}
+          = \out{\tau}
+        \end{cases}
+      }
     }
     { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ v }{ \out{\tau} } } }
   }
 
   {
     \inferrule*
-    [lab=\LookupEnv-Constructor]
-    {
-      I =\Inductive{n_{\text{ind}}}{\overline{p_{\text{ind}}}}{\overline{i_{\text{ind}}}}{u}{
-        \overline{c}
-      }
-      \\
-      \exists\ C \in \overline{c} \text{\ such that\ }
-      C = \Constructor{n_{\text{ctor}}}{\overline{p_{\text{ctor}}}}{\overline{i_{\text{ctor}}}}
-      \\
-      \tau = \op{\text{ConstructorType}(} I \op{,\ } C \op{,\ } u_{e} \op{)}
-    }
-    { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ n_{\text{ctor}} }{ \out{\tau} } } }
-  }
-
-  {
-    \inferrule*
     [lab=\LookupEnv-There]
     {
-      I =\Inductive{n_{\text{ind}}}{\overline{p_{\text{ind}}}}{\overline{i_{\text{ind}}}}{u}{
-        \overline{c}
+      {
+        I = \Inductive%
+        {n_{\text{ind}}}
+        {\overline{p_{\text{ind}}}}
+        {\overline{i_{\text{ind}}}}
+        {u}{\overline{c}}
+      }
+      \\
+      {
+        \text{all of}
+        \begin{cases}
+          v \neq n_{\text{ind}} & \\
+          \text{and}\\
+          \forall u_{\text{elim}},
+          v \neq \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}\\
+          \text{and}\\
+          \forall \Constructor%
+          {n_{\text{ctor}}}
+          {\overline{p_{\text{ctor}}}}
+          {\overline{i_{\text{ctor}}}}
+          \in \overline{c}, v \neq n_{\text{ctor}}
+        \end{cases}
       }
       \\\\
-      v \neq n_{\text{ind}}
-      \and
-      \forall u_{e}, v \neq \op{\text{EliminatorName}(} I \op{,\ } u_{e} \op{)}
-      \\
-      \forall\ \Constructor{n_{\text{ctor}}}{\overline{p_{\text{ctor}}}}{\overline{i_{\text{ctor}}}}
-      \in \overline{c}, v \neq n_{\text{ctor}}
-      \\\\
-      \turnstile{ E }{ \hasType{v}{\out{\tau}} }
+      { \turnstile{ E }{ \hasType{v}{\out{\tau}} } }
     }
     { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ v }{ \out{\tau} } } }
   }
@@ -159,6 +173,8 @@ three previous rules hold.
 \end{mathpar}
 
 \end{Rules}
+
+\subsection{Lookup rules for diffs}
 
 Our second notion of a lookup essentially follows the same strategy, but we are
 \emph{\textbf{not}} interested in finding the type of the variable, but rather
@@ -234,6 +250,8 @@ environment, analogously to the process in Figure~\ref{lookup-type-dispatch}.
 
 \end{Rules}
 
+\subsubsection{Lookup rules for diffs in the local context}
+
 Figure~\ref{lookup-diff-context} shows how we proceed to lookup for the diff of
 a variable from the original program in the local context.  Note that, since we
 assume the original program type-checked, when we look up variables, we can
@@ -256,9 +274,11 @@ sure the user notices, we rename the variable using the helper
 $\op{\text{Deprecate}}$, and make its diff as uninformative as possible using a
 hole (Rule~\rulename{Diff-\LCMod-There}).
 
-The last case to handle (Rule~\rulename{Diff-\LCDrop}) is that of a variable
-other than our target being modified, in which case we simply keep looking
-recursively into the context.
+The last cases to handle are that of a variable other than our target being
+modified (Rule~\rulename{Diff-\LCDrop}), in which case we simply keep looking
+recursively into the context, and that of a permutation
+(Rule~\rulename{Diff-\LCPermute}), in which case we can perform the permutation
+and keep looking recursively.
 
 \begin{Rules}{lookup-diff-context}{ Diff lookup rules (local context) }
 
@@ -319,8 +339,7 @@ recursively into the context.
     {
       \inferrule*
       [lab=Diff-\LCDrop]
-      { v' = \op{\text{Deprecate}(} v \op{)}
-      }
+      { \op{\text{Deprecate}(} v \op{)} = \out{v'} }
       {\turnstile%
         { \diff%
           { \MathCons{\MathLocalAssum{v}{\tau}}{\Gamma} }
@@ -350,5 +369,309 @@ recursively into the context.
     }
 
 \end{mathpar}
+
+\end{Rules}
+
+\subsubsection{Lookup rules for diffs in the global environment}
+
+\begin{Rules}
+{rules-lookup-environment}
+{Lookup in the global environment}
+
+  \begin{mathpar}
+
+    {
+      \inferrule*
+      [lab=Diff-\GESame]
+      {
+        { \turnstile {E} {\hasType { v } { \out{\tau_v} } } }
+      }
+      {\turnstile
+        { \diff {E} {\MathSame} }
+        { \declDiff { v } { \MathSame } { \MathSame } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEDrop-Definition-Here]
+      {
+        {
+          \op{\text{Deprecate}(} v \op{)} = \out{v'}
+        }
+      }
+      {
+        \turnstile%
+        { \diff%
+          {
+            \MathCons%
+            {\Definition{k}{v}{\tau}{t}}
+            {E}
+          }
+          {\MathDrop{\delta_{E}}} }
+        { \declDiff{v}{\MathReplace{v'}}{\MathReplace{\MathHole{}}} }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEDrop-Definition-There]
+      {
+        { w \neq v }
+        \and
+        {
+          \turnstile%
+          { \diff%
+            {E}
+            {\delta_{E}}
+          }
+          { \declDiff{v}{\delta_v}{\delta_\tau} }
+        }
+      }
+      {
+        \turnstile%
+        { \diff%
+          {
+            \MathCons%
+            {\Definition{k}{w}{\tau}{t}}
+            {E}
+          }
+          {\MathDrop{\delta_{E}}} }
+        { \declDiff{v}{\delta_v}{\delta_\tau} }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEIns]
+      {\turnstile
+        { \diff {E} {\delta_{E}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+      {\turnstile
+        { \diff%
+          {E}
+          {
+            \MathIns{
+              \Inductive%
+              {n}
+              {\overline{p}}
+              {\overline{i}}
+              {u}
+              {\overline{c}}
+            }
+            {\delta_{E}}
+          }
+        }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEMod{Defn}]
+      {
+      }
+      {\turnstile
+        { \diff
+          {\MathCons{\Definition{k}{v}{\tau}{t}}{E}}
+          {\MathMod{\ModifyDefinition{\delta_k}{\delta_v}{\delta_\tau}{\delta_t}}{\delta_{E}}}
+        }
+        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEMod{Inductive}-Type]
+      {
+        {
+          I = \Inductive%
+          {n}
+          {\overline{p}}
+          {\overline{i}}
+          {u}
+          {\overline{c}}
+        }
+        \\
+        {
+          \delta_{I} = \ModifyInductive%
+          {\delta_n}
+          {\delta_{\overline{p}}}
+          {\delta_{\overline{i}}}
+          {\delta_u}
+          {\delta_{\overline{c}}}
+        }
+        \\\\
+        {
+          \deltaIndType{I}{\delta_{I}}{\delta_\tau}
+        }
+      }
+      {
+        \turnstile%
+        {
+          \diff%
+          {\MathCons{I}{E}}
+          {
+            \MathMod%
+            {\delta_{I}}
+            {\delta_{E}}
+          }
+        }
+        { \declDiff{n}{\delta_n}{\delta_{\tau}} }
+      }
+    }
+
+    % {
+    %   \inferrule*
+    %   [lab=Diff-\GEMod{Inductive}]
+    %   { T
+    %   }
+    %   { B
+    %   }
+    % }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEMod{Eliminator}]
+      {
+        {
+          I = \Inductive%
+          {n}
+          {\overline{p}}
+          {\overline{i}}
+          {u}
+          {\overline{c}}
+        }
+        \\
+        {
+          \delta_{I} = \ModifyInductive%
+          {\delta_n}
+          {\delta_{\overline{p}}}
+          {\delta_{\overline{i}}}
+          {\delta_u}
+          {\delta_{\overline{c}}}
+        }
+        \\\\
+        {
+          v = \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}
+        }
+        \and
+        {
+          \deltaEliminatorName{I}{\delta_{I}}{u_{\text{elim}}}
+          {\delta_v}
+        }
+        \\
+        {
+          \deltaEliminator{I}{\delta_{I}}{u_{\text{elim}}}
+          {\delta_\tau}
+        }
+      }
+      {\turnstile%
+        { \diff%
+          {\MathCons{I}{E}}
+          {\MathMod{\delta_{I}}{\delta_{E}}}
+        }
+        { \declDiff{v}{\delta_v}{\delta_{\tau}} }
+      }
+    }
+
+  \end{mathpar}
+
+\end{Rules}
+
+Unfortunately, the presentation for $\ConstructorText{}$ is quite heavy, as we
+need to account for all possible list changes to the list of constructors.  In
+the interest of thoroughness, we list all the rules in
+Figure~\ref{rules-lookup-environment-constructor}, but do warn the reader that
+reading these rules is not particularly interesting or enlightening.
+
+\begin{Rules}
+{rules-lookup-environment-constructor}
+{Lookup in the global environment (constructor rules)}
+
+  \begin{mathpar}
+
+    % Possibilities:
+    % (v + cs), (δv +mod δcs)
+    % (v + cs), (-drop δcs)
+    % (v + cs), (+keep δcs)
+    % (v + cs), (permute p δcs)
+    % (v + cs), (v' +ins δcs)
+    % (v' + cs), (δv +mod δcs)
+    % (v' + cs), (-drop δcs)
+    % (v' + cs), (+keep δcs)
+    % (v' + cs), (permute p δcs)
+    % (v' + cs), (v'' +ins δcs)
+
+    {
+      \inferrule*
+      [lab=Diff-\GEMod{Constructor}]
+      {
+        {
+          I = \Inductive%
+          {n}
+          {\overline{p}}
+          {\overline{i}}
+          {u}
+          {\MathCons{C}{\overline{c}}}
+        }
+        \\
+        {
+          \delta_{I} = \ModifyInductive%
+          {\delta_n}
+          {\delta_{\overline{p}}}
+          {\delta_{\overline{i}}}
+          {\delta_u}
+          {\delta_{\overline{c}}}
+        }
+        \\
+        {
+          C = \Constructor%
+          {n_{\text{ctor}}}
+          {\overline{p_{\text{ctor}}}}
+          {\overline{i_{\text{ctor}}}}
+        }
+        \\
+        {
+          \deltaConstructor
+          {\overline{p}}
+          {\delta_{\overline{p}}}
+          {\overline{i}}
+          {\delta_{\overline{i}}}
+          {\overline{c}}
+          {\delta_{\overline{c}}}
+          {v}
+          {(\delta_v, \delta_\tau)}
+        }
+      }
+      {\turnstile
+        { \diff
+          {\MathCons
+            {\Inductive
+              {n}
+              {\overline{p}}
+              {\overline{i}}
+              {u}
+              {\overline{c}}
+            }
+            {E}
+          }
+          {\MathMod
+            {\ModifyInductive
+              {\delta_n}
+              {\delta_{\overline{p}}}
+              {\delta_{\overline{i}}}
+              {\delta_u}
+              {\delta_{\overline{c}}}
+            }
+            {\delta_{E}}
+          }
+        }
+        { \declDiff{v}{\delta_v}{\delta_{\tau}} }
+      }
+    }
+
+  \end{mathpar}
 
 \end{Rules}

@@ -316,21 +316,26 @@
 
 \newcommand{\GE}[1]{Lookup-Env-{#1}}
 \newcommand{\GESame}{\GE{Same}}
+\newcommand{\GEDrop}{\GE{\Drop}}
 \newcommand{\GEIns}{\GE{\Ins}}
 \newcommand{\GEMod}[1]{\GE{\Mod-{#1}}}
 
-\newcommand{\deltaIndTypeOp}{\op{\delta_{\text{Inductive}}}}
-\newcommand{\deltaIndType}[7]{ \deltaIndTypeOp\op{(} \diff{#1}{#2}
-\op{,} \diff{#3}{#4} \op{,} \diff{#5}{#6} \op{) =\ } \out{#7} }
+\newcommand{\deltaIndTypeOp}{\op{\delta_{\text{InductiveType}}}}
+\newcommand{\deltaIndType}[3]{ \deltaIndTypeOp\op{(} \diff{#1}{#2} \op{) =\ } \out{#3} }
 
-\newcommand{\deltaConstructorOp}{\op{\delta_{\text{Constructor}}}}
+\newcommand{\deltaConstructorOp}{\op{\delta_{\text{ConstructorType}}}}
 \newcommand{\deltaConstructor}[8]{ \deltaConstructorOp\op{(}
 \diff{#1}{#2} \op{,} \diff{#3}{#4} \op{,} \diff{#5}{#6} \op{,}\ #7 \op{) =\ }
 \out{#8} }
 
-\newcommand{\deltaEliminatorOp}{\op{\delta_{\text{Eliminator}}}}
-\newcommand{\deltaEliminator}[6]{ \deltaEliminatorOp\op{(} #1 \op{,} #2
-\op{,} #3 \op{,} #4 \op{,}\ #5 \op{) =\ } \out{#6} }
+\newcommand{\deltaEliminatorOp}{\op{\delta_{\text{EliminatorType}}}}
+\newcommand{\deltaEliminatorNameOp}{\op{\delta_{\text{EliminatorName}}}}
+\newcommand{\deltaEliminator}[4]{
+  \deltaEliminatorOp\op{(} \diff{#1}{#2} \op{,} #3 \op{) =\ } \out{#4}
+}
+\newcommand{\deltaEliminatorName}[4]{
+  \deltaEliminatorNameOp\op{(} \diff{#1}{#2} \op{,} #3 \op{) =\ } \out{#4}
+}
 
 \newcommand{\easy}{ \faStar \faStarO \faStarO }
 \newcommand{\medium}{ \faStar \faStar \faStarO }
