@@ -116,7 +116,7 @@ three previous rules hold.
           v = n_{ind}
           & \text{\ and\ } \op{\text{InductiveType}(} I \op{)} = \out{\tau} \\
           \text{\ or\ }\\
-          \exists u_{\text{elim}} \text{\ such that\ } \\
+          \exists\ u_{\text{elim}} \text{\ such that\ } \\
           \quad v = \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}
           & \text{\ and\ }
           \op{\text{EliminatorType}(} I \op{,\ } u_{\text{elim}} \op{)} = \out{\tau} \\
@@ -151,10 +151,10 @@ three previous rules hold.
         \begin{cases}
           v \neq n_{\text{ind}} & \\
           \text{\ and\ }\\
-          \forall u_{\text{elim}},
+          \forall\ u_{\text{elim}},
           v \neq \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}\\
           \text{\ and\ }\\
-          \forall \Constructor%
+          \forall\ \Constructor%
           {n_{\text{ctor}}}
           {\overline{p_{\text{ctor}}}}
           {\overline{i_{\text{ctor}}}}
@@ -480,7 +480,7 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
         \begin{cases}
           v = n_{ind}\\
           \text{\ or\ }\\
-          \exists u_{\text{elim}} \text{\ such that\ }
+          \exists\ u_{\text{elim}} \text{\ such that\ }
           v = \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}\\
           \text{\ or\ }\\
           \exists\ C \in \overline{c} \text{\ such that\ }
@@ -528,10 +528,10 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
             \begin{cases}
             v \neq n_{\text{ind}} & \\
             \text{\ and\ }\\
-            \forall u_{\text{elim}},
+            \forall\ u_{\text{elim}},
             v \neq \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}\\
             \text{\ and\ }\\
-            \forall \Constructor%
+            \forall\ \Constructor%
             {n_{\text{ctor}}}
             {\overline{p_{\text{ctor}}}}
             {\overline{i_{\text{ctor}}}}
@@ -564,6 +564,14 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
   \end{mathpar}
 \end{Rules}
 
+When an element has been modified in the environment
+(Figure~\ref{rules-lookup-environment-mod}), we also need to check whether the
+variable in question has been removed or not.  For the same reasons as in the
+drop case, we need to check all possibilities for inductive data type
+definitions, yielding Rule~\rulename{Diff-\GEMod-Here} for cases where the
+target variable is being modified, and Rule~\rulename{Diff-\GEMod-There} for
+cases where other variables than our target are being modified.
+
 \begin{Rules}
 {rules-lookup-environment-mod}
 {Lookup in the global environment (modification)}
@@ -571,22 +579,56 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
   \begin{mathpar}
     { % don't break this line or things get out of center
       \inferrule*
-      [lab=Diff-\GEMod{Defn}]
+      [lab=Diff-\GEMod{Here}]
       {
         {
           \begin{cases}
+            e = \Definition{k}{v}{\tau}{t}
+            \text{\ and\ }
+            \delta_{e} = \ModifyDefinition{\delta_k}{\delta_v}{\delta_\tau}{\delta_t}
+            \\
+            \text{\ or\ }\\
             \begin{cases}
-              e = \Definition{k}{v}{\tau}{t} \\
-              \delta_{e} = \ModifyDefinition{\delta_k}{\delta_v}{\delta_\tau}{\delta_t}
-            \end{cases} \\
-            C
+              e = \Inductive%
+              {n}
+              {\overline{p_{\text{ind}}}}
+              {\overline{i_{\text{ind}}}}
+              {u}
+              {\overline{c}}
+              \text{\ and\ }
+              \delta_{e} = \ModifyInductive%
+              {\delta_{n}}
+              {\delta_{\overline{p_{\text{ind}}}}}
+              {\delta_{\overline{i_{\text{ind}}}}}
+              {\delta_u}
+              {\delta_{\overline{c}}} \\
+              \text{\ and\ }\\
+              \begin{cases}
+                v = n
+                \text{\ and\ }
+                \delta_{n} = \out{\delta_{v}}
+                \text{\ and\ }
+                \deltaIndType{e}{\delta_{e}}{\delta_{\tau}}
+                \\
+                \text{\ or\ }
+                \\
+                \begin{cases}
+                  \exists\ u_{\text{elim}} \text{\ such that\ }
+                  v = \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}
+                  \\ \text{\ and\ }
+                  \deltaEliminatorName{e}{\delta_{e}}{u_{\text{elim}}}{\delta_{v}}
+                  \\ \text{\ and\ }
+                  \deltaEliminator{e}{\delta_{e}}{u_{\text{elim}}}{\delta_{\tau}}
+                \end{cases}
+              \end{cases}
+            \end{cases}
           \end{cases}
         }
       }
       {\turnstile
         { \diff
-          {\MathCons{\Definition{k}{v}{\tau}{t}}{E}}
-          {\MathMod{\ModifyDefinition{\delta_k}{\delta_v}{\delta_\tau}{\delta_t}}{\delta_{E}}}
+          {\MathCons{e}{E}}
+          {\MathMod{\delta_e}{\delta_{E}}}
         }
         { \declDiff { v } { \delta_v } { \delta_{\tau} } }
       }
@@ -594,96 +636,54 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
 
     {
       \inferrule*
-      [lab=Diff-\GEMod{Inductive}-Type]
+      [lab=Diff-\GEMod{There}]
       {
         {
-          I = \Inductive%
-          {n}
-          {\overline{p}}
-          {\overline{i}}
-          {u}
-          {\overline{c}}
+          \begin{cases}
+            e = \Definition{k}{w}{\tau}{t} \text{\ and\ } v \neq w \\
+            \text{\ or\ } \\
+            e = \Inductive%
+            {n_{\text{ind}}}
+            {\overline{p_{\text{ind}}}}
+            {\overline{i_{\text{ind}}}}
+            {u}
+            {\overline{c}}
+            \text{\ and\ }\\
+            \quad
+            \begin{cases}
+            v \neq n_{\text{ind}} & \\
+            \text{\ and\ }\\
+            \forall\ u_{\text{elim}},
+            v \neq \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}\\
+            \text{\ and\ }\\
+            \forall\ \Constructor%
+            {n_{\text{ctor}}}
+            {\overline{p_{\text{ctor}}}}
+            {\overline{i_{\text{ctor}}}}
+            \in \overline{c}, v \neq n_{\text{ctor}}
+          \end{cases}
+          \end{cases}
         }
         \\
         {
-          \delta_{I} = \ModifyInductive%
-          {\delta_n}
-          {\delta_{\overline{p}}}
-          {\delta_{\overline{i}}}
-          {\delta_u}
-          {\delta_{\overline{c}}}
-        }
-        \\\\
-        {
-          \deltaIndType{I}{\delta_{I}}{\delta_\tau}
+          \turnstile%
+          { \diff%
+            {E}
+            {\delta_{E}}
+          }
+          { \declDiff{v}{\delta_v}{\delta_\tau} }
         }
       }
       {
         \turnstile%
-        {
-          \diff%
-          {\MathCons{I}{E}}
-          {
-            \MathMod%
-            {\delta_{I}}
-            {\delta_{E}}
-          }
-        }
-        { \declDiff{n}{\delta_n}{\delta_{\tau}} }
-      }
-    }
-
-    % {
-    %   \inferrule*
-    %   [lab=Diff-\GEMod{Inductive}]
-    %   { T
-    %   }
-    %   { B
-    %   }
-    % }
-
-    {
-      \inferrule*
-      [lab=Diff-\GEMod{Eliminator}]
-      {
-        {
-          I = \Inductive%
-          {n}
-          {\overline{p}}
-          {\overline{i}}
-          {u}
-          {\overline{c}}
-        }
-        \\
-        {
-          \delta_{I} = \ModifyInductive%
-          {\delta_n}
-          {\delta_{\overline{p}}}
-          {\delta_{\overline{i}}}
-          {\delta_u}
-          {\delta_{\overline{c}}}
-        }
-        \\\\
-        {
-          v = \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}
-        }
-        \and
-        {
-          \deltaEliminatorName{I}{\delta_{I}}{u_{\text{elim}}}
-          {\delta_v}
-        }
-        \\
-        {
-          \deltaEliminator{I}{\delta_{I}}{u_{\text{elim}}}
-          {\delta_\tau}
-        }
-      }
-      {\turnstile%
         { \diff%
-          {\MathCons{I}{E}}
-          {\MathMod{\delta_{I}}{\delta_{E}}}
-        }
-        { \declDiff{v}{\delta_v}{\delta_{\tau}} }
+          {
+            \MathCons%
+            {e}
+            {E}
+          }
+          {\MathMod{\delta_{e}}{\delta_{E}}} }
+        { \declDiff{v}{\delta_v}{\delta_\tau} }
       }
     }
 
