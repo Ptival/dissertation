@@ -371,9 +371,27 @@ and keep looking recursively.
 
 \subsubsection{Lookup rules for diffs in the global environment}
 
+Unfortunately, the number of combinations we need to consider for diffs grow
+alongside the number of constructs that introduce variables, as well as along
+the number of modifications that happen to those constructs.  Since inductive
+data type definitions introduce three classes of variables (namely, the type,
+the eliminators, and the constructors), and we have four classes of changes for
+lists ($\MathSame{}$, $\MathMod{}{}$, $\MathDrop{}$, $\permuteOp{}{}$), this
+raises the number of cases in a quadratic fashion.  We do our best to summarize
+those cases in few rules, by using disjunctive premises to account for many
+cases in a single rule.
+
+Figure~\ref{rules-lookup-environment-same} covers the simplest cases.  When the
+environment has not changed, as in Rule~\rulename{Diff-\GESame}, the variable
+must not have changed either, as long as it actually existed.  When any
+$\DefinitionText{}$ or $\InductiveText{}$ has been inserted, we can skip it and
+keep looking recursively (Rule~\rulename{Diff-\GEIns}).  Finally, when the
+environment has undergone a permutation, we can simply proceed recursively on
+the appropriately permuted environment (Rule~\rulename{Diff-\GEPermute}).
+
 \begin{Rules}
-{rules-lookup-environment-1}
-{Lookup in the global environment (part 1)}
+{rules-lookup-environment-same}
+{Lookup in the global environment (identity, insertion, permutation)}
 
   \begin{mathpar}
     { % don't break this line or things get out of center
@@ -388,6 +406,61 @@ and keep looking recursively.
       }
     }
 
+    {
+      \inferrule*
+      [lab=Diff-\GEIns]
+      {\turnstile
+        { \diff {E} {\delta_{E}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+      {\turnstile
+        { \diff%
+          {E}
+          {
+            \MathIns{e}{\delta_{E}}
+          }
+        }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEPermute]
+      {\turnstile%
+        { \diff%
+          { \permuteOp{p}{E} }
+          { \delta_{E} }
+        }
+        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+      }
+      {\turnstile%
+        { \diff%
+          { E }
+          { \MathPermute{p}{\delta_{E}} }
+        }
+        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+      }
+    }
+
+  \end{mathpar}
+\end{Rules}
+
+When an element has been removed from the environment
+(Figure~\ref{rules-lookup-environment-drop}), we need to check whether the
+variable in question has been removed or not.  For a $\DefinitionText{}$, it
+suffices to check whether the name matches, but for an $\InductiveText{}$, we
+need to check whether the name matches the inductive type, any of the
+eliminators, or any of the constructors.  If it does, then we indicate that the
+variable has been removed by using $\op{\text{Deprecate}}$ again
+(Rule~\rulename{Diff-\GEDrop-Here}).  Otherwise, we keep looking recursively
+(Rule~\rulename{Diff-\GEDrop-There}).
+
+\begin{Rules}
+{rules-lookup-environment-drop}
+{Lookup in the global environment (drop)}
+
+  \begin{mathpar}
     {
       \inferrule*
       [lab=Diff-\GEDrop-Here]
@@ -488,45 +561,27 @@ and keep looking recursively.
         { \declDiff{v}{\delta_v}{\delta_\tau} }
       }
     }
-
-    {
-      \inferrule*
-      [lab=Diff-\GEIns]
-      {\turnstile
-        { \diff {E} {\delta_{E}} }
-        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
-      }
-      {\turnstile
-        { \diff%
-          {E}
-          {
-            \MathIns{
-              \Inductive%
-              {n}
-              {\overline{p}}
-              {\overline{i}}
-              {u}
-              {\overline{c}}
-            }
-            {\delta_{E}}
-          }
-        }
-        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
-      }
-    }
-
   \end{mathpar}
 \end{Rules}
 
 \begin{Rules}
-{rules-lookup-environment-2}
-{Lookup in the global environment (part 2)}
+{rules-lookup-environment-mod}
+{Lookup in the global environment (modification)}
 
   \begin{mathpar}
     { % don't break this line or things get out of center
       \inferrule*
       [lab=Diff-\GEMod{Defn}]
       {
+        {
+          \begin{cases}
+            \begin{cases}
+              e = \Definition{k}{v}{\tau}{t} \\
+              \delta_{e} = \ModifyDefinition{\delta_k}{\delta_v}{\delta_\tau}{\delta_t}
+            \end{cases} \\
+            C
+          \end{cases}
+        }
       }
       {\turnstile
         { \diff
@@ -636,11 +691,7 @@ and keep looking recursively.
 
 \end{Rules}
 
-Unfortunately, the presentation for $\ConstructorText{}$ is quite heavy, as we
-need to account for all possible list changes to the list of constructors.  In
-the interest of thoroughness, we list all the rules in
-Figure~\ref{rules-lookup-environment-constructor}, but do warn the reader that
-reading these rules is not particularly interesting or enlightening.
+TODO
 
 \begin{Rules}
 {rules-lookup-environment-constructor}
