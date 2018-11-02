@@ -126,7 +126,7 @@ are syntactically equivalent, and we will favor the former (shorter) syntax.
 
 % Introduce Π-telescopes
 
-Nested $\Pi$-types can depend on the values of previously-quantified variables.
+Nested $\Pi$-types can depend on the values of previously quantified variables.
 We call a \define{$\Pi$-telescope} any sequence of $\Pi$-types directly nested
 within one another.  We can summarize them in a list of bindings and their
 types, where each type is allowed to, but does not have to, depend on previous
@@ -255,7 +255,7 @@ such \coqinline{τi} will be considered)
 
 It then yields the conclusion of the applied term, \coqinline{τr}, as a
 hypothesis, but also adds new obligations for all the other antecedents in the
-telescope.  Intuitively, the applied term \coqinline{t} was fully-applied, with
+telescope.  Intuitively, the applied term \coqinline{t} was fully applied, with
 formal parameter \coqinline{τi} receiving argument \coqinline{a}, and all other
 formal parameters receiving arguments to be determined by solving the new
 obligations.  That is, given the context:

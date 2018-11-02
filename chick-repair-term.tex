@@ -34,14 +34,29 @@ this happens for constructs whose type does not inform us about the type of its
 constituents (for instance, function application), and for simple terms (holes,
 universes, variables).
 
-The judgments for repairing terms include a local context $\Gamma$, behaving
-similarly to the global environment $E$ but holding local variables introduced
-by the binding structures of terms.  The first judgment is therefore to be
-understood as: given that a term $t$ had type $\tau$ in the global environment
-$E$ and the local context $\Gamma$, if those latter three respectively undergo
-the modifications $\delta_\tau$, $\delta_E$, and $\delta_\Gamma$, then the term
-$t$ should be repaired according to $\delta_t$.  The other judgment is to be
-read similarly, except the type information is missing.  Importantly, the first
+\paragraph{Notation} The first judgment can be read as follows:
+
+\begin{itemize}
+
+  \item \textbf{Top}: Given that a term $t$ had type $\tau$ in local context
+$\Gamma$ and global environment $E$,
+
+  \item \textbf{Bottom left}: and the global environment underwent modification
+$\delta_{E}$,
+
+  \item \textbf{Bottom left}: and the local context underwent modification
+$\delta_{\Gamma}$,
+
+  \item \textbf{Bottom right}: and the type underwent modification
+$\delta_{\tau}$,
+
+  \item \textbf{Right}: then, we suggest to repair the term $t$ with diff
+$\out{\delta_{t}}$.
+
+\end{itemize}
+
+\noindent The second judgment can be read analogously, but does not have access
+to typing information for the term being repaired.  Importantly, the first
 judgment assumes the diff $\delta_\tau$ is repaired already: it is the
 responsibility of the caller to ensure so.
 

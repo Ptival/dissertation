@@ -10,7 +10,7 @@ its indices,
 \item each constructor must be repaired, including their parameters, and their
 instantiation of indices,
 
-\item the automatically-generated elimination principles for the type must also
+\item the automatically generated elimination principles for the type must also
 be repaired accordingly.
 
 \end{itemize}%
@@ -113,7 +113,7 @@ computed by:
 \item universally quantifying over the inductive indices $\overrightarrow{i}$,
 
 \item universally quantifying over a target, i.e.\ an element of the inductive
-type undergoing elimination, fully-instantiated with parameters
+type undergoing elimination, fully instantiated with parameters
 from~\ref{ind-params} and the indices from the previous sub-step,
 
 \item and returning in the appropriate universe for the desired elimination
@@ -129,11 +129,11 @@ universally quantified over, whose type is obtained thus:
 
 \item each constructor parameter $\overrightarrow{p_c}$ is
 universally quantified over, and for each parameter $p_{c_i}$ that is a
-recursive occurrence of the data type being eliminated, a fully-instantiated
+recursive occurrence of the data type being eliminated, a fully instantiated
 motive, with appropriate arguments so as to target this parameter, is also
 universally quantified over immediately after this parameter,
 
-\item the return type is also a fully-instantiated motive, where inductive
+\item the return type is also a fully instantiated motive, where inductive
 indices are instantiated with the constructor indices $\overrightarrow{i_c}$,
 and the motive's target is an instantiation of the constructor $n_c$, with
 inductive parameters from step~\ref{ind-params}, and constructor parameters from
@@ -148,7 +148,7 @@ universally quantified over,
 inductive type applied to inductive parameters from~\ref{ind-params} and
 inductive indices from~\ref{ind-indices},
 
-\item finally, the elimination rule returns a value of the fully-instantiated
+\item finally, the elimination rule returns a value of the fully instantiated
 motive, with indices from~\ref{ind-indices}, and the discriminee as target.
 
 \end{enumerate}

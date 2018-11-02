@@ -1,0 +1,28 @@
+\begin{table}[!htbp]
+  \centering
+  \caption{\PeaCoq{} A-B study exercises timings per group}~\label{peacoq-a-b-study-timings}
+  All times are reported in seconds.\\
+  \participant{} indicates how many pairs of participants finished the proof.
+  \begin{tabular}{l l | r c | r c}
+    \toprule
+    Exercise & Difficulty & \multicolumn{2}{c|}{Group A} & \multicolumn{2}{c}{Group B} \\
+    & & \makecell{Mean\\(Std. Dev.)} & \# & \makecell{Mean\\(Std. Dev.)} & \# \\
+    \midrule
+    01. \safecoqinline{rev_snoc      }       & \easy{}   & \makecell{ 213 \\  (74.6)} & \ptcpfive{}  & \makecell{609 \\ (495.8) } & \ptcpfive{}  \\ \hline
+    02. \safecoqinline{rev_involutive}       & \medium{} & \makecell{ 571 \\ (234.6)} & \ptcpfive{}  & \makecell{180 \\ (179.1) } & \ptcpfive{}  \\ \hline
+    03. \safecoqinline{concat_cons_sn}\ldots & \medium{} & \makecell{ 158 \\  (63.6)} & \ptcpfive{}  & \makecell{292 \\ (146.0) } & \ptcpfive{}  \\ \hline
+    04. \safecoqinline{go_somewhere  }       & \easy{}   & \makecell{  24 \\  (18.7)} & \ptcpfive{}  & \makecell{ 14 \\   (3.8) } & \ptcpfive{}  \\ \hline
+    05. \safecoqinline{B_is_enough   }       & \easy{}   & \makecell{ 134 \\ (122.9)} & \ptcpfive{}  & \makecell{ 66 \\  (31.8) } & \ptcpfive{}  \\ \hline
+    06. \safecoqinline{more_facts    }       & \easy{}   & \makecell{  34 \\  (25.7)} & \ptcpfive{}  & \makecell{ 27 \\  (15.4) } & \ptcpfive{}  \\ \hline
+    07. \safecoqinline{A_and_B       }       & \easy{}   & \makecell{  49 \\  (20.1)} & \ptcpfive{}  & \makecell{ 21 \\  (11.6) } & \ptcpfive{}  \\ \hline
+    08. \safecoqinline{snoc_concat_en}\ldots & \medium{} & \makecell{ 104 \\  (36.1)} & \ptcpfive{}  & \makecell{156 \\ (133.3) } & \ptcpfive{}  \\ \hline
+    09. \safecoqinline{rev_distribute}\ldots & \hard{}   & \makecell{ 446 \\ (437.4)} & \ptcpfive{}  & \makecell{748 \\ (540.6) } & \ptcpfive{}  \\ \hline
+    10. \safecoqinline{map_commutes  }       & \medium{} & \makecell{ 348 \\ (134.7)} & \ptcpfive{}  & \makecell{189 \\ (118.2) } & \ptcpfive{}  \\ \hline
+    11. \safecoqinline{map_fusion    }       & \medium{} & \makecell{ 109 \\  (47.8)} & \ptcpfive{}  & \makecell{ 76 \\  (47.9) } & \ptcpfive{}  \\ \hline
+    12. \safecoqinline{fold_snoc     }       & \medium{} & \makecell{  86 \\  (39.2)} & \ptcpfour{}  & \makecell{207 \\ (182.8) } & \ptcpfive{}  \\ \hline
+    13. \safecoqinline{map'_unroll   }       & \easy{}   & \makecell{ 471 \\ (186.4)} & \ptcpfour{}  & \makecell{ 13 \\   (9.9) } & \ptcpfive{}  \\ \hline
+    14. \safecoqinline{map_map'      }       & \medium{} & \makecell{ 317 \\ (239.0)} & \ptcpthree{} & \makecell{ 80 \\  (83.0) } & \ptcpfive{}  \\ \hline
+    15. \safecoqinline{In_cons       }       & \easy{}   & \makecell{  52 \\ (undefined)} & \ptcpone{}   & \makecell{160 \\  (93.0) } & \ptcpfive{}  \\ \hline
+    16. \safecoqinline{In_concat_left}       & \hard{}   & \makecell{ 492 \\ (undefined)} & \ptcpone{}   & \makecell{791 \\ (256.2) } & \ptcpthree{} \\ \hline
+  \end{tabular}{\parfillskip=0pt\par}
+\end{table}

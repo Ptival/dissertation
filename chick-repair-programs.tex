@@ -27,10 +27,10 @@ in Section~\ref{chick-syntax-programs}).  Each vernacular command is
 type-checked in such a global typing environment, and upon being executed,
 populates it with some additional definitions for the subsequent commands.
 
-$\delta_E$, is a diff indicating how the global environment has been changed by
+$\delta_E$ is a diff indicating how the global environment has been changed by
 the time $p$ is reached by the repair algorithm: it accounts for whether some
-definitions have been added, removed, or modified, in the prefix of the program
-already-repaired preceding $p$.  For instance, in our motivating example, by the
+definitions have been added, removed, or modified, in the prefix of the already
+repaired program preceding $p$.  For instance, in our motivating example, by the
 time we reach the inductive definition being modified (\coqinline{list},
 becoming \coqinline{vec}), $E$ would contain the inductive data type definition
 for the type \coqinline{nat}, and $\delta_E$ would keep it intact.  After this
@@ -77,7 +77,7 @@ one inductive data type definition.
 
 \rulename{\RProgSameCons} simply defers to \rulename{\RProgMod}: even though it
 processes unchanged commands, they might need repairs to account for changes in
-upstream, accounted for in the global environment.
+their dependencies, as accounted for in the global environment diff.
 
 \begin{Rules}{fig:repair-program}%
   { Rules for repairing programs ($\repairProgOp$) }
@@ -102,7 +102,7 @@ upstream, accounted for in the global environment.
 
     {
       \inferrule*
-          [lab=R-Prog-Replace]
+          [lab=\RepairProg{Replace}]
           {\turnstile%
             { \denv{E}{\delta_E} }
             { \repairProg{q}{\MathSameProg}{\delta} }
@@ -113,26 +113,11 @@ upstream, accounted for in the global environment.
           }
     }
 
-    % {
-    %   \inferrule*
-    %       [lab=\RProgKeep]
-    %       {
-    %         {\turnstile
-    %           { \denv{E'}{\delta_E'} }
-    %           { \repairProg{\MathCons{v}{p}}{\MathMod{\MathSameVernac}{\delta_p}}{\delta} }
-    %         }
-    %       }
-    %       {\turnstile
-    %         { \denv{E}{\delta_E} }
-    %         { \repairProg{\MathCons{v}{p}}{\MathKeep{\delta_p}}{\delta} }
-    %       }
-    % }
-
     \RuleRProgModify{}
 
     {
       \inferrule*
-          [lab=R-Prog-Drop]
+          [lab=\RepairProg{Drop}]
           {
             {\turnstile%
               { \denv{v \Cons{} E}{\MathDrop{\delta_E}} }
@@ -147,7 +132,7 @@ upstream, accounted for in the global environment.
 
     {
       \inferrule*
-          [lab=R-Prog-Permute]
+          [lab=\RepairProg{Permute}]
           {
             { \MathPatches{q}{\MathPermute{p}{}}{q'} }
             \and

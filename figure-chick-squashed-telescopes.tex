@@ -1,0 +1,43 @@
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [→,name=spec l1,tikz={
+      \node[NodeLabel] at (spec l1.south east) {$l_{1}$};
+      }
+    [→,name=spec l2,tikz={
+      \node[NodeLabel] at (spec l2.south east) {$l_{2}$};
+      }
+      [A,fill=color01]
+      [C,fill=color02]
+      [D,fill=color03]
+    ]
+    [A,fill=color01]
+    [C,fill=color02]
+    [D,fill=color03]
+  ]
+\end{forest}
+\hspace{10pt}
+\begin{forest}
+  [→,name=spec r1,tikz={
+      \node[NodeLabel] at (spec r1.south east) {$r_{1}$};
+      }
+    [→,name=spec r2,tikz={
+      \node[NodeLabel] at (spec r2.south east) {$r_{2}$};
+      }
+      [C,fill=color02]
+      [B]
+      [A,fill=color01]
+      [D,fill=color03]
+    ]
+    [A,fill=color01]
+    [B]
+    [C,fill=color02]
+    [D,fill=color03]
+  ]
+\end{forest}
+\begin{align*}
+  S(l_{1},r_{1}) = \frac{6}{9} = 0.67 & \hspace{2cm} & S(l_{1},r_{2}) = \frac{6}{8} = 0.75\\
+  S(l_{2},r_{1}) = \frac{6}{8} = 0.75 & \hspace{2cm} & S(l_{2},r_{2}) = \frac{6}{7} = 0.86\\
+\end{align*}
+\caption{Example of squashed telescopes}\label{chick-squashed-telescopes}
+\end{figure}

@@ -3,12 +3,12 @@
 The algorithm for $\repairTermThreeOp$ is directed by the syntax of the term
 being repaired.
 
-For variables (\rulename{\UTRVar}) and function applications
-(\rulename{\UTRApp}), we use another helper, $\repairArgsOp$, to compute the
-diff.  First, we syntactically extract as many application nodes as possible,
-building a list of the arguments, until the function symbol (in the case of a
-variable, this corresponds to an empty list of arguments).  Once we lookup the
-type diff for the function symbol (resp. $\delta_{\tau_v}$ and
+For repairing variables (Rule \rulename{\UTRVar}) and function applications
+(Rule \rulename{\UTRApp}), we use another helper, $\repairArgsOp$, to compute
+the diff.  First, we syntactically extract as many application nodes as
+possible, building a list of the arguments, until the function symbol (in the
+case of a variable, this corresponds to an empty list of arguments).  Once we
+lookup the type diff for the function symbol (resp. $\delta_{\tau_v}$ and
 $\delta_{\tau_f}$), we can start producing the output diff.  An example will be
 illustrative of the $\repairArgsOp$ algorithm: consider the case where a
 function $f$ had type $(A \rightarrow C)$ and undergoes the transformation
@@ -40,157 +40,12 @@ removed, and modifications to constructors impact the pattern and arm of its
 matching branch.  Notice that we do not support the full power of
 dependently-typed elimination yet: our \coqinline{match} construct does not have
 an index binding declaration or a return type annotation (respectively known as
-the \coqinline{in}-clause and the \coqinline{return}-clause in Gallina).
+the \coqinline{in}-clause and the \coqinline{return}-clause in \Gallina{}).
 
-Also of note, in \rulename{\UTRAnnot}, we actually retrieve type information
-from the annotation, and can repair the annotated term with more information.
-In practice however, we don't expect much code to contain type annotations.
-Finally, the rule \rulename{\UTROtherwise} captures terms such as holes, and
-universes, which we repair by doing nothing.
+Also of note, in Rule \rulename{\UTRAnnot}, we actually retrieve type
+information from the annotation, and can repair the annotated term with more
+information.  In practice however, we don't expect much code to contain type
+annotations.  Finally, Rule \rulename{\UTROtherwise} captures terms such as
+holes, and universes, which we repair by doing nothing.
 
-\begin{Rules}{rules-unknown-repair}{ Rules for $\repairTermThreeOp$, the
-term-directed repair algorithm. }
-
-\begin{mathpar}
-  {
-    \inferrule*
-    [lab=\UTRVar]
-    {
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \declDiff{v}{\delta_v}{\delta_{\tau_v}} }
-      }
-      \and
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \repairArgs{ [] }{\tau_v}{\delta_{\tau_v}}{\delta_v}{\delta}
-        }
-      }
-    }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairTermWithoutType{v}{\delta} }
-    }
-  }
-
-  {
-    \inferrule*
-    [lab=\UTRApp]
-    {
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \declDiff{f}{\delta_f}{\delta_{\tau_f}} }
-      }
-      \and
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \repairArgs{[a_1, \ldots, a_n]}{\tau_f}{\delta_{\tau_f}}
-          {\delta_f}{\delta}
-        }
-      }
-    }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairTermWithoutType{ f\ a_1\ \ldots\ a_n }{\delta} }
-    }
-  }
-
-  {
-    \inferrule*
-    [lab=\UTRPi]
-    {
-      {\turnstile
-        {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
-        {\freshOne{x}{\MathSame}{\delta_x}}
-      }
-      \and
-      {\turnstile
-        { \dcontext { e } { \delta_E }
-          { \Gamma }
-          { \delta_\Gamma }
-        }
-        { \repair { \tau_1 } { \delta_{\tau_1} } { \MathType } { \MathSame } }
-      }
-      \\
-      {\turnstile
-        { \dcontext { e } { \delta_E }
-          { \MathCons{\MathLocalAssum{x}{\tau_1}}{\Gamma} }
-          { \MathMod{\MathLocalAssum{\delta_x}{\delta_{\tau_1}}}{\delta_\Gamma} }
-        }
-        { \repair { \tau_2 } { \delta_{\tau_2} } { \MathType } { \MathSame } }
-      }
-    }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairTermWithoutType{ \MathPi{\tau_1}{x}{\tau_2} }
-        { \MathModPi{\delta_{\tau_1}}{\delta_x}{\delta_{\tau_2}} }
-      }
-    }
-  }
-
-  {
-    \inferrule*
-    [lab=\UTRMatch]
-    {
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \repairTermWithoutType{t}{\delta_t} }
-      }
-      \and
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \repairBranches{t}{[b_1 \ldots b_n]}{\delta_b} }
-      }
-    }
-    {\turnstile
-      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
-      {\repairTermWithoutType
-        {\MathMatch{t}{b_1 \ldots b_n}}
-        {\delta}
-      }
-    }
-  }
-
-  {
-    \inferrule*
-    [lab=\UTRAnnot]
-    {
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \repairTermWithoutType{\tau}{\delta_\tau} }
-      }
-      \and
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \repair{t}{\delta_t}{\tau}{\delta_\tau} }
-      }
-    }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairTermWithoutType{\MathAnnot{t}{\tau}}{\MathAnnot{\delta_t}{\delta_\tau}} }
-    }
-  }
-
-  % {
-  %   \inferrule*
-  %   [lab=\UTRType]
-  %   { u \in \{ \MathProp, \MathSet, \MathType \} }
-  %   {\turnstile
-  %     { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-  %     { \repairTermWithoutType{u}{\MathSame} }
-  %   }
-  % }
-
-  {
-    \inferrule*
-    [lab=\UTROtherwise]
-    {  }
-    {\turnstile
-      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
-      {\repairTermWithoutType{t}{\MathSame}}
-    }
-  }
-
-  \end{mathpar}
-
-\end{Rules}
+\input{chick-rules-unknown-repair}

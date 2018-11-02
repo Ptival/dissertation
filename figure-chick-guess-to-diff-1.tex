@@ -1,0 +1,80 @@
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [,phantom,tikz={\draw[Matching] (!1) -- (!l);},
+    [→,fill=color06,
+       tikz={\node[NodeLabel] at (.south east) {L};},
+      [→,fill=color07,
+         tikz={\node[NodeLabel] at (.south east) {L};},
+         for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+         [...,draw=none]
+         [...,draw=none]
+      ]
+      [→,fill=color09,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+         tikz={\node[NodeLabel] at (.south east) {L};},
+         [...,draw=none]
+         [...,draw=none]
+      ]
+    ]
+    [,phantom[,phantom[,phantom]]]
+    [→,fill=color06,
+       tikz={\node[NodeLabel] at (.south east) {R};},
+      [→,fill=color08,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+         tikz={\node[NodeLabel] at (.south east) {R};},
+         [...,draw=none]
+         [...,draw=none]
+      ]
+      [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+         tikz={\node[NodeLabel] at (.south east) {R};},
+         [...,draw=none]
+         [...,draw=none]
+      ]
+    ]
+  ]
+\end{forest}
+\\
+\vspace{20pt}
+$\delta(
+\begin{forest}
+  begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+    [→,fill=color06,tikz={\node[NodeLabel] at (.south east) {L};},]
+  \end{forest}
+  ,
+  \begin{forest}
+    begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+      [→,fill=color06,tikz={\node[NodeLabel] at (.south east) {R};},]
+  \end{forest}
+  )
+= \out{
+  \MathModPi
+  {
+    \textcolor{black}{\delta(
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color07,tikz={\node[NodeLabel] at (.south east) {L};},]
+    \end{forest}
+    ,
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color08,tikz={\node[NodeLabel] at (.south east) {R};},]
+    \end{forest}
+    )}
+  }
+  {\MathSame{}}
+  {
+    \textcolor{black}{\delta(
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,black,fill=color09,tikz={\node[NodeLabel] at (.south east) {L};},]
+    \end{forest}
+    ,
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,black,tikz={\node[NodeLabel] at (.south east) {R};},]
+    \end{forest}
+    )}
+  }
+}
+$
+\caption{Run of the algorithm for turning a matching into a diff (example 1)}\label{chick-guess-to-diff-1}
+\end{figure}

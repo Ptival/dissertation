@@ -1,0 +1,62 @@
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+[,phantom
+  [→
+    [→
+      [A,fill=color01]
+      [→,name=spec n1,tikz={
+        \node[RoundedRectangle,red,fit= () (!1) (!l)] (T1) {};
+        \node[below=1pt of T1]{$T_{1}$};
+        \node[NodeLabel] at (spec n1.south east) {$l_{1}$};
+        }
+        [C,fill=color02]
+        [D,fill=color03]
+      ]
+    ]
+    [→
+      [A,fill=color01]
+      [→,name=spec n2,tikz={
+        \node[RoundedRectangle,red,fit= () (!1) (!l)] (T2) {};
+        \node[below=1pt of T2]{$T_{2}$};
+        \node[NodeLabel] at (spec n2.south east) {$l_{2}$};
+      }
+        [C,fill=color02]
+        [D,fill=color03]
+      ]
+    ]
+  ]
+  [,phantom[,phantom[,phantom]]]
+  [→
+    [→
+      [C,fill=color02]
+      [→
+        [B]
+        [→
+          [A,fill=color01]
+          [D,fill=color03]
+        ]
+      ]
+    ]
+    [→
+      [A,fill=color01]
+      [→
+        [B]
+        [→,name=spec n3,tikz={
+          \node[RoundedRectangle,red,fit= () (!1) (!l)] (T3) {};
+          \node[below=1pt of T3]{$T_{3}$};
+          \node[NodeLabel] at (spec n3.south east) {$r$};
+          }
+          [C,fill=color02]
+          [D,fill=color03]
+        ]
+      ]
+    ]
+  ]
+]
+\end{forest}
+\[
+  S(l_{1},r) = 1 \hspace{2cm} S(l_{2},r) = 1
+\]
+\caption{Example of sub-trees with equal similarity}\label{chick-sub-trees-equal-similarity}
+\end{figure}

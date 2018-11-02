@@ -3,7 +3,7 @@
 The algorithm for $\repairTermOneOp$ is directed by the syntax of the diff for
 the type of the term being repaired.
 
-The rules~\rulename{\RSamePi} and~\rulename{\RSame} apply when the type has not
+Rules \rulename{\RSamePi} and \rulename{\RSame} apply when the type has not
 been modified.  The first one turns the $\MathSame$ diff for a $\Pi$-type into a
 $\MathModPiOp$, to defer the handling of the $\lambda$'s binder, and the
 populating of the local context, to the rule \rulename{\RModPi} described
@@ -14,7 +14,7 @@ therefore defers this work to the type-directed term repair algorithm
 $\repairTermTwoOp$.
 
 The rule that handles the modification of a dependent $\Pi$-type for an explicit
-$\lambda$ function, \rulename{\RModPi}, requires a lot of care.  A simple
+$\lambda$ function, Rule \rulename{\RModPi}, requires a lot of care.  A simple
 version of it would not alter the binder $x$ in the term abstraction.
 Unfortunately, there is a potential for a binder conflict.  Consider the term
 $(\MathLam{a}{b\ a})$ defined in a global environment where $b$ is bound, and
@@ -30,7 +30,7 @@ binder $\chi$ with the same variable.  Unfortunately, we can't always choose $x$
 because the body of the type abstraction $\tau_2$ might depend on an existing
 $x$ in either the global environment or local context, neither can we always
 choose $\chi$ because the body of the term abstraction $t$ might depend on such
-a $\chi$ too.  The $\freshTwoOp$ algorithm picks such a suitably-fresh variable
+a $\chi$ too.  The $\freshTwoOp$ algorithm picks such a suitably fresh variable
 $z$.  This $z$ is only necessary for the algorithm, and will never be shown to
 the programmer.
 

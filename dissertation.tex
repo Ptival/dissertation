@@ -5,8 +5,9 @@
 %\usepackage{mathptmx}
 
 \usepackage{fontspec}
-\setmainfont{TeX Gyre Pagella}
-\setmonofont{DejaVuSansMono}
+\usepackage{gfsdidot}          % makes math stuff look neat, but also overrides text stuff
+\setmainfont{TeX Gyre Pagella} % forces back text stuff to look neat too
+\setmonofont{DejaVuSansMono}   % monospace stuff should look neat too
 %\renewcommand{\familydefault}{\sfdefault}
 %\usepackage[scaled=1]{helvet}
 
@@ -27,7 +28,11 @@
 
 % Valentin
 \usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz, pgfplots, etc.
-\usepackage{amsmath}
+\let\iint\relax
+\let\iiint\relax
+\let\iiiint\relax
+\let\idotsint\relax
+\usepackage{amsmath} % loaded by mathtools?
 \usepackage{amssymb}
 \usepackage[english]{babel}
 \usepackage{calc}
@@ -42,7 +47,6 @@
 \usepackage{fontawesome}
 \usepackage{forest}
 \usepackage{graphicx}
-%\usepackage{gfsdidot}
 \usepackage{longtable}
 \usepackage{ltablex} \keepXColumns % Made me sad for appendix tables, where was it used?
 \usepackage{makecell}
@@ -567,7 +571,7 @@ without dependent types, but with more features than our tool was built for.
 \input{chick}
 %\input{related-work}
 
-\chapter{Takeaways}
+%\chapter{Takeaways}
 
 \appendix
 

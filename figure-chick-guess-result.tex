@@ -1,0 +1,111 @@
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+[,phantom
+  [→,fill=color06
+    [→,fill=color07,
+      [A,fill=color01]
+      [→,fill=color08,
+        [C,fill=color02]
+        [D,fill=color03]
+      ]
+    ]
+    [→,fill=color09,
+      [A,fill=color12]
+      [→,fill=color10,
+        [C,fill=color13]
+        [D,fill=color14]
+      ]
+    ]
+  ]
+  [,phantom[,phantom[,phantom]]]
+  [→,fill=color06
+    [→,fill=color08
+      [C,fill=color02]
+      [→,fill=color15
+        [B]
+        [→,fill=color07
+          [A,fill=color01]
+          [D,fill=color03]
+        ]
+      ]
+    ]
+    [→,fill=color09
+      [A,fill=color12]
+      [→,fill=color16
+        [B]
+        [→,fill=color10
+          [C,fill=color13]
+          [D,fill=color14]
+        ]
+      ]
+    ]
+  ]
+]
+\end{forest}
+\\
+\vspace{20pt}
+\scalebox{1.25}{
+  \tcbhighmath[size=fbox,boxrule=2pt,colframe=color06,colback=white]{
+    \begin{tabular}{c}
+      $
+      \MathModPi%
+      {
+        \MathPermutePis%
+        {[0,1]}
+        {
+          \tcbhighmath[size=fbox,boxrule=2pt,colframe=color08,colback=white]{
+            \MathModPi%
+            {
+              \tcbhighmath[size=fbox,boxrule=2pt,colframe=color02,colback=white]{
+                \MathSame{}
+              }
+            }
+            {\MathSame{}}
+            {
+              \tcbhighmath[size=fbox,boxrule=2pt,colframe=color15,colback=white]{
+                \MathInsPi%
+                {B}
+                {\_}
+                {
+                  \tcbhighmath[size=fbox,boxrule=2pt,colframe=color07,colback=white]{
+                    \MathSame{}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      {\MathSame{}}
+      {  } % left empty so that it can be on two lines
+      $
+      \tabularnewline
+      $
+        \tcbhighmath[size=fbox,boxrule=2pt,colframe=color09,colback=white]{
+          \MathModPi%
+          {
+            \tcbhighmath[size=fbox,boxrule=2pt,colframe=color12,colback=white]{
+              \MathSame{}
+            }
+          }
+          {\MathSame{}}
+          {
+            \tcbhighmath[size=fbox,boxrule=2pt,colframe=color16,colback=white]{
+              \MathInsPi%
+              {B}
+              {\_}
+              {
+                \tcbhighmath[size=fbox,boxrule=2pt,colframe=color10,colback=white]{
+                  \MathSame{}
+                }
+              }
+            }
+          }
+        }
+      $
+    \end{tabular}
+  }
+}
+\caption{Final guess}\label{chick-guess-result}
+\end{figure}

@@ -1,0 +1,147 @@
+\begin{Rules}
+  {rules-unknown-repair}
+  { Rules for $\repairTermThreeOp$, the term-directed repair algorithm. }
+
+\begin{mathpar}
+  {
+    \inferrule*
+    [lab=\UTRVar]
+    {
+      {\turnstile
+        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+        { \declDiff{v}{\delta_v}{\delta_{\tau_v}} }
+      }
+      \and
+      {\turnstile
+        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+        { \repairArgs{ [] }{\tau_v}{\delta_{\tau_v}}{\delta_v}{\delta}
+        }
+      }
+    }
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairTermWithoutType{v}{\delta} }
+    }
+  }
+
+  {
+    \inferrule*
+    [lab=\UTRApp]
+    {
+      {\turnstile
+        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+        { \declDiff{f}{\delta_f}{\delta_{\tau_f}} }
+      }
+      \and
+      {\turnstile
+        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+        { \repairArgs{[a_1, \ldots, a_n]}{\tau_f}{\delta_{\tau_f}}
+          {\delta_f}{\delta}
+        }
+      }
+    }
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairTermWithoutType{ f\ a_1\ \ldots\ a_n }{\delta} }
+    }
+  }
+
+  {
+    \inferrule*
+    [lab=\UTRPi]
+    {
+      {\turnstile
+        {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+        {\freshOne{x}{\MathSame}{\delta_x}}
+      }
+      \and
+      {\turnstile
+        { \dcontext { e } { \delta_E }
+          { \Gamma }
+          { \delta_\Gamma }
+        }
+        { \repair { \tau_1 } { \delta_{\tau_1} } { \MathType } { \MathSame } }
+      }
+      \\
+      {\turnstile
+        { \dcontext { e } { \delta_E }
+          { \MathCons{\MathLocalAssum{x}{\tau_1}}{\Gamma} }
+          { \MathMod{\MathLocalAssum{\delta_x}{\delta_{\tau_1}}}{\delta_\Gamma} }
+        }
+        { \repair { \tau_2 } { \delta_{\tau_2} } { \MathType } { \MathSame } }
+      }
+    }
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairTermWithoutType{ \MathPi{\tau_1}{x}{\tau_2} }
+        { \MathModPi{\delta_{\tau_1}}{\delta_x}{\delta_{\tau_2}} }
+      }
+    }
+  }
+
+  {
+    \inferrule*
+    [lab=\UTRMatch]
+    {
+      {\turnstile
+        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+        { \repairTermWithoutType{t}{\delta_t} }
+      }
+      \and
+      {\turnstile
+        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+        { \repairBranches{t}{[b_1 \ldots b_n]}{\delta_b} }
+      }
+    }
+    {\turnstile
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+      {\repairTermWithoutType
+        {\MathMatch{t}{b_1 \ldots b_n}}
+        {\delta}
+      }
+    }
+  }
+
+  {
+    \inferrule*
+    [lab=\UTRAnnot]
+    {
+      {\turnstile
+        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+        { \repairTermWithoutType{\tau}{\delta_\tau} }
+      }
+      \and
+      {\turnstile
+        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+        { \repair{t}{\delta_t}{\tau}{\delta_\tau} }
+      }
+    }
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairTermWithoutType{\MathAnnot{t}{\tau}}{\MathAnnot{\delta_t}{\delta_\tau}} }
+    }
+  }
+
+  % {
+  %   \inferrule*
+  %   [lab=\UTRType]
+  %   { u \in \{ \MathProp, \MathSet, \MathType \} }
+  %   {\turnstile
+  %     { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+  %     { \repairTermWithoutType{u}{\MathSame} }
+  %   }
+  % }
+
+  {
+    \inferrule*
+    [lab=\UTROtherwise]
+    {  }
+    {\turnstile
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+      {\repairTermWithoutType{t}{\MathSame}}
+    }
+  }
+
+  \end{mathpar}
+
+\end{Rules}

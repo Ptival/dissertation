@@ -1,0 +1,100 @@
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+  [,phantom,tikz={
+    \draw[Matching,color07] (!1) -- (!lll);
+    \draw[Matching,color08] (!1l) -- (!l);
+  },
+    [→,fill=color07,
+       tikz={
+         \draw[RoundedDottedPath,color07]
+         (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+         -- (!1.south east) -- (.south east)
+         ;
+         \node[NodeLabel] at (.south east) {L};
+       },
+      [A,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+      ]
+      [→,fill=color08,
+         tikz={
+           \draw[RoundedDottedPath,color08]
+           (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+           -- (!1.south east) -- (.south east)
+          ;
+          \node[NodeLabel] at (.south east) {L};
+        },
+         for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+        [C]
+        [D]
+      ]
+    ]
+    [,phantom[,phantom[,phantom]]]
+    [→,fill=color08,
+       tikz={\node[NodeLabel] at (.south east) {R};},
+       [C,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+       ]
+       [→,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+          tikz={\node[NodeLabel] at (.south east) {R};},
+         [B]
+         [→,fill=color07,
+           [A]
+           [D]
+         ]
+       ]
+    ]
+  ]
+\end{forest}
+\\
+\vspace{20pt}
+$\delta(
+\begin{forest}
+  begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+    [→,fill=color07,tikz={\node[NodeLabel] at (.south east) {L};},]
+  \end{forest}
+  ,
+  \begin{forest}
+    begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+      [→,fill=color08,tikz={\node[NodeLabel] at (.south east) {R};},]
+  \end{forest}
+  )
+= \out{
+  \MathPermutePis{[1,0]}
+  {
+    \textcolor{black}{\delta(
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color08,
+           tikz={
+             \draw[RoundedDottedPath,color08]
+             (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+             -- (!1.south east) -- (.south east)
+             ;
+             \node[NodeLabel] at (.south east) {L};
+           },
+           [C,for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+           ]
+           [→,fill=color07,
+             for tree={text opacity=0.2,draw opacity=0.2,edge={draw opacity=0.2}},
+             tikz={
+               \draw[RoundedDottedPath,color07]
+               (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+               -- (!1.south east) -- (.south east)
+               ;
+               \node[NodeLabel] at (.south east) {L};
+             },
+            [A]
+            [D]
+          ]
+        ]
+    \end{forest}
+    ,
+    \begin{forest}
+      begin draw/.code={\begin{tikzpicture}[anchor=base,baseline]},
+        [→,fill=color08,tikz={\node[NodeLabel] at (.south east) {R};},]
+    \end{forest}
+    )}
+  }
+}
+$
+\caption{Run of the algorithm for turning a matching into a diff (example 2)}\label{chick-guess-to-diff-2}
+\end{figure}

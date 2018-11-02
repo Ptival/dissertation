@@ -209,10 +209,10 @@ with the following semantics:
 \end{mathpar}
 
 Note that we defined the semantics of $\MathModPiOp$ so that it both modifies
-and keeps the head: the recursive occurrence in rule~\rulename{Modify},
+and keeps the head: the recursive occurrence in rule \rulename{Modify},
 $\delta_t$, therefore applies to the tail $t$ and not the whole list after the
 head has been repaired.  On the other hand, the recursive occurrence in
-rule~\rulename{Permute}, $\delta$, targets the entire list after the permutation
+rule \rulename{Permute}, $\delta$, targets the entire list after the permutation
 is performed, not solely the tail: this is necessary because we will want to
 perform modifications of elements after having shuffled them around.
 
@@ -240,13 +240,13 @@ application in our diffs, even though we use an infix space for function
 application in our terms, which is not ideal but should prevent confusion.  For
 our purpose, we biased the diffs on binary operations in the least surprising
 way: deleting a function application keeps its left child, i.e. removes the
-function call and keeps the function (see rule~\rulename{\RmApp}), while
+function call and keeps the function (see rule \rulename{\RmApp}), while
 deleting a \coqinline{Pi} keeps its right child, i.e. removes the value being
-quantified but keeps the return type (see rule~\rulename{\RmPi}).  For
+quantified but keeps the return type (see rule \rulename{\RmPi}).  For
 insertion, we allow maximal flexibility by passing the entire old term to all
 recursive occurrences: for instance, the diff
 $(\MathInsApp{\MathSame}{\MathSame})$ turns any term $t$ into the
-self-application $(t\ t)$ (see rule~\rulename{\InsApp}).  However, it is often
+self-application $(t\ t)$ (see rule \rulename{\InsApp}).  However, it is often
 the case that only one recursive occurrence will use the original term, while
 the other ones will replace it: for instance, the diff
 $(\MathInsApp{\MathSame}{\MathReplace{x}})$ turns any term $t$ into the
@@ -395,7 +395,7 @@ left-associative.  Therefore, when comparing \coqinline{list A} with
 correspond to any application node in the former.  The whole original term,
 \coqinline{list A}, in fact corresponds to the left-child of the outermost
 application node, i.e. \coqinline{vec A}.  Again, the reader might want to refer
-to rule~\rulename{\InsApp} from Section~\ref{chick-diffs-term-diff} for the
+to rule \rulename{\InsApp} from Section~\ref{chick-diffs-term-diff} for the
 semantics of $\MathInsApp{}{}$.
 
 \begin{figure*}[!htp]

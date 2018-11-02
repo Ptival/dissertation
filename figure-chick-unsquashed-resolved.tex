@@ -1,0 +1,79 @@
+\begin{figure}[htp!]
+\centering
+\begin{forest}
+[,phantom
+  [→,fill=color06
+    [→,fill=color07
+    ,tikz={\draw[RoundedDottedPath,bicolor={color07}{color01}]
+      (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+      -- (!1.south east) -- (.south east)
+      ;}
+      [A,fill=color01]
+      [→,fill=color08
+      ,tikz={\draw[RoundedDottedPath,bicolor={color08}{color02}]
+        (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+        -- (!1.south east) -- (.south east)
+        ;}
+        [C,fill=color02]
+        [D,fill=color03]
+      ]
+    ]
+    [→,fill=color09
+    ,tikz={\draw[RoundedDottedPath,bicolor={color09}{color12}]
+      (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+      -- (!1.south east) -- (.south east)
+      ;}
+      [A,fill=color12]
+      [→,fill=color10
+      ,tikz={\draw[RoundedDottedPath,bicolor={color10}{color13}]
+        (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+        -- (!1.south east) -- (.south east)
+        ;}
+        [C,fill=color13]
+        [D,fill=color14]
+      ]
+    ]
+  ]
+  [,phantom[,phantom[,phantom]]]
+  [→,fill=color06
+    [→,fill=color08
+      ,tikz={\draw[RoundedDottedPath,bicolor={color08}{color02}]
+        (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+        -- (!1.south east) -- (.south east)
+        ;}
+      [C,fill=color02]
+      [→
+        [B]
+        [→,fill=color07
+        ,tikz={\draw[RoundedDottedPath,bicolor={color07}{color01}]
+          (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+          -- (!1.south east) -- (.south east)
+          ;}
+          [A,fill=color01]
+          [D,fill=color03]
+        ]
+      ]
+    ]
+    [→,fill=color09
+    ,tikz={\draw[RoundedDottedPath,bicolor={color09}{color12}]
+      (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+      -- (!1.south east) -- (.south east)
+      ;}
+      [A,fill=color12]
+      [→
+        [B]
+        [→,fill=color10
+        ,tikz={\draw[RoundedDottedPath,bicolor={color10}{color13}]
+          (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+          -- (!1.south east) -- (.south east)
+          ;}
+          [C,fill=color13]
+          [D,fill=color14]
+        ]
+      ]
+    ]
+  ]
+]
+\end{forest}
+\caption{Guess for matching unsquashed, resolved}\label{chick-unsquashed-resolved}
+\end{figure}

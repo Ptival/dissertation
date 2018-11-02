@@ -31,7 +31,7 @@ not only a name for the inductive type being defined, but also one name per
 elimination principles it generates, and finally one name per the constructor of
 the data type.  This is captured in the lookup rules, where we check those in
 order before looking in the rest of the environment.  Unfortunately,
-rule~\rulename{\LookupEnv-There} has to be quite bloated, but its premises only
+rule \rulename{\LookupEnv-There} has to be quite bloated, but its premises only
 ensure that we look in the rest of the environment only when neither of the
 three previous rules hold.
 
@@ -257,24 +257,24 @@ additional rules to account for the absence of a variable, and to change the
 output types to allow for failure.
 
 When the context hasn't changed, we can obtain its type from the old environment
-(Rule~\rulename{Diff-\LCSame}).  When some variable has been inserted, we can
+(Rule \rulename{Diff-\LCSame}).  When some variable has been inserted, we can
 ignore it with no effort, since we only care about shadowing in the original
-program (Rule~\rulename{Diff-\LCIns}).
+program (Rule \rulename{Diff-\LCIns}).
 
 When we find the target variable in the local context, there are only two
 remaining possibilities for the diff: either it is a $\MathModPiOp$, or a
 $\MathDropPiOp$.  When it has been modified, we have found exactly the
 information we were looking for, so we can simply output it
-(Rule~\rulename{Diff-\LCMod-Here}).  If it has been dropped, then there is no
+(Rule \rulename{Diff-\LCMod-Here}).  If it has been dropped, then there is no
 satisfactory result, the variable is no longer in the program.  In order to make
 sure the user notices, we rename the variable using the helper
 $\op{\text{Deprecate}}$, and make its diff as uninformative as possible using a
-hole (Rule~\rulename{Diff-\LCMod-There}).
+hole (Rule \rulename{Diff-\LCMod-There}).
 
 The last cases to handle are that of a variable other than our target being
-modified (Rule~\rulename{Diff-\LCDrop}), in which case we simply keep looking
+modified (Rule \rulename{Diff-\LCDrop}), in which case we simply keep looking
 recursively into the context, and that of a permutation
-(Rule~\rulename{Diff-\LCPermute}), in which case we can perform the permutation
+(Rule \rulename{Diff-\LCPermute}), in which case we can perform the permutation
 and keep looking recursively.
 
 \begin{Rules}{lookup-diff-context}{ Diff lookup rules (local context) }
@@ -382,12 +382,12 @@ those cases in few rules, by using disjunctive premises to account for many
 cases in a single rule.
 
 Figure~\ref{rules-lookup-environment-same} covers the simplest cases.  When the
-environment has not changed, as in Rule~\rulename{Diff-\GESame}, the variable
+environment has not changed, as in Rule \rulename{Diff-\GESame}, the variable
 must not have changed either, as long as it actually existed.  When any
 $\DefinitionText{}$ or $\InductiveText{}$ has been inserted, we can skip it and
-keep looking recursively (Rule~\rulename{Diff-\GEIns}).  Finally, when the
+keep looking recursively (Rule \rulename{Diff-\GEIns}).  Finally, when the
 environment has undergone a permutation, we can simply proceed recursively on
-the appropriately permuted environment (Rule~\rulename{Diff-\GEPermute}).
+the appropriately permuted environment (Rule \rulename{Diff-\GEPermute}).
 
 \begin{Rules}
 {rules-lookup-environment-same}
@@ -453,8 +453,8 @@ suffices to check whether the name matches, but for an $\InductiveText{}$, we
 need to check whether the name matches the inductive type, any of the
 eliminators, or any of the constructors.  If it does, then we indicate that the
 variable has been removed by using $\op{\text{Deprecate}}$ again
-(Rule~\rulename{Diff-\GEDrop-Here}).  Otherwise, we keep looking recursively
-(Rule~\rulename{Diff-\GEDrop-There}).
+(Rule \rulename{Diff-\GEDrop-Here}).  Otherwise, we keep looking recursively
+(Rule \rulename{Diff-\GEDrop-There}).
 
 \begin{Rules}
 {rules-lookup-environment-drop}
@@ -568,8 +568,8 @@ When an element has been modified in the environment
 (Figure~\ref{rules-lookup-environment-mod}), we also need to check whether the
 variable in question has been removed or not.  For the same reasons as in the
 drop case, we need to check all possibilities for inductive data type
-definitions, yielding Rule~\rulename{Diff-\GEMod-Here} for cases where the
-target variable is being modified, and Rule~\rulename{Diff-\GEMod-There} for
+definitions, yielding Rule \rulename{Diff-\GEMod-Here} for cases where the
+target variable is being modified, and Rule \rulename{Diff-\GEMod-There} for
 cases where other variables than our target are being modified.
 
 \begin{Rules}
