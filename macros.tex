@@ -122,14 +122,29 @@
 \newcommand{\boundOp}{\op{\text{Bound}}}
 \newcommand{\freshOneOp}{\op{\text{Fresh}_1}}
 \newcommand{\freshTwoOp}{\op{\text{Fresh}_2}}
-\newcommand{\repairIndOp}{\op{R_{I}}}
+\newcommand{\repairIndOp}{\op{R_{\text{Inductive}}}}
 \newcommand{\repairProgOp}{\op{R_{P}}}
 \newcommand{\repairTermOneOp}{\op{R_{T_1}}}
 \newcommand{\repairTermTwoOp}{\op{R_{T_2}}}
 \newcommand{\repairTermThreeOp}{\op{R_{T_2}}}
-\newcommand{\repairVernacOp}{\op{R_{V}}}
+\newcommand{\repairVernacOp}{\op{R_{\text{Vernacular}}}}
 \newcommand{\vernacEnvOp}{\op{E_{V}}}
 \newcommand{\repairBranchesOp}{\op{R_{B}}}
+
+\newcommand{\repairParametersOp}{\op{R_{\text{Parameters}}}}
+\newcommand{\repairIndicesOp}{\op{R_{\text{Indices}}}}
+\newcommand{\repairConstructorsOp}{\op{R_{\text{Constructors}}}}
+
+\newcommand{\repairParameters}[3]{
+  \mksimplerepair{\repairParametersOp}{\diff{#1}{#2}}{#3}
+}
+\newcommand{\repairIndices}[3]{
+  \mksimplerepair{\repairIndicesOp}{\diff{#1}{#2}}{#3}
+}
+
+\newcommand{\repairConstructors}[3]{
+  \mksimplerepair{\repairConstructorsOp}{\diff{#1}{#2}}{#3}
+}
 
 \newcommand{\blackbrackets}[1]{\left[ #1 \right]}
 \newcommand{\blackdiff}[2]{\blackbrackets{\genfrac{}{}{0pt}{}{#1}{#2}}}
@@ -275,12 +290,12 @@
 
 \newcommand{\MathAnnot}[2]{#1 : #2}
 
-\newcommand{\UTRApp}{\UnknownTypeRepair{App}}
+\newcommand{\UTRApp}{\UnknownTypeRepair{Application}}
 \newcommand{\UTRMatch}{\UnknownTypeRepair{Match}}
 \newcommand{\UTRPi}{\UnknownTypeRepair{Pi}}
 \newcommand{\UTRType}{\UnknownTypeRepair{Universe}}
-\newcommand{\UTRVar}{\UnknownTypeRepair{Var}}
-\newcommand{\UTRAnnot}{\UnknownTypeRepair{Annot}}
+\newcommand{\UTRVar}{\UnknownTypeRepair{Variable}}
+\newcommand{\UTRAnnot}{\UnknownTypeRepair{Annotation}}
 \newcommand{\UTRHole}{\UnknownTypeRepair{Hole}}
 \newcommand{\UTROtherwise}{\UnknownTypeRepair{Otherwise}}
 

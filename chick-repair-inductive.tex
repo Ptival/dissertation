@@ -1,0 +1,73 @@
+We omit most of the details of repairing an inductive data type definition
+behind the symbol $\repairIndOp$.  It essentially needs to go recursively in all
+parameters and indices of both the inductive type itself and all of its
+constructors and repair them.  Each subsequent parameter must be repaired in a
+local context where its predecessor parameter has been accounted, so as to react
+to possible modifications: for instance, if the first parameter must be renamed,
+and the second parameter's type refers to the first parameter's name, the type
+will need to be repaired.  Indices also must repaired in the context of the
+repaired parameters.  Constructors are repaired one by one, in isolation, but
+the repairing of their parameters.  Constructor indices are simply
+instantiations of the inductive indices with terms: they are simply repaired in
+isolation.
+
+\begin{Rules}
+  {fig:repair-inductive}
+  { Rules for repairing inductive data type definitions ($\repairIndOp$) }
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=\RepairVernac{Inductive}]
+      {
+        {
+          \turnstile%
+          {\dcontext{\Gamma}{\delta_{\Gamma}}{E}{\delta_E}}
+          {\repairParameters%
+            {\overrightarrow{p}}
+            {\delta_{\overrightarrow{p}}}
+            {(\blackdiff{\Gamma'}{\delta'_{\Gamma}}, \delta'_{\overrightarrow{p}})}
+          }
+        }
+        \\
+        {
+          \turnstile%
+          {\dcontext{\Gamma'}{\delta'_{\Gamma}}{E}{\delta_E}}
+          {\repairIndices%
+            {\overrightarrow{i}}
+            {\delta_{\overrightarrow{i}}}
+            {(\blackdiff{\Gamma''}{\delta''_{\Gamma}}, \delta'_{\overrightarrow{i}})}
+          }
+        }
+        \\
+        {
+          WRONG
+          % We can't add indices like this, instead, the inductive type must be modified
+          \turnstile%
+          {\dcontext{\Gamma''}{\delta''_{\Gamma}}{E}{\delta_E}}
+          {\repairConstructors%
+            {\overrightarrow{c}}
+            {\delta_{\overrightarrow{c}}}
+            {\delta'_{\overrightarrow{c}}}
+          }
+        }
+      }
+      {
+        {\turnstile%
+          {\dcontext{\Gamma}{\delta_{\Gamma}}{E}{\delta_E}}
+          {\repairInd%
+            {\overrightarrow{p}}
+            {\delta_{\overrightarrow{p}}}
+            {\overrightarrow{i}}
+            {\delta_{\overrightarrow{i}}}
+            {\overrightarrow{c}}
+            {\delta_{\overrightarrow{c}}}
+            {(\delta_{\overrightarrow{p}}', \delta_{\overrightarrow{i}}',
+              \delta_{\overrightarrow{c}}')}
+          }
+        }
+      }
+    }
+  \end{mathpar}
+
+\end{Rules}

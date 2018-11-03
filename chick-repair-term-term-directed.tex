@@ -22,9 +22,9 @@ innermost type modification $\MathInsPiOp$.  This is not surprising: a function
 $g$ whose type is $(A \rightarrow (B \rightarrow (C \rightarrow D)))$, and its
 application to arguments $(((g\ a)\ b)\ c)$, exhibit the same inversion.  For
 this reason, $\repairArgsOp$ works by processing the $\Pi$-telescope type diff
-(i.e. a sequence of nested $\Pi$s) from outside-in, and builds the $\App$ term
-diff from inside-out.  We omit the rules for $\repairArgsOp$ as they would be
-cumbersome and not enlightening.
+(i.e. a sequence of nested $\Pi$s) from outside-in, and builds the applications
+term diff from inside-out.  We omit the rules for $\repairArgsOp$ as they would
+be cumbersome and not enlightening.
 
 We also omit the rules for repairing a \coqinline{match} construct behind the
 symbol $\repairBranchesOp$.  Once the discriminee is repaired, the branches must

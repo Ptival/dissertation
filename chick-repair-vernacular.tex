@@ -13,10 +13,13 @@ judgment:
   \]
 }
 
-\noindent The rule \rulename{R-Vernac-Def} shows how we attempt to repair a
-vernacular term definition.  It is quite involved because we account for the
-possibility of a non-recursive definition becoming recursive and vice-versa.  We
-want to account for the user-provided modifications $\delta_k$, $\delta_n$,
+\noindent which can be read analogously to $\repairProgOp$ as described in
+Section~\ref{repair-program}.
+
+Rule \rulename{\RepairVernac{Def}} shows how we attempt to repair a vernacular
+term definition.  It is quite involved because we account for the possibility of
+a non-recursive definition becoming recursive and vice-versa.  We want to
+account for the user-provided modifications $\delta_k$, $\delta_n$,
 $\delta_\tau$, and $\delta_t$, but we might need to repair some of them.  We
 first repair the type $\tau$, and obtain its repaired diff $\delta_\tau'$.  Now,
 the user has modified the name of the definition according to $\delta_n$, but
@@ -25,22 +28,23 @@ there are two situations where we must intervene:
 \begin{enumerate}
 
 \item If $\delta_n$ is $\MathSame$, the user intends to keep the name $n$ for
-this definition.  However, they could have introduced in the global environment,
-which would be accounted for in $\delta_E$. In this case, we need to come up
-with a fresh name that is free in the new environment.
+this definition.  However, they could have introduced another name $n$ in the
+global environment, which would be accounted for in $\delta_E$.  In this case,
+we need to come up with a fresh name that is free in the new environment.
 
 \item If $\delta_n$ is $\MathReplace{m}$, the user intends to rename this
-definition from $n$ into $m$.  Again, this is a problem if the new global
-environment contains an $m$ already.  In this case, we also need to come up with
-a fresh name that is free in the new environment.
+definition from $n$ into $m$.  Again, even though this is unlikely in practice,
+it could be a problem if the new global environment contains an $m$ already.  In
+this case, we also need to come up with a fresh name that is free in the new
+environment.
 
 \end{enumerate}
 
 \noindent $\freshOneOp$ takes care of these two situations: it takes as input a
 name $n$, and a desired modification for it $\delta_n$, and returns a suitable
-modification $\delta_n'$, that tries to preserve $\delta_n$ when it is possible,
-to preserve $n$ otherwise when it is possible, or comes up with a fresh name
-when neither of these conditions can be met.
+modification $\delta_n'$, that first tries to preserve $\delta_n$ when possible,
+otherwise tries to preserve $n$ when possible, or finally, comes up with a fresh
+name when neither of these conditions can be met.
 
 Finally, in order to repair the body of the definition, we need to build an
 initial local context (as described in Section~\ref{chick-lookup-rules}).  This
@@ -49,19 +53,6 @@ self-reference for recursive definitions.  The side conditions defining $\Gamma$
 and $\delta_\Gamma$ make sure that the local context is appropriately set in all
 possible combinations of the recursive flag before and after the
 user-modification.
-
-We omit most of the details of repairing an inductive data type definition
-behind the symbol $\repairIndOp$.  It essentially needs to go recursively in all
-parameters and indices of both the inductive type itself and all of its
-constructors and repair them.  Each subsequent parameter must be repaired in a
-local context where its predecessor parameter has been accounted, so as to react
-to possible modifications: for instance, if the first parameter must be renamed,
-and the second parameter's type refers to the first parameter's name, the type
-will need to be repaired.  Indices also must repaired in the context of the
-repaired parameters.  Constructors are repaired one by one, in isolation, but
-the repairing of their parameters.  Constructor indices are simply
-instantiations of the inductive indices with terms: they are simply repaired in
-isolation.
 
 \begin{Rules}
   {fig:repair-vernac}
@@ -128,14 +119,21 @@ isolation.
       \inferrule*
       [lab=\RepairVernac{Inductive}]
       {
-        {\turnstile
+        {
+          \turnstile%
           {\denv{E}{\delta_E}}
           {\freshOne{n}{\delta_n}{\delta_{n}'}}
         }
-        \and
-        {\turnstile
-          {\denv{E}{\delta_E}}
-          {\repairInd
+        \\
+        {\turnstile%
+          {
+            \dcontext%
+            {\MathCons{n}{[]}}
+            {\MathMod{\delta'_{n}}{\MathSame{}}}
+            {E}
+            {\delta_E}
+          }
+          {\repairInd%
             {\overrightarrow{p}}
             {\delta_{\overrightarrow{p}}}
             {\overrightarrow{i}}
@@ -147,24 +145,26 @@ isolation.
           }
         }
       }
-      {\turnstile
+      {
+        \turnstile%
         { \denv{E}{\delta_E} }
-        { \repairVernac
-          {\Inductive
+        {
+          \repairVernac%
+          {\Inductive%
             {n}
             {\overrightarrow{p}}
             {\overrightarrow{i}}
             {u}
             {\overrightarrow{c}}
           }
-          {\ModifyInductive
+          {\ModifyInductive%
             {\delta_n}
             {\delta_{\overrightarrow{p}}}
             {\delta_{\overrightarrow{i}}}
             {\delta_u}
             {\delta_{\overrightarrow{c}}}
           }
-          {\ModifyInductive
+          {\ModifyInductive%
             {\delta_n'}
             {\delta_{\overrightarrow{p}}'}
             {\delta_{\overrightarrow{i}}'}
