@@ -51,7 +51,7 @@
 \usepackage{ltablex} \keepXColumns % Made me sad for appendix tables, where was it used?
 \usepackage{makecell}
 \usepackage{mathpartir}
-\usepackage{mathtools} % \coloneqq
+%\usepackage{mathtools} % \coloneqq
 \usepackage{mdframed}
 \usepackage{minted}
 \usepackage{multicol}
@@ -67,6 +67,12 @@
 \usepackage{tikz-qtree}
 \usepackage{xpatch}
 \usepackage[breaklinks=true,pdfborder={0 0 0}]{hyperref}
+
+% gfsdidot makes ∀ and ∃ super ugly, this reverts them to something fine
+\DeclareSymbolFont{CMsymbols}{OMS}{cmsy}{b}{n}
+\SetSymbolFont{CMsymbols}{bold}{OMS}{cmsy}{ub}{n}
+\DeclareMathSymbol{\forall}{\mathord}{CMsymbols}{"38}
+\DeclareMathSymbol{\exists}{\mathord}{CMsymbols}{"39}
 
 \definecolor{color01}{HTML}{E6194B}
 \definecolor{color02}{HTML}{3CB44B}

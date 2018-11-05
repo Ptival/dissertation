@@ -103,29 +103,24 @@ three previous rules hold.
     [lab=\LookupEnv-Inductive-Type-Here]
     {
       {
-        I = \Inductive%
-        {n_{\text{ind}}}
-        {\overline{p_{\text{ind}}}}
-        {\overline{i_{\text{ind}}}}
-        {u}
-        {\overline{c}}
+        I = \Inductive{\nind}{\pind}{\iind}{u}{\overline{c}}
       }
-      \\
+      \\\\\\
       {
         \begin{cases}
-          v = n_{ind}
-          & \text{\ and\ } \op{\text{InductiveType}(} I \op{)} = \out{\tau} \\
-          \text{\ or\ }\\
-          \exists\ u_{\text{elim}} \text{\ such that\ } \\
-          \quad v = \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}
+          \phantom{\text{\ or\ }}
+          v = \nind{}
+          & \text{\ and\ } \InductiveType{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\tau} \\
+          \text{\ or\ }
+          \exists\ \uelim{} \text{\ such that\ } \\
+          \phantom{\text{\ or\ }}
+          \quad v = \op{\text{EliminatorName}(} I \op{,\ } \uelim{} \op{)}
           & \text{\ and\ }
-          \op{\text{EliminatorType}(} I \op{,\ } u_{\text{elim}} \op{)} = \out{\tau} \\
-          \text{\ or\ }\\
+          \op{\text{EliminatorType}(} I \op{,\ } \uelim{} \op{)} = \out{\tau} \\
+          \text{\ or\ }
           \exists\ C \in \overline{c} \text{\ such that\ } \\
-          \quad C = \Constructor%
-          {v}
-          {\overline{p_{\text{ctor}}}}
-          {\overline{i_{\text{ctor}}}}
+          \phantom{\text{\ or\ }}
+          \quad C = \Constructor{v}{\pctor{}}{\ictor{}}
           & \text{\ and\ }
           \op{\text{ConstructorType}(} I \op{,\ } C \op{)}
           = \out{\tau}
@@ -140,28 +135,22 @@ three previous rules hold.
     [lab=\LookupEnv-There]
     {
       {
-        I = \Inductive%
-        {n_{\text{ind}}}
-        {\overline{p_{\text{ind}}}}
-        {\overline{i_{\text{ind}}}}
-        {u}{\overline{c}}
+        I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}
       }
-      \\
+      \\\\\\
       {
         \begin{cases}
-          v \neq n_{\text{ind}} & \\
-          \text{\ and\ }\\
-          \forall\ u_{\text{elim}},
-          v \neq \op{\text{EliminatorName}(} I \op{,\ } u_{\text{elim}} \op{)}\\
-          \text{\ and\ }\\
-          \forall\ \Constructor%
-          {n_{\text{ctor}}}
-          {\overline{p_{\text{ctor}}}}
-          {\overline{i_{\text{ctor}}}}
-          \in \overline{c}, v \neq n_{\text{ctor}}
+          \phantom{\ and\ }
+          v \neq \nind{} & \\
+          \text{\ and\ }
+          \forall\ \uelim{},
+          v \neq \op{\text{EliminatorName}(} I \op{,\ } \uelim{} \op{)}\\
+          \text{\ and\ }
+          \forall\ \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
+          \in \cind{}, v \neq \nctor{}
         \end{cases}
       }
-      \\\\
+      \\\\\\
       { \turnstile{ E }{ \hasType{v}{\out{\tau}} } }
     }
     { \turnstile{ {\MathCons{I}{E}} }{ \hasType{ v }{ \out{\tau} } } }
@@ -467,28 +456,24 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
       {
         {
           \begin{cases}
+            \phantom{\text{\ or\ }}
             e = \Definition{k}{v}{\tau}{t} \\
-            \text{\ or\ } \\
-            e = \Inductive%
-            {n_{\text{ind}}}
-            {\overline{p_{\text{ind}}}}
-            {\overline{i_{\text{ind}}}}
-            {u}
-            {\overline{c}}
-            \text{\ and\ }\\
-         \quad
-        \begin{cases}
-          v = n_{ind}\\
-          \text{\ or\ }\\
-          \exists\ u_{\text{elim}} \text{\ such that\ }
-          v = \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}\\
-          \text{\ or\ }\\
-          \exists\ C \in \overline{c} \text{\ such that\ }
-          C = \Constructor%
-          {v}
-          {\overline{p_{\text{ctor}}}}
-          {\overline{i_{\text{ctor}}}}
-        \end{cases}
+            \text{\ or\ }
+            \begin{cases}
+              \phantom{\text{\ and\ }}
+              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
+              \text{\ and\ }
+              \begin{cases}
+                \phantom{\text{\ or\ }}
+                v = \nind{} \\
+                \text{\ or\ }
+                \exists\ \uelim{} \text{\ such that\ }
+                v = \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
+                \text{\ or\ }
+                \exists\ C \in \overline{c} \text{\ such that\ }
+                C = \Constructor{v}{\pctor{}}{\ictor{}}
+              \end{cases}
+            \end{cases}
           \end{cases}
         }
         \\
@@ -498,13 +483,10 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
       }
       {
         \turnstile%
-        { \diff%
-          {
-            \MathCons%
-            {e}
-            {E}
-          }
-          {\MathDrop{\delta_{E}}} }
+        {
+          \diff%
+          {\MathCons{e}{E}}
+          {\MathDrop{\delta_{E}}}}
         { \declDiff{v}{\MathReplace{v'}}{\MathReplace{\MathHole{}}} }
       }
     }
@@ -515,28 +497,24 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
       {
         {
           \begin{cases}
+            \phantom{\text{\ or\ }}
             e = \Definition{k}{w}{\tau}{t} \text{\ and\ } v \neq w \\
-            \text{\ or\ } \\
-            e = \Inductive%
-            {n_{\text{ind}}}
-            {\overline{p_{\text{ind}}}}
-            {\overline{i_{\text{ind}}}}
-            {u}
-            {\overline{c}}
-            \text{\ and\ }\\
-            \quad
+            \text{\ or\ }
             \begin{cases}
-            v \neq n_{\text{ind}} & \\
-            \text{\ and\ }\\
-            \forall\ u_{\text{elim}},
-            v \neq \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}\\
-            \text{\ and\ }\\
-            \forall\ \Constructor%
-            {n_{\text{ctor}}}
-            {\overline{p_{\text{ctor}}}}
-            {\overline{i_{\text{ctor}}}}
-            \in \overline{c}, v \neq n_{\text{ctor}}
-          \end{cases}
+              \phantom{\text{\ and\ }}
+              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
+              \text{\ and\ }
+              \begin{cases}
+                \phantom{\text{\ and\ }}
+                v \neq \nind{} & \\
+                \text{\ and\ }
+                \forall\ \uelim{},
+                v \neq \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
+                \text{\ and\ }
+                \forall\ \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
+                \in \cind{}, v \neq \nctor{}
+              \end{cases}
+            \end{cases}
           \end{cases}
         }
         \\
@@ -585,40 +563,42 @@ cases where other variables than our target are being modified.
           \begin{cases}
             e = \Definition{k}{v}{\tau}{t}
             \text{\ and\ }
-            \delta_{e} = \ModifyDefinition{\delta_k}{\delta_v}{\delta_\tau}{\delta_t}
+            \delta_{e} = \ModifyDefinition{\delta_k}{\out{\delta_v}}{\out{\delta_\tau}}{\delta_t}
             \\
-            \text{\ or\ }\\
+            \text{\ or\ } \\
             \begin{cases}
-              e = \Inductive%
-              {n}
-              {\overline{p_{\text{ind}}}}
-              {\overline{i_{\text{ind}}}}
-              {u}
-              {\overline{c}}
+              \phantom{\text{\ and\ }}
+              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
               \text{\ and\ }
-              \delta_{e} = \ModifyInductive%
-              {\delta_{n}}
-              {\delta_{\overline{p_{\text{ind}}}}}
-              {\delta_{\overline{i_{\text{ind}}}}}
-              {\delta_u}
-              {\delta_{\overline{c}}} \\
-              \text{\ and\ }\\
+              \delta_{e} = \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}} \\
+              \text{\ and\ }
               \begin{cases}
-                v = n
-                \text{\ and\ }
-                \delta_{n} = \out{\delta_{v}}
-                \text{\ and\ }
-                \deltaIndType{e}{\delta_{e}}{\delta_{\tau}}
+                \phantom{\text{\ or\ }}
+                \begin{cases}
+                  \phantom{\text{\ and\ }}
+                  v = \nind{}
+                  \\
+                  \text{\ and\ }
+                  \delta_{n} = \out{\delta_{v}}
+                  \\
+                  \text{\ and\ }
+                  \deltaInductiveType%
+                  {\diff{\nind{}}{\dnind{}}}
+                  {\diff{\pind{}}{\dpind{}}}
+                  {\diff{\iind{}}{\diind{}}}
+                  {\diff{\uind{}}{\duind{}}}
+                  {\delta_{\tau}}
+                \end{cases}
                 \\
                 \text{\ or\ }
-                \\
                 \begin{cases}
-                  \exists\ u_{\text{elim}} \text{\ such that\ }
-                  v = \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}
+                  \phantom{\text{\ and\ }}
+                  \exists\ \uelim{} \text{\ such that\ }
+                  v = \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}
                   \\ \text{\ and\ }
-                  \deltaEliminatorName{e}{\delta_{e}}{u_{\text{elim}}}{\delta_{v}}
+                  \deltaEliminatorName{e}{\delta_{e}}{\uelim{}}{\delta_{v}}
                   \\ \text{\ and\ }
-                  \deltaEliminator{e}{\delta_{e}}{u_{\text{elim}}}{\delta_{\tau}}
+                  \deltaEliminator{e}{\delta_{e}}{\uelim{}}{\delta_{\tau}}
                 \end{cases}
               \end{cases}
             \end{cases}
@@ -640,31 +620,25 @@ cases where other variables than our target are being modified.
       {
         {
           \begin{cases}
+            \phantom{\text{\ or\ }}
             e = \Definition{k}{w}{\tau}{t} \text{\ and\ } v \neq w \\
-            \text{\ or\ } \\
-            e = \Inductive%
-            {n_{\text{ind}}}
-            {\overline{p_{\text{ind}}}}
-            {\overline{i_{\text{ind}}}}
-            {u}
-            {\overline{c}}
-            \text{\ and\ }\\
-            \quad
+            \text{\ or\ }
             \begin{cases}
-            v \neq n_{\text{ind}} & \\
-            \text{\ and\ }\\
-            \forall\ u_{\text{elim}},
-            v \neq \op{\text{EliminatorName}(} e \op{,\ } u_{\text{elim}} \op{)}\\
-            \text{\ and\ }\\
-            \forall\ \Constructor%
-            {n_{\text{ctor}}}
-            {\overline{p_{\text{ctor}}}}
-            {\overline{i_{\text{ctor}}}}
-            \in \overline{c}, v \neq n_{\text{ctor}}
-          \end{cases}
+              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
+              \text{\ and\ }
+              \begin{cases}
+                \phantom{\text{\ and\ }} v \neq \nind{}\\
+                \text{\ and\ }
+                \forall\ \uelim{},
+                v \neq \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
+                \text{\ and\ }
+                \forall\ \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
+                \in \cind{}, v \neq \nctor{}
+              \end{cases}
+            \end{cases}
           \end{cases}
         }
-        \\
+        \\\\\\
         {
           \turnstile%
           { \diff%
@@ -714,38 +688,19 @@ TODO
       [lab=Diff-\GEMod{Constructor}]
       {
         {
-          I = \Inductive%
-          {n}
-          {\overline{p}}
-          {\overline{i}}
-          {u}
-          {\MathCons{C}{\overline{c}}}
+          I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}
         }
-        \\
+        \\\\\\
         {
-          \delta_{I} = \ModifyInductive%
-          {\delta_n}
-          {\delta_{\overline{p}}}
-          {\delta_{\overline{i}}}
-          {\delta_u}
-          {\delta_{\overline{c}}}
+          \delta_{I} = \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
         }
-        \\
+        \\\\\\
         {
-          C = \Constructor%
-          {n_{\text{ctor}}}
-          {\overline{p_{\text{ctor}}}}
-          {\overline{i_{\text{ctor}}}}
+          C = \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
         }
-        \\
+        \\\\\\
         {
-          \deltaConstructor
-          {\overline{p}}
-          {\delta_{\overline{p}}}
-          {\overline{i}}
-          {\delta_{\overline{i}}}
-          {\overline{c}}
-          {\delta_{\overline{c}}}
+          \deltaConstructor{\pind{}}{\dpind{}}{\iind{}}{\diind{}}{\cind{}}{TODO \dcind{}}
           {v}
           {(\delta_v, \delta_\tau)}
         }
@@ -753,23 +708,11 @@ TODO
       {\turnstile
         { \diff
           {\MathCons
-            {\Inductive
-              {n}
-              {\overline{p}}
-              {\overline{i}}
-              {u}
-              {\overline{c}}
-            }
+            {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}}
             {E}
           }
           {\MathMod
-            {\ModifyInductive
-              {\delta_n}
-              {\delta_{\overline{p}}}
-              {\delta_{\overline{i}}}
-              {\delta_u}
-              {\delta_{\overline{c}}}
-            }
+            {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}}
             {\delta_{E}}
           }
         }

@@ -168,12 +168,15 @@
 \newcommand{\turnstile}[2]{#1\ \mathbin{\textcolor{\opcolor}{\vdash}}\ #2}
 \newcommand{\repair}[4]{ \mkrepair{\repairTermOneOp}{#1}{#2}{#3}{#4} }
 \newcommand{\repairBranches}[3]{\mksimplerepair{\repairBranchesOp}{#1\op{,}\ #2}{#3}}
-\newcommand{\repairInd}[7]{
+
+\newcommand{\repairInd}[6]{
   \mksimplerepair%
   {\repairIndOp}
-  {\diff{#1}{#2}\op{,}\ \diff{#3}{#4}\op{,}\ \diff{#5}{#6}}
-  {#7}
+  {#1\op{,}\ #2\op{,}\ #3\op{,}\ #4\op{,}\ #5}
+  %{\diff{#1}{#2}\op{,}\ \diff{#3}{#4}\op{,}\ \diff{#5}{#6}\op{,}\ \diff{#7}{#8}}
+  {#6}
 }
+
 \newcommand{\repairProg}[3]{
   \repairProgOp\op{(}\blackdiff{#1}{#2}\op{)}\ \op{=}\ \out{#3}
 }
@@ -338,7 +341,9 @@
 \newcommand{\GEPermute}{\GE{\Permute}}
 
 \newcommand{\deltaIndTypeOp}{\op{\delta_{\text{InductiveType}}}}
-\newcommand{\deltaIndType}[3]{ \deltaIndTypeOp\op{(} \diff{#1}{#2} \op{) =\ } \out{#3} }
+\newcommand{\deltaInductiveType}[5]{
+  \deltaIndTypeOp\op{(} #1\op{,}\ #2\op{,}\ #3\op{,}\ #4\op{) =\ } \out{#5}
+}
 
 \newcommand{\deltaConstructorOp}{\op{\delta_{\text{ConstructorType}}}}
 \newcommand{\deltaConstructor}[8]{ \deltaConstructorOp\op{(}
@@ -359,3 +364,25 @@
 \newcommand{\hard}{ \faStar \faStar \faStar }
 
 \newcommand{\MatchingToDiff}{\op{\text{MD}}}
+
+\newcommand{\InductiveType}[5]{
+  \op{\text{InductiveType}(} #1\op{,}\ #2\op{,}\ #3\op{,}\ #4\op{)} = \out{#5}
+}
+
+\newcommand{\nind}{n_{\text{ind}}}
+\newcommand{\pind}{\overline{p_{\text{ind}}}}
+\newcommand{\iind}{\overline{i_{\text{ind}}}}
+\newcommand{\uind}{u_{\text{ind}}}
+\newcommand{\cind}{\overline{c_{\text{ind}}}}
+
+\newcommand{\dnind}{\delta{n_{\text{ind}}}}
+\newcommand{\dpind}{\delta{\overline{p_{\text{ind}}}}}
+\newcommand{\diind}{\delta{\overline{i_{\text{ind}}}}}
+\newcommand{\duind}{\delta{u_{\text{ind}}}}
+\newcommand{\dcind}{\delta{\overline{c_{\text{ind}}}}}
+
+\newcommand{\nctor}{n_{\text{ctor}}}
+\newcommand{\pctor}{\overline{p_{\text{ctor}}}}
+\newcommand{\ictor}{\overline{i_{\text{ctor}}}}
+
+\newcommand{\uelim}{u_\text{elim}}

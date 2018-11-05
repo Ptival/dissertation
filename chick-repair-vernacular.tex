@@ -124,22 +124,20 @@ user-modification.
           {\denv{E}{\delta_E}}
           {\freshOne{n}{\delta_n}{\delta_{n}'}}
         }
-        \\
+        \\\\\\
         {\turnstile%
           {
-            \dcontext%
-            {\MathCons{n}{[]}}
-            {\MathMod{\delta'_{n}}{\MathSame{}}}
+            \denv%
             {E}
             {\delta_E}
           }
-          {\repairInd%
-            {\overrightarrow{p}}
-            {\delta_{\overrightarrow{p}}}
-            {\overrightarrow{i}}
-            {\delta_{\overrightarrow{i}}}
-            {\overrightarrow{c}}
-            {\delta_{\overrightarrow{c}}}
+          {
+            \repairInd%
+            {\diff{n}{\delta'_{n}}}
+            {\diff{\overrightarrow{p}}{\delta_{\overrightarrow{p}}}}
+            {\diff{\overrightarrow{i}}{\delta_{\overrightarrow{i}}}}
+            {\diff{u}{\delta_{u}}}
+            {\diff{\overrightarrow{c}}{\delta_{\overrightarrow{c}}}}
             {(\delta_{\overrightarrow{p}}', \delta_{\overrightarrow{i}}',
               \delta_{\overrightarrow{c}}')}
           }

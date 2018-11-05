@@ -22,48 +22,43 @@ isolation.
       {
         {
           \turnstile%
+          {\dcontext{[]}{\MathSame{}}{E}{\delta_E}}
+          {\repairParameters{\pind{}}{\dpind{}}
+            {(\blackdiff{\Gamma}{\delta_{\Gamma}}, \dpind{}')}
+          }
+        }
+        \\\\\\
+        {
+          \turnstile%
           {\dcontext{\Gamma}{\delta_{\Gamma}}{E}{\delta_E}}
-          {\repairParameters%
-            {\overrightarrow{p}}
-            {\delta_{\overrightarrow{p}}}
-            {(\blackdiff{\Gamma'}{\delta'_{\Gamma}}, \delta'_{\overrightarrow{p}})}
-          }
+          {\repairIndices{\iind{}}{\diind{}}{\diind{}'}}
         }
-        \\
+        \\\\\\
+        \InductiveType{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\tau}
+        \\\\\\
+        \deltaInductiveType%
+        {\diff{\nind{}}{\dnind{}}}
+        {\diff{\pind{}}{\dpind{}}}
+        {\diff{\iind{}}{\diind{}}}
+        {\diff{\uind{}}{\duind{}}}
+        {\delta_{\tau}}
+        \\\\\\
         {
           \turnstile%
-          {\dcontext{\Gamma'}{\delta'_{\Gamma}}{E}{\delta_E}}
-          {\repairIndices%
-            {\overrightarrow{i}}
-            {\delta_{\overrightarrow{i}}}
-            {(\blackdiff{\Gamma''}{\delta''_{\Gamma}}, \delta'_{\overrightarrow{i}})}
-          }
-        }
-        \\
-        {
-          WRONG
-          % We can't add indices like this, instead, the inductive type must be modified
-          \turnstile%
-          {\dcontext{\Gamma''}{\delta''_{\Gamma}}{E}{\delta_E}}
-          {\repairConstructors%
-            {\overrightarrow{c}}
-            {\delta_{\overrightarrow{c}}}
-            {\delta'_{\overrightarrow{c}}}
-          }
+          {\dcontext{\MathCons{\tau}{[]}}{\MathMod{TODO}{\MathSame{}}}{E}{\delta_E}}
+          {\repairConstructors{\cind{}}{\dcind{}}{\dcind{}'}}
         }
       }
       {
         {\turnstile%
-          {\dcontext{\Gamma}{\delta_{\Gamma}}{E}{\delta_E}}
+          {\denv{E}{\delta_E}}
           {\repairInd%
-            {\overrightarrow{p}}
-            {\delta_{\overrightarrow{p}}}
-            {\overrightarrow{i}}
-            {\delta_{\overrightarrow{i}}}
-            {\overrightarrow{c}}
-            {\delta_{\overrightarrow{c}}}
-            {(\delta_{\overrightarrow{p}}', \delta_{\overrightarrow{i}}',
-              \delta_{\overrightarrow{c}}')}
+            {\diff{\nind{}}{\dnind{}}}
+            {\diff{\pind{}}{\dpind{}}}
+            {\diff{\iind{}}{\diind{}}}
+            {\diff{\uind{}}{\duind{}}}
+            {\diff{\cind{}}{\dcind{}}}
+            {(\dpind{}', \diind{}', \dcind{}')}
           }
         }
       }
