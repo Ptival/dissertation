@@ -13,40 +13,40 @@ It is important to clarify how we intend to use those diff types.  We will want
 to describe changes made to the data types in the abstract syntax tree of the
 user's program.  An example will help us avoid some misconception: consider the
 user program and its modification in Figure~\ref{bool-modification}.  While,
-from the program point of view, a value of type \coqinline{bool} was modified
+from the program point of view, a value of type \coqinline{Bool} was modified
 from the value \coqinline{True} to the value \coqinline{False}, we will
-\emph{not} use the type $\Delta_{\coqinline{bool}}$ to describe this change!
+\emph{not} use the type $\Delta_{\coqinline{Bool}}$ to describe this change!
 From the point of view of the abstract syntax tree, a value of type
 \coqinline{term} has changed from the original value \coqinline{Var "True"} to
 the value \coqinline{Var "False"}, which we will capture using the diff type
-$\Delta_{\coqinline{term}}$.
+$\Delta_{\coqinline{Term}}$.
 
 To be precise, we will have to describe how a \coqinline{Definition} has
 changed, and describe how its name has remained \coqinline{a}, its type has
-remained \coqinline{bool}, but its definition has changed.  This will be
-described as a value of type $\Delta_{\coqinline{vernacular}}$, containing a
+remained \coqinline{Bool}, but its definition has changed.  This will be
+described as a value of type $\Delta_{\coqinline{Vernacular}}$, containing a
 diff for each of those three components that may change, including the one of
-diff type $\Delta_{\coqinline{term}}$.
+diff type $\Delta_{\coqinline{Term}}$.
 
 \begin{figure*}[!htp]
 
   \noindent%
   \begin{minipage}[t]{0.50\textwidth}
     \begin{minted}[linenos=false]{coq}
-Inductive bool : Set :=
-| True  : bool
-| False : bool.
+Inductive Bool : Set :=
+| True  : Bool
+| False : Bool.
 
-Definition a : bool := True.
+Definition a : Bool := True.
 \end{minted}
 \end{minipage}%
 \begin{minipage}[t]{0.50\textwidth}
   \begin{minted}[escapeinside=@@,linenos=false]{coq}
-Inductive bool : Set :=
-| True  : bool
-| False : bool.
+Inductive Bool : Set :=
+| True  : Bool
+| False : Bool.
 
-Definition a : bool := @\modified{False}@.
+Definition a : Bool := @\modified{False}@.
 \end{minted}
 \end{minipage}
 
@@ -58,7 +58,7 @@ Definition a : bool := @\modified{False}@.
 
 When the user makes a change to their program, we will attempt to guess the
 structure of their changes, as a value of one of the program diff type
-$\delta_{\coqinline{program}}$.  To illustrate the kind of changes we are
+$\Delta_{\coqinline{Program}}$.  To illustrate the kind of changes we are
 interested in describing, let us look back at our motivating example in
 Figure~\ref{listtovec}, where we can observe the following partial attempts at
 refactoring:
@@ -110,11 +110,11 @@ granularity: either the value is the same in the new program, or it has been
 replaced with a different, unrelated value.  For instance, a binder can either
 have the same name, or have been renamed.  Similarly, the only possible change
 to the recursive flag of a definition is to be atomically changed to a different
-value.  The parameterized $\delta_{atomic}$ diff type captures such cases for a
-given type $\tau$:
+value.  The parameterized diff type $\Delta_{\text{Atomic}}$ captures such cases
+for a given type $\tau$:
 
 \begin{grammar}
-<$\delta_{atomic}\ \tau$> ::= \ %trick LaTeX
+<$\Delta_{\normalfont \text{Atomic}}\ \tau$> ::= \ %trick LaTeX
 \alt $\MathSame$                        \hfill (unchanged)
 \alt $\MathReplace{\langle\tau\rangle}$ \hfill (replaced)
 \end{grammar}
@@ -138,7 +138,10 @@ with the following semantics:
 
 \end{mathpar}
 
-\paragraph{Note} We sometimes indicate
+\paragraph{Notation} We chose this notation to be reminiscent of the identity
+function (for $\MathSame{}$), and the constant function (for
+$\MathReplaceOp{}$).  However, these are not functions, but simply inert
+constructors.
 
 \subsection{List diff}~\label{list-diff}
 

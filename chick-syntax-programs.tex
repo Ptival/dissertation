@@ -26,7 +26,7 @@ Inductive definitions are not mutual, and follow the following syntax:
 
 \noindent
 \begin{grammar}
-<inductive> ::= Inductive(\{\\
+<inductive> ::= \coqinline{Inductive}(\{\\
 name : \synt{var},\\
 parameters : $\overline{ ( \synt{var} , \synt{term} ) }$,\\
 indices : $\overline{ ( \synt{binder} , \synt{term} ) }$,\\
@@ -34,7 +34,7 @@ universe : \synt{universe},\\
 constructors : $\overline{ \synt{constructor} }$\\
 \})
 
-<constructor> ::= Constructor(\{\\
+<constructor> ::= \coqinline{Constructor}(\{\\
 name : \synt{var},\\
 parameters : $\overline{ ( \synt{binder}, \synt{term} ) }$,\\
 indices : $\overline{ \synt{term} }$\\
