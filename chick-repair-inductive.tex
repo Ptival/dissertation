@@ -22,10 +22,10 @@ each repaired index before repairing the next one.  We don't need the final
 context further, so it is not returned.
 
   \item Once we have repaired parameters and indices, we are ready to compute
-how the type of the inductive data type is changing, using $\deltaIndTypeOp{}$.
-We need this information in order to repair the constructors, because
-constructors can contain recursive references to the inductive data type being
-defined in their parameters.
+how the type of the inductive data type is changing, using
+$\deltaInductiveTypeOp{}$.  We need this information in order to repair the
+constructors, because constructors can contain recursive references to the
+inductive data type being defined in their parameters.
 
 \end{enumerate}
 

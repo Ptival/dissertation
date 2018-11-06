@@ -110,7 +110,7 @@
 \newcommand{\MathPermutePis}[2]{\permuteOp{#1}{\Pi} #2}
 \newcommand{\MathPi}[3]{\mkMathPi{#1}{#2}{#3}{}{}}
 \newcommand{\MathPis}[4]{\mkMathPi{#1}{#2}{#3}{}{\BarCount{#4}}}
-\newcommand{\MathReplaceOp}{\mathds{K}({#1})}
+\newcommand{\MathReplaceOp}{\mathds{K}}
 \newcommand{\MathReplace}[1]{\MathReplaceOp{}({#1})}
 \newcommand{\MathSame}{\mathds{1}}
 
@@ -344,20 +344,20 @@
 \newcommand{\GEMod}[1]{\GE{\Mod-{#1}}}
 \newcommand{\GEPermute}{\GE{\Permute}}
 
-\newcommand{\deltaIndTypeOp}{\op{\delta_{\text{InductiveType}}}}
+\newcommand{\deltaInductiveTypeOp}{\op{\delta_{\text{InductiveType}}}}
 \newcommand{\deltaInductiveType}[5]{
-  \deltaIndTypeOp\op{(} #1\op{,}\ #2\op{,}\ #3\op{,}\ #4\op{) =\ } \out{#5}
+  \deltaInductiveTypeOp\op{(} #1\op{,}\ #2\op{,}\ #3\op{,}\ #4\op{) =\ } \out{#5}
 }
 
-\newcommand{\deltaConstructorOp}{\op{\delta_{\text{ConstructorType}}}}
-\newcommand{\deltaConstructor}[8]{ \deltaConstructorOp\op{(}
+\newcommand{\deltaConstructorTypeOp}{\op{\delta_{\text{ConstructorType}}}}
+\newcommand{\deltaConstructorType}[8]{ \deltaConstructorTypeOp\op{(}
 \diff{#1}{#2} \op{,} \diff{#3}{#4} \op{,} \diff{#5}{#6} \op{,}\ #7 \op{) =\ }
 \out{#8} }
 
-\newcommand{\deltaEliminatorOp}{\op{\delta_{\text{EliminatorType}}}}
+\newcommand{\deltaEliminatorTypeOp}{\op{\delta_{\text{EliminatorType}}}}
 \newcommand{\deltaEliminatorNameOp}{\op{\delta_{\text{EliminatorName}}}}
-\newcommand{\deltaEliminator}[4]{
-  \deltaEliminatorOp\op{(} \diff{#1}{#2} \op{,} #3 \op{) =\ } \out{#4}
+\newcommand{\deltaEliminatorType}[4]{
+  \deltaEliminatorTypeOp\op{(} \diff{#1}{#2} \op{,} #3 \op{) =\ } \out{#4}
 }
 \newcommand{\deltaEliminatorName}[4]{
   \deltaEliminatorNameOp\op{(} \diff{#1}{#2} \op{,} #3 \op{) =\ } \out{#4}
@@ -390,3 +390,22 @@
 \newcommand{\ictor}{\overline{i_{\text{ctor}}}}
 
 \newcommand{\uelim}{u_\text{elim}}
+
+\newcommand{\TypeAsText}[1]{\normalfont \coqinline[fontsize=\scriptsize]{#1}}
+
+% {\normalfont ...} is the same as \textnormal{...}
+\newcommand{\DiffType}[1]{\Delta_{\TypeAsText{#1}}}
+\newcommand{\DeltaAtomic}{\DiffType{Atomic}}
+\newcommand{\DeltaInductive}{\DiffType{Inductive}}
+\newcommand{\DeltaList}{\DiffType{List}}
+\newcommand{\DeltaTerm}{\DiffType{Term}}
+\newcommand{\DeltaProgram}{\DiffType{Program}}
+
+\newcommand{\MathSameType}[1]{\MathSame{}_{\TypeAsText{#1}}}
+\newcommand{\MathSameInductive}{\MathSameType{Inductive}}
+\newcommand{\MathSameList}{\MathSameType{List}}
+\newcommand{\MathSameUniverse}{\MathSameType{Universe}}
+
+\newcommand{\deltaType}[1]{\delta_{\TypeAsText{#1}}}
+\newcommand{\deltaConstructor}{\deltaType{Constructor}}
+\newcommand{\deltaInductive}{\deltaType{Inductive}}

@@ -436,14 +436,14 @@ the appropriately permuted environment (Rule \rulename{Diff-\GEPermute}).
 \end{Rules}
 
 When an element has been removed from the environment
-(Figure~\ref{rules-lookup-environment-drop}), we need to check whether the
-variable in question has been removed or not.  For a $\DefinitionText{}$, it
-suffices to check whether the name matches, but for an $\InductiveText{}$, we
-need to check whether the name matches the inductive type, any of the
-eliminators, or any of the constructors.  If it does, then we indicate that the
-variable has been removed by using $\op{\text{Deprecate}}$ again
-(Rule \rulename{Diff-\GEDrop-Here}).  Otherwise, we keep looking recursively
-(Rule \rulename{Diff-\GEDrop-There}).
+(Figure~\ref{rules-lookup-environment-drop}), we need to check whether it was
+our target variable that has been removed.  For the case of a
+\coqinline{Definition}, it suffices to check whether the name matches, but for
+an \coqinline{Inductive}, we need to check whether the name matches the
+inductive type, any of the eliminators, or any of the constructors.  If it does,
+then we indicate that the variable has been removed by using
+$\op{\text{Deprecate}}$ again (Rule \rulename{Diff-\GEDrop-Here}).  Otherwise,
+we keep looking recursively (Rule \rulename{Diff-\GEDrop-There}).
 
 \begin{Rules}
 {rules-lookup-environment-drop}
@@ -543,11 +543,11 @@ variable has been removed by using $\op{\text{Deprecate}}$ again
 \end{Rules}
 
 When an element has been modified in the environment
-(Figure~\ref{rules-lookup-environment-mod}), we also need to check whether the
-variable in question has been removed or not.  For the same reasons as in the
-drop case, we need to check all possibilities for inductive data type
-definitions, yielding Rule \rulename{Diff-\GEMod-Here} for cases where the
-target variable is being modified, and Rule \rulename{Diff-\GEMod-There} for
+(Figure~\ref{rules-lookup-environment-mod}), we again need to check whether our
+target variable is the one that has been removed.  For the same reasons as in
+the drop case, we need to check all possibilities for inductive data type
+definitions, yielding Rule \rulename{Diff-\GEMod{Here}} for cases where the
+target variable is being modified, and Rule \rulename{Diff-\GEMod{There}} for
 cases where other variables than our target are being modified.
 
 \begin{Rules}
@@ -598,7 +598,7 @@ cases where other variables than our target are being modified.
                   \\ \text{\ and\ }
                   \deltaEliminatorName{e}{\delta_{e}}{\uelim{}}{\delta_{v}}
                   \\ \text{\ and\ }
-                  \deltaEliminator{e}{\delta_{e}}{\uelim{}}{\delta_{\tau}}
+                  \deltaEliminatorType{e}{\delta_{e}}{\uelim{}}{\delta_{\tau}}
                 \end{cases}
               \end{cases}
             \end{cases}
@@ -700,7 +700,7 @@ TODO
         }
         \\\\\\
         {
-          \deltaConstructor{\pind{}}{\dpind{}}{\iind{}}{\diind{}}{\cind{}}{TODO \dcind{}}
+          \deltaConstructorType{\pind{}}{\dpind{}}{\iind{}}{\diind{}}{\cind{}}{TODO \dcind{}}
           {v}
           {(\delta_v, \delta_\tau)}
         }
