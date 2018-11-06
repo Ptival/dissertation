@@ -1,3 +1,34 @@
+\subsection{Repairing inductive data type definitions}
+
+Figure~\ref{fig:repair-inductive} gives the high-level overview of how inductive
+data type definitions are repaired.  The repair operates in three sequential
+steps:
+
+\begin{enumerate}
+
+  \item First, the inductive parameters are repaired using
+$\repairParametersOp{}$.  Starting with an empty local context, the first
+parameter is repaired, and added to the local context, with its repaired diff,
+before repairing the next parameter.  Thanks to the local context, further
+parameters may be repaired appropriately if they depend on previous parameters
+that have undergone repair already.  We return the final local context,
+alongside the repaired parameters, because we need to update the indices in the
+same context.
+
+  \item Second, the inductive indices are repaired using $\repairIndicesOp{}$,
+starting in the local context obtained at the end of the previous step.  Indices
+are repaired in a similar fashion to parameters, populating the context with
+each repaired index before repairing the next one.  We don't need the final
+context further, so it is not returned.
+
+  \item Once we have repaired parameters and indices, we are ready to compute
+how the type of the inductive data type is changing, using $\deltaIndTypeOp{}$.
+We need this information in order to repair the constructors, because
+constructors can contain recursive references to the inductive data type being
+defined in their parameters.
+
+\end{enumerate}
+
 We omit most of the details of repairing an inductive data type definition
 behind the symbol $\repairIndOp$.  It essentially needs to go recursively in all
 parameters and indices of both the inductive type itself and all of its
@@ -7,9 +38,8 @@ to possible modifications: for instance, if the first parameter must be renamed,
 and the second parameter's type refers to the first parameter's name, the type
 will need to be repaired.  Indices also must repaired in the context of the
 repaired parameters.  Constructors are repaired one by one, in isolation, but
-the repairing of their parameters.  Constructor indices are simply
-instantiations of the inductive indices with terms: they are simply repaired in
-isolation.
+the repairing of their parameters.  Constructor indices are simply instances of
+the inductive indices with terms: they are simply repaired in isolation.
 
 \begin{Rules}
   {fig:repair-inductive}
@@ -45,7 +75,13 @@ isolation.
         \\\\\\
         {
           \turnstile%
-          {\dcontext{\MathCons{\tau}{[]}}{\MathMod{TODO}{\MathSame{}}}{E}{\delta_E}}
+          {
+            \dcontext%
+            {\MathCons{\MathLocalAssum{\nind{}}{\tau}}{[]}}
+            {\MathMod{\MathLocalAssum{\dnind{}}{\delta_{\tau}}}{\MathSame{}}}
+            {E}
+            {\delta_E}
+          }
           {\repairConstructors{\cind{}}{\dcind{}}{\dcind{}'}}
         }
       }
@@ -60,6 +96,29 @@ isolation.
             {\diff{\cind{}}{\dcind{}}}
             {(\dpind{}', \diind{}', \dcind{}')}
           }
+        }
+      }
+    }
+  \end{mathpar}
+
+\end{Rules}
+
+\subsubsection{Repairing inductive parameters}
+
+\begin{Rules}
+  {fig:repair-inductive-parameters}
+  { Rules for repairing inductive parameters ($\repairParametersOp$) }
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=\RepairVernac{Inductive}]
+      {
+      }
+      {
+        {\turnstile%
+          {\dcontext{\Gamma}{\delta_{\Gamma}}{E}{\delta_E}}
+          {\repairParameters{\pind{}}{\dpind{}}{(\blackdiff{A}{B}, \dpind{}')}}
         }
       }
     }

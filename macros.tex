@@ -123,13 +123,13 @@
 \newcommand{\freshOneOp}{\op{\text{Fresh}_1}}
 \newcommand{\freshTwoOp}{\op{\text{Fresh}_2}}
 \newcommand{\repairIndOp}{\op{R_{\text{Inductive}}}}
-\newcommand{\repairProgOp}{\op{R_{P}}}
-\newcommand{\repairTermOneOp}{\op{R_{T_1}}}
-\newcommand{\repairTermTwoOp}{\op{R_{T_2}}}
-\newcommand{\repairTermThreeOp}{\op{R_{T_2}}}
+\newcommand{\repairProgOp}{\op{R_{\text{Program}}}}
+\newcommand{\repairTermOneOp}{\op{R_{\text{Term}_1}}}
+\newcommand{\repairTermTwoOp}{\op{R_{\text{Term}_2}}}
+\newcommand{\repairTermThreeOp}{\op{R_{\text{Term}_2}}}
 \newcommand{\repairVernacOp}{\op{R_{\text{Vernacular}}}}
 \newcommand{\vernacEnvOp}{\op{E_{V}}}
-\newcommand{\repairBranchesOp}{\op{R_{B}}}
+\newcommand{\repairBranchesOp}{\op{R_{\text{Branches}}}}
 
 \newcommand{\repairParametersOp}{\op{R_{\text{Parameters}}}}
 \newcommand{\repairIndicesOp}{\op{R_{\text{Indices}}}}
@@ -184,6 +184,9 @@
 \newcommand{\repairTermWithoutType}[2]{\mksimplerepair{\repairTermThreeOp}{#1}{#2}}
 \newcommand{\repairVernac}[3]{
   \repairVernacOp\op{(}\blackdiff{#1}{#2}\op{)}\ \op{=}\ \out{#3}
+}
+\newcommand{\repairVernacTwoLines}[2]{
+  \repairVernacOp\op{(}\blackdiff{#1}{#2}\op{)}\ \op{=}
 }
 
 \newcommand{\DefinitionText}{\text{Definition}}

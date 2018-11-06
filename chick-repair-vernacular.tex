@@ -82,8 +82,8 @@ user-modification.
         {
           \Gamma \op{=}
           \begin{cases}
-            []                         & \text{if } k = \text{Definition}\\
-            [\MathLocalAssum{n}{\tau}] & \text{if } k = \text{Fixpoint}
+            []                                      & \text{if } k = \text{Definition}\\
+            \MathCons{\MathLocalAssum{n}{\tau}}{[]} & \text{if } k = \text{Fixpoint}
           \end{cases}
         }
         \\\\\\
@@ -119,10 +119,14 @@ user-modification.
       \inferrule*
       [lab=\RepairVernac{Inductive}]
       {
+        I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}
+        \\\\\\
+        \delta_{I} = \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
+        \\\\\\
         {
           \turnstile%
           {\denv{E}{\delta_E}}
-          {\freshOne{n}{\delta_n}{\delta_{n}'}}
+          {\freshOne{\nind{}}{\dnind{}}{\dnind{}'}}
         }
         \\\\\\
         {\turnstile%
@@ -133,41 +137,21 @@ user-modification.
           }
           {
             \repairInd%
-            {\diff{n}{\delta'_{n}}}
-            {\diff{\overrightarrow{p}}{\delta_{\overrightarrow{p}}}}
-            {\diff{\overrightarrow{i}}{\delta_{\overrightarrow{i}}}}
-            {\diff{u}{\delta_{u}}}
-            {\diff{\overrightarrow{c}}{\delta_{\overrightarrow{c}}}}
-            {(\delta_{\overrightarrow{p}}', \delta_{\overrightarrow{i}}',
-              \delta_{\overrightarrow{c}}')}
+            {\diff{\nind{}}{\dnind{}}}
+            {\diff{\pind{}}{\dpind{}}}
+            {\diff{\iind{}}{\diind{}}}
+            {\diff{\uind{}}{\duind{}}}
+            {\diff{\cind{}}{\dcind{}}}
+            {(\dpind{}', \diind{}', \dcind{}')}
           }
         }
       }
       {
         \turnstile%
         { \denv{E}{\delta_E} }
-        {
-          \repairVernac%
-          {\Inductive%
-            {n}
-            {\overrightarrow{p}}
-            {\overrightarrow{i}}
-            {u}
-            {\overrightarrow{c}}
-          }
-          {\ModifyInductive%
-            {\delta_n}
-            {\delta_{\overrightarrow{p}}}
-            {\delta_{\overrightarrow{i}}}
-            {\delta_u}
-            {\delta_{\overrightarrow{c}}}
-          }
-          {\ModifyInductive%
-            {\delta_n'}
-            {\delta_{\overrightarrow{p}}'}
-            {\delta_{\overrightarrow{i}}'}
-            {\delta_u}
-            {\delta_{\overrightarrow{c}}'}
+        { \repairVernac{I}{\delta_{I}}
+          {
+            \ModifyInductive{\dnind{}'}{\dpind{}'}{\diind{}'}{\duind{}}{\dcind{}'}
           }
         }
       }

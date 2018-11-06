@@ -2,13 +2,32 @@
 
 This chapter will focus on the development and evaluation of a tool to help
 functional programmers propagate changes made to some of their definitions to
-the rest of their code.
+the rest of their code, called \Chick{}\footnotemark{}.
+Section~\ref{chick-background} gives additional background specific to this
+chapter.  Section~\ref{chick-design} describes the global design of the tool and
+its components.  Section~\ref{chick-syntax} will cover the syntax of the
+language over which \Chick{} operates.
 
-% \input{chick-background}
-% \input{chick-design}
-% \input{chick-syntax}
-% \input{chick-diffs}
+\footnotetext{All code for \Chick{} is publicly available at:
+\url{https://github.com/Ptival/chick}}
+
+In Section~\ref{chick-diffs}, we will describe a family of data types that allow
+us to perform repairs.  Section~\ref{chick-lookup} will present both usual
+lookup rules, and \Chick{}-specific lookup rules, that are necessary to describe
+the repair algorithm.  Section~\ref{chick-repair} will then describe the repair
+algorithm and all its components.
+
+Section~\ref{chick-deriving} goes into more details into how some diff
+operations needed by the repair algorithm can be automatically derived from
+small descriptions of their reactions to certain changes in the data structure
+they operate on.  Finally, we describe how we automatically infer diffs from
+pairs of programs without requiring user help in Section~\ref{chick-guess}.
+
+\input{chick-background}
+\input{chick-design}
+\input{chick-syntax}
+\input{chick-diffs}
 \input{chick-lookup}
 \input{chick-repair}
-% \input{chick-deriving}
-% \input{chick-guess}
+\input{chick-deriving}
+\input{chick-guess}

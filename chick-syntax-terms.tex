@@ -3,31 +3,34 @@
 \Chick{} is designed as a small functional programming language upon which the
 repair algorithm will operate.  The aim was to represent a language such as
 \Gallina{}, and as such, \Chick{} is a dependently-typed lambda calculus, with
-inductive constructions.  The syntax of \Chick{} is given in this grammar:
+inductive constructions.  The abstract syntax of \Chick{} terms is given in the
+following grammar:
 
 \begin{grammar}%
 <term> ::= \ %trick LaTeX
-\alt <term> : <term>                                           \hfill (type annotation)
-\alt <term> <term>                                             \hfill (application)
-\alt _                                                         \hfill (hole)
-\alt $\lambda$ <binder>, <term>                                \hfill (value abstraction)
-\alt match <term> with $\overrightarrow{ \synt{pattern} }$ end \hfill (pattern matching)
-\alt $\Pi$(<binder> : <term>) → <term>                         \hfill (type abstraction)
-\alt <universe>                                                \hfill (universes)
-\alt <var>                                                     \hfill (variable)
+\alt <term> \coqinline{:} <term>                         \hfill (type annotation)
+\alt <term> <term>                                       \hfill (function application)
+\alt \coqinline{_}                                       \hfill (hole)
+\alt \coqinline{λ} <binder> \coqinline{,} <term>         \hfill (value abstraction)
+\alt \coqinline{match} <term> \coqinline{with}
+$\overline{ \synt{pattern} }$ \coqinline{end}            \hfill (pattern matching)
+\alt \coqinline{Π(} <binder> \coqinline{:} <term>
+\coqinline{) →} <term>                                   \hfill (type abstraction)
+\alt <universe>                                          \hfill (universes)
+\alt <var>                                               \hfill (variable)
 
-<universe> ::= Prop \alt Set \alt Type
+<universe> ::= \coqinline{Prop} | \coqinline{Set} | \coqinline{Type}
 
 <binder> ::= \ % trick LaTeX
 \alt <var> \hfill (named)
 \alt _     \hfill (anonymous)
 
-<pattern> ::= ($\overrightarrow{ \synt{binder} }$, <term>)
+<pattern> ::= ($\overline{ \synt{binder} }$, <term>)
 \end{grammar}
 
-The \emph{application}, \emph{value abstraction}, \emph{type abstraction}, and
-\emph{variable} constructs, are standard constructs of a dependently-typed
-lambda calculus.
+The \emph{function application}, \emph{value abstraction}, \emph{type
+abstraction}, and \emph{variable} constructs, are standard constructs of a
+dependently-typed lambda calculus.
 
 The \emph{type annotation} construct lets us ascribe a type to a given term.
 The \emph{hole} construct can take the place of a term anywhere: it stands for a
@@ -40,21 +43,24 @@ synthesis techniques to generate such values, the algorithm can safely insert a
 typed hole, leaving to the programmer the task of figuring out the proper value.
 
 Finally, the \emph{pattern matching} construct is found in languages with
-algebraic data types, and lets us dispatch code based on the shape of some
-such data type.
+algebraic data types, and lets us dispatch code based on the shape of some such
+data type.  The attentive reader may notice that our pattern language is
+somewhat limited.  We do not cover nested patterns, or other advanced pattern
+features.
 
 We use the same universe names as found in \Gallina{}, though we do not yet
-support its cumulative universe hierarchy syntactically.  However, this does
-\emph{not} mean that \Chick{} cannot repair \Gallina{} programs that use the
-universe hierarchy, but rather, it cannot syntactically represent universe
-levels.  Instead, \Chick{} is oblivious to universe levels, so it will repair
-programs regardless of their universe level.  The downside is that it cannot
-represent explicit universe levels, and as such, might break programs that
-require them.  Universe levels can be added almost for free, since the repair
-algorithm could simply carry them along and attempt no repair.
+support its cumulative universe hierarchy syntactically.  This does \emph{not}
+mean that \Chick{} cannot repair \Gallina{} programs that use the universe
+hierarchy, but rather, that it cannot syntactically represent universe levels.
+Instead, \Chick{} is oblivious to universe levels, so it will repair programs
+regardless of their universe level.  The downside is that, because it cannot
+represent universe levels explicitly, it might break programs that require them.
+Bare support for universe levels can be added almost for free, since the repair
+algorithm could simply carry them along and attempt no repair.  A universe-aware
+repair algorithm would require further investigation.
 
-While we use the underscore symbol ($\_$) to represent both a hole term and an
-anonymous binder, the two concepts can never appear in the same program
-location, and therefore, there can be no confusion: in a term context, the
-symbol represents a hole, while in a binding context, it represents an anonymous
-binder.
+\paragraph{About underscores} While we use the underscore symbol ($\_$) to
+represent both a hole term and an anonymous binder, the two concepts can never
+appear in the same program location, and therefore, there can be no confusion:
+in a term context, the symbol represents a hole, while in a binding context, it
+represents an anonymous binder.
