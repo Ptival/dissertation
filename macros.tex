@@ -21,6 +21,7 @@
 \newcommand{\Vernacular}{\Language{Vernacular}}
 
 \newcommand{\Chick}{\Language{Chick}}
+\newcommand{\Coop}{\Language{Coop}}
 \newcommand{\Coq}{\Language{Coq}}
 \newcommand{\CoqIDE}{\Tool{CoqIDE}}
 \newcommand{\Erlang}{\Language{Erlang}}
@@ -219,6 +220,8 @@
 
 \newcommand{\RepairProg}[1]{Repair-Program-#1}
 \newcommand{\RepairVernac}[1]{Repair-Vernacular-#1}
+\newcommand{\RepairParameters}[1]{Repair-Parameters-#1}
+\newcommand{\RepairIndices}[1]{Repair-Indices-#1}
 
 \newcommand{\RProgMod}{\RepairProg{Modify}}
 \newcommand{\RProgSameCons}{\RepairProg{Same-Cons}}
@@ -241,10 +244,6 @@
         \label{#1}
       \end{figure*}
     }
-
-\newcommand{\MathSameProg}{\MathSame_P}
-\newcommand{\MathSameVernac}{\MathSame_V}
-\newcommand{\MathSameGlobal}{\MathSame_G}
 
 \newcommand{\MathProp}{\mathtt{Prop}}
 \newcommand{\MathSet} {\mathtt{Set}}
@@ -391,21 +390,27 @@
 
 \newcommand{\uelim}{u_\text{elim}}
 
-\newcommand{\TypeAsText}[1]{\normalfont \coqinline[fontsize=\scriptsize]{#1}}
+%\newcommand{\MathLabel}[1]{\normalfont \coqinline[fontsize=\scriptsize]{#1}}
+\newcommand{\MathLabel}[1]{\normalfont \text{#1}}
 
 % {\normalfont ...} is the same as \textnormal{...}
-\newcommand{\DiffType}[1]{\Delta_{\TypeAsText{#1}}}
+\newcommand{\DiffType}[1]{\Delta_{\MathLabel{#1}}}
 \newcommand{\DeltaAtomic}{\DiffType{Atomic}}
 \newcommand{\DeltaInductive}{\DiffType{Inductive}}
 \newcommand{\DeltaList}{\DiffType{List}}
 \newcommand{\DeltaTerm}{\DiffType{Term}}
 \newcommand{\DeltaProgram}{\DiffType{Program}}
 
-\newcommand{\MathSameType}[1]{\MathSame{}_{\TypeAsText{#1}}}
-\newcommand{\MathSameInductive}{\MathSameType{Inductive}}
-\newcommand{\MathSameList}{\MathSameType{List}}
-\newcommand{\MathSameUniverse}{\MathSameType{Universe}}
+\newcommand{\MathSameLabel}[1]{\MathSame{}_{\MathLabel{#1}}}
 
-\newcommand{\deltaType}[1]{\delta_{\TypeAsText{#1}}}
+\newcommand{\MathSameInductive}{\MathSameLabel{Inductive}}
+\newcommand{\MathSameList}{\MathSameLabel{List}}
+\newcommand{\MathSameProgram}[1]{\MathSameLabel{Program}}
+\newcommand{\MathSameTerm}[1]{\MathSameLabel{Term}}
+\newcommand{\MathSameUniverse}{\MathSameLabel{Universe}}
+\newcommand{\MathSameVariable}[1]{\MathSameLabel{Variable}}
+\newcommand{\MathSameVernacular}[1]{\MathSameLabel{Vernacular}}
+
+\newcommand{\deltaType}[1]{\delta_{\MathLabel{#1}}}
 \newcommand{\deltaConstructor}{\deltaType{Constructor}}
 \newcommand{\deltaInductive}{\deltaType{Inductive}}

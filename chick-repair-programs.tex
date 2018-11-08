@@ -91,25 +91,50 @@ their dependencies, as accounted for in the global environment diff.
           {
             {\turnstile%
               { \denv{E}{\delta_E} }
-              { \repairProg{\MathCons{v}{p}}{\MathMod{\MathSameVernac}{\MathSameProg}}{\delta} }
+              { \repairProg%
+                {\MathCons{v}{p}}
+                {\MathMod{\MathSameVernacular{}}{\MathSameProgram{}}}
+                {\delta}
+              }
             }
           }
           {\turnstile%
             { \denv{E}{\delta_E} }
-            { \repairProg{\MathCons{v}{p}}{\MathSame}{\delta} }
+            { \repairProg{\MathCons{v}{p}}{\MathSameProgram{}}{\delta} }
           }
     }
 
     {
       \inferrule*
           [lab=\RepairProg{Replace}]
+          % {\turnstile%
+          %   { \denv{E}{\delta_E} }
+          %   { \repairProg{q}{\MathSameProgram{}}{\delta} }
+          % }
+          % {\turnstile%
+          %   { \denv{E}{\delta_E} }
+          %   { \repairProg{p}{\MathReplace{q}}{\delta} }
+          % }
+          { }
           {\turnstile%
             { \denv{E}{\delta_E} }
-            { \repairProg{q}{\MathSameProg}{\delta} }
+            { \repairProg{p}{\MathReplace{q}}{\MathReplace{q}} }
+          }
+    }
+
+    {
+      \inferrule*
+          [lab=\RepairProg{Insert}]
+          {\turnstile%
+            { \denv%
+              {\MathCons{v}{E}}
+              {\MathMod{\MathSameVernacular{}}{\delta_E}}
+            }
+            { \repairProg{p}{\delta_{p}}{\delta} }
           }
           {\turnstile%
             { \denv{E}{\delta_E} }
-            { \repairProg{p}{\MathReplace{q}}{\delta} }
+            { \repairProg{p}{\MathIns{v}{\delta_{p}}}{\delta} }
           }
     }
 

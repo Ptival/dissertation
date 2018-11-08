@@ -91,26 +91,28 @@ vec_ind :
 \end{figure*}
 
 The property being returned \coqinline{P} is usually referred to as the
-\textit{motive} of the elimination principle.  The motive is a property about a
-value of the inductive type being eliminated: we will refer to this value as the
-\textit{target} of the motive.  The value being eliminated (the last
-universally quantified value, respectively \coqinline{l} and \coqinline{v}) are
-usually referred to as the \textit{discriminee}.  The process that computes the
-elimination principle's type from the inductive data type definition
-$\Inductive{n}{\overrightarrow{p}}{\overrightarrow{i}}{u}{\overrightarrow{c}}$
+\textit{motive} of the elimination principle
+(see~\mycite{mcbride2000elimination} for a thorough introduction to elimination
+with a motive).  The motive is a property about a value of the inductive type
+being eliminated: we will refer to this value as the \textit{target} of the
+motive.  The value being eliminated (the last universally quantified value,
+respectively \coqinline{l} and \coqinline{v}) are usually referred to as the
+\textit{discriminee}.  The process that computes the elimination principle's
+type from the inductive data type definition
+$\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}$
 is involved, but straightforward:
 
 \begin{enumerate}[label=\protect\circled{\arabic*}]
 
-\item~\label{ind-params} the inductive parameters $\overrightarrow{p}$ are
-universally quantified over,
+\item~\label{ind-params} the inductive parameters $\pind{}$ are universally
+quantified over,
 
 \item the motive \coqinline{P} is universally quantified over, its type being
 computed by:
 
 \begin{itemize}
 
-\item universally quantifying over the inductive indices $\overrightarrow{i}$,
+\item universally quantifying over the inductive indices $\iind{}$,
 
 \item universally quantifying over a target, i.e.\ an element of the inductive
 type undergoing elimination, fully instantiated with parameters
@@ -121,27 +123,26 @@ principle,
 
 \end{itemize}
 
-\item for each constructor
-$\Constructor{n_c}{\overrightarrow{p_c}}{\overrightarrow{i_c}}$, a case is
-universally quantified over, whose type is obtained thus:
+\item for each constructor $\Constructor{\nctor{}}{\pctor{}}{\ictor{}}$, a case
+is universally quantified over, whose type is obtained thus:
 
 \begin{itemize}
 
-\item each constructor parameter $\overrightarrow{p_c}$ is
-universally quantified over, and for each parameter $p_{c_i}$ that is a
-recursive occurrence of the data type being eliminated, a fully instantiated
-motive, with appropriate arguments so as to target this parameter, is also
-universally quantified over immediately after this parameter,
+\item each constructor parameter $\pctor{}$ is universally quantified over, and
+for each parameter that is a recursive occurrence of the data type being
+eliminated, a fully instantiated motive, with appropriate arguments so as to
+target this parameter, is also universally quantified over immediately after
+this parameter,
 
 \item the return type is also a fully instantiated motive, where inductive
-indices are instantiated with the constructor indices $\overrightarrow{i_c}$,
-and the motive's target is an instantiation of the constructor $n_c$, with
-inductive parameters from step~\ref{ind-params}, and constructor parameters from
-the previous sub-step,
+indices are instantiated with the constructor indices $\ictor{}$, and the
+motive's target is an instantiation of the constructor $n_c$, with inductive
+parameters from step~\ref{ind-params}, and constructor parameters from the
+previous sub-step,
 
 \end{itemize}
 
-\item~\label{ind-indices} inductive indices $\overrightarrow{i}$ are
+\item~\label{ind-indices} inductive indices $\iind{}$ are
 universally quantified over,
 
 \item the discriminee is universally quantified over, its type being the

@@ -66,27 +66,25 @@ programs, we built a prototype tool called \Chick{}.  The high-level workflow of
 \Chick{} is given in Figure~\ref{chick-workflow}.  The main idea is to take the
 original, existing program prior to the refactoring attempt, and the modified
 program where a partial refactoring has been performed, and automatically finish
-propagating changes through the rest of the program.
+propagating changes through the rest of the program.  However, we do not perform
+this operation all at once.  Instead, our workflow consists in three phases.
 
-However, we do not perform this operation all at once.  Instead, our workflow
-consists in three phases.  First, we analyze the original program against the
-modified program to build a list of all the differences between the two.  We
-will describe the data type used to represent those differences in
-Section~\ref{chick-diffs}.  We try to capture the intent of the programmer in
-this list of differences; as we will discuss, there can be several ways of
-interpreting the same change, and the repair performed will depend on which
-interpretation is chosen.  We will postpone the details of how we guess until
-Section~\ref{chick-guess}, and assume the appropriate diff is given for now.
+First, we analyze the original program against the modified program to build a
+list of all the differences between the two.  We will describe the data types
+used to represent those differences in Section~\ref{chick-diffs}, but will defer
+explanations about how this guess is performed until Section~\ref{chick-guess}.
+We try to capture the intent of the programmer in this list of differences; as
+we will discuss, there can be several ways of interpreting the same change, and
+the repair performed will depend on which interpretation is chosen.
 
 Second, this list of differences is used to compute a repair of the program.
 Here again, we do not directly compute a repaired program (a value of type
-\coqinline{program}), but instead compute a value of type
-$\delta_{\coqinline{program}}$ describing how the program must be modified in
-order to be repaired.  We will cover the benefits of this approach in
-Section~\ref{TODO}.
+\coqinline{program}), but instead compute a value of type $\DeltaProgram$ (as
+described in Section~\ref{chick-diffs}) describing how the program must be
+modified in order to be repaired.
 
-Finally, the repaired program is obtained by simply applying the repaired diff
-to the original program.
+Third and finally, the repaired program is obtained by simply applying the
+repaired diff to the original program.
 
 \begin{figure*}[!htp]
 
@@ -122,7 +120,8 @@ Fixpoint map :
     match l with
     | nil _      => nil B
     | cons _ h t =>
-      cons B (f h) (map A B f t)
+      cons B (f h)
+           (map A B f t)
     end.
   \end{minted}
 \end{minipage}%
@@ -157,7 +156,8 @@ Fixpoint map :
     match l with
     | nil _         => nil B
     | @\repaired{vcons}@ _ @\repaired{\_}@ h t =>
-      @\repaired{vcons}@ B @\repaired{\_}@ (f h) (map A B f t)
+      @\repaired{vcons}@ B @\repaired{\_}@ (f h)
+            (map A B f t)
     end.
   \end{minted}
 \end{minipage}
