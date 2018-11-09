@@ -1,4 +1,4 @@
-\section{\Coop{}: extending \Chick{} with optics to repair other languages}
+\section{Design of \Coop{}}\label{coop-design}
 
 Unfortunately, testing \Chick{} on real-world \Coq{} programs is extremely
 complicated.  For one, the language described by \Chick{} is a very small subset
@@ -24,17 +24,18 @@ We present the workflow that we envision for \Coop{}, an extension of \Chick{}
 to support repairing other programming languages, in
 Figure~\ref{fig:coop-workflow}.  Starting with an original program and a
 partially refactored program, in some source language, we can use a parser for
-the source language to obtain abstract syntax trees for those.  Now, in order to
-embed these into \Chick{}, we need some program we call an \define{embedder},
-and discuss in Section~\ref{embedding-extracting}.  Now we can run the original
-\Chick{} pipeline, described in Section~\ref{chick-design}, until we obtained a
-repaired abstract syntax tree, still in the \Chick{} language.  We can now run
-an \define{extracter}, which performs the inverse operation to our embedder.  We
-obtain a repaired abstract syntax tree, now in the syntax of the source
-language.  We can then obtained the repaired program, using the surface syntax
-of the source language, by calling a pretty-printer.  We use a
-diff-pretty-printer, described in Section~\ref{diff-pretty-printer}, so as to
-obtain a program syntactically as close as possible to the original.
+the source language to obtain abstract syntax trees (\define{AST}) for those.
+Now, in order to embed these into \Chick{}, we need some program we call an
+\define{embedder}, and discuss in Section~\ref{coop-embedding-extracting}.  Now
+we can run the original \Chick{} pipeline, described in
+Section~\ref{chick-design}, until we obtained a repaired abstract syntax tree,
+still in the \Chick{} language.  We can now run an \define{extracter}, which
+performs the inverse operation to our embedder.  We obtain a repaired abstract
+syntax tree, now in the syntax of the source language.  We can then obtained the
+repaired program, using the surface syntax of the source language, by calling a
+pretty-printer.  We use a diff-pretty-printer, described in
+Section~\ref{coop-diff-pretty-printer}, so as to obtain a program syntactically
+as close as possible to the original.
 
 \begin{figure}[!htp]
 
@@ -90,7 +91,8 @@ obtain a program syntactically as close as possible to the original.
     { Chick (as described in Figure~\ref{chick-workflow}) };
 
     \node[doc,below=of chick]      (repaired-1) { Repaired AST };
-    \node[box,below=of repaired-1] (extracter)  { Source language extracter };
+    \node[box,below=of repaired-1,minimum width=11cm] (extracter)
+    { Source language extracter };
 
     \draw[dashed, ultra thick] (extracter.west) -- (extracter.west -| SW);
     \draw[dashed, ultra thick] (extracter.east) -- (extracter.east -| SE)
@@ -99,7 +101,8 @@ obtain a program syntactically as close as possible to the original.
     ;
 
     \node[doc,below=of extracter]  (repaired-2) { Repaired AST };
-    \node[box,below=of repaired-2] (printer)    { Source language diff-pretty-printer };
+    \node[box,below=of repaired-2,minimum width=11cm] (printer)
+    { Source language diff-pretty-printer };
     \node[doc,below=of printer]    (repaired-3) { Repaired program };
 
     \draw[->,ultra thick] (original-1.south) -- (original-1.south |- parser.north);
@@ -155,108 +158,3 @@ obtain a program syntactically as close as possible to the original.
   \caption{\Coop{}'s workflow}~\label{fig:coop-workflow}
 
 \end{figure}
-
-\subsection{Embedding and extracting programs}\label{embedding-extracting}
-
-In order to embed a new language into \Chick{}, we simply need to add a
-constructor to the constructor of our \coqinline{Vernacular} and
-\coqinline{Term} types.  For instance, we added support for \OCaml{} with the
-following extension:
-
-\begin{grammar}
-<vernacular> ::= \ %trick LaTeX
-\alt ... \hfill (same as in Section~\ref{chick-syntax-programs})
-\alt \coqinline{OCamlStructureItem} <ocaml-structure-item>
-
-<term> ::= \ %trick LaTeX
-\alt ... \hfill (same as in Section~\ref{chick-syntax-terms})
-\alt \coqinline{OCamlExpression} <ocaml-expression>
-\end{grammar}
-
-Now, our \define{embedder} can inspect the incoming abstract syntax tree, and
-decide to map constructs from the source language to \Chick{} constructs, when
-it makes sense to do so, or store the constructs in the extra constructors when
-there is no matching concept in \Chick{}.
-
-For instance, in the \OCaml{} embedder, we map constructs such as \OCaml{}'s
-(non-polymorphic) variants to our notion of inductive data types, since the
-concepts match.  We can also map most simple expressions to our term type, but
-complex features that we do not support (say, nested pattern matching) get put
-aside in the \coqinline{OCamlExpression} constructor.
-
-The \define{extracter} acts as an inverse of the embedder, mapping \Chick{}
-constructs back to their source language counterpart.  Constructs that have
-been stashed in one of our constructors for unsupported language features
-are simply restored as is, and \Chick{} constructs are mapped back to the
-source language construct they came from.
-
-Unfortunately, we sometimes need to map different source language abstract
-syntax trees to the same \Chick{} abstract syntax tree.  For instance,
-using \OCaml{} as an example again, the following two functions:
-
-\begin{minted}{ocaml}
-let f x y = 42
-let g x = fun y -> 42
-let h = fun x -> fun y -> 42
-\end{minted}
-
-map to similar \Chick{} terms:
-
-\begin{minted}{coq}
-Definition f : _ := λ x, λ y, 42.
-Definition g : _ := λ x, λ y, 42.
-Definition h : _ := λ x, λ y, 42.
-\end{minted}
-
-In order to try and preserve surface-level syntax as much as possible, we would
-like to attach metadata about such source language syntactic choices in \Chick{}
-terms.  This goals seems at odds with our intent of making \Coop{} extensible,
-but we can actually achieve this somewhat easily by using the technique employed
-by~\mycite{najd2017trees} for the Glasgow \Haskell{} Compiler (GHC).  Using
-generalized algebraic data types (GADTs), and type families, this technique
-allows us to build abstract syntax trees for \Chick{} that can be decorated with
-arbitrary metadata, and use type-level computations to determine what this
-metadata may be for different constructors in different contexts.
-
-For instance, we can solve the previous problem by attaching metadata about the
-number of function arguments that are marked as parameters, as opposed to being
-abstracted over.
-
-\begin{minted}{haskell}
--- We declare the existence of a family of types for storing the
--- metadata attached to a Definition.
-type family DefinitionMetadata ξ
-
--- We attach this metadata to the Definition contructor.
-data Vernacular ξ
-  = Definition (DefinitionMetadata ξ) (DefinitionData ξ)
-  | ...
-
--- We instantiate the family for the OCaml language with an
--- integer representing the number of explicit parameters.
-type instance (DefinitionMetadata OCaml) = Int
-\end{minted}
-
-With this information attached to our \mintinline{haskell}{Definition} nodes,
-the extracter can pick the appropriate form, so as to preserve the original
-syntactic choice.
-
-\begin{minted}{haskell}
-extracterVernacularOCaml :: Vernacular OCaml -> StructureItem
-extracterVernacularOCaml (Definition metadata data) =
-  -- Here, metadata :: Int, tells us how many parameters should be before equal
-\end{minted}
-
-This technique gives us great flexibility, as different languages will need
-different metadata for the same concepts.  For constructors that may be created
-by \Chick{}, using an optional type for the metadata (say,
-\mintinline{haskell}{Maybe Int} instead of \mintinline{haskell}{Int} here)
-allows us to avoid having to come up with arbitrary metadata.
-
-\subsection{Optics to repair unknown language constructs}\label{optics}
-
-TODO
-
-\subsection{Diff-pretty-printer}
-
-TODO

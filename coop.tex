@@ -1,0 +1,23 @@
+\chapter{\Coop{}: extending \Chick{} to repair other languages}
+
+In this chapter, we present ongoing work to extend \Chick{} so that it can
+repair programs regardless of their surface level language.  We call this
+extension \Coop{}.
+
+Section~\ref{coop-design} presents a high-level view of the architecture of
+\Coop{}.
+
+Section~\ref{coop-embedding-extracting} explains how we embed constructs from
+foreign languages within \Chick{}, and how we extract those back after repair.
+
+Section~\ref{coop-optics} describes our use of traversals to repair inner
+constructs that we handle within outer constructs that we do not handle.
+
+Section~\ref{coop-diff-pretty-printer} shows how we can turn the output abstract
+syntax tree of \Coop{} into concrete syntax with minimal impact on the original
+layout of the code.
+
+\input{coop-design}
+\input{coop-embedding-extracting}
+\input{coop-optics}
+\input{coop-diff-pretty-printer}

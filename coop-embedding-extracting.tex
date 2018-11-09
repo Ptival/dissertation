@@ -1,0 +1,105 @@
+\section{Embedding and extracting programs}\label{coop-embedding-extracting}
+
+In order to embed a new language into \Chick{}, we simply need to add a
+constructor to the constructor of our \coqinline{Vernacular} and
+\coqinline{Term} types.  For instance, we added support for \OCaml{} with the
+following extension:
+
+\begin{grammar}
+<vernacular> ::= \ %trick LaTeX
+\alt ... \hfill (same as in Section~\ref{chick-syntax-programs})
+\alt \coqinline{OCamlStructureItem} <ocaml-structure-item>
+
+<term> ::= \ %trick LaTeX
+\alt ... \hfill (same as in Section~\ref{chick-syntax-terms})
+\alt \coqinline{OCamlExpression} <ocaml-expression>
+\end{grammar}
+
+Now, our \define{embedder} can inspect the incoming abstract syntax tree, and
+decide to map constructs from the source language to \Chick{} constructs, when
+it makes sense to do so, or store the constructs in the extra constructors when
+there is no matching concept in \Chick{}.
+
+For instance, in the \OCaml{} embedder, we map constructs such as \OCaml{}'s
+(non-polymorphic) variants to our notion of inductive data types, since the
+concepts match.  We can also map most simple expressions to our term type, but
+complex features that we do not support (say, nested pattern matching) get put
+aside in the \coqinline{OCamlExpression} constructor.
+
+The \define{extracter} acts as an inverse of the embedder, mapping \Chick{}
+constructs back to their source language counterpart.  Constructs that have
+been stashed in one of our constructors for unsupported language features
+are simply restored as is, and \Chick{} constructs are mapped back to the
+source language construct they came from.
+
+Unfortunately, we sometimes need to map different source language abstract
+syntax trees to the same \Chick{} abstract syntax tree.  For instance,
+using \OCaml{} as an example again, the following two functions:
+
+\begin{minted}{ocaml}
+let f x y = 42
+let g x = fun y -> 42
+let h = fun x -> fun y -> 42
+\end{minted}
+
+map to similar \Chick{} terms:
+
+\begin{minted}{coq}
+Definition f : _ := λ x, λ y, 42.
+Definition g : _ := λ x, λ y, 42.
+Definition h : _ := λ x, λ y, 42.
+\end{minted}
+
+In order to try and preserve surface-level syntax as much as possible, we would
+like to attach metadata about such source language syntactic choices in \Chick{}
+terms.  This goals seems at odds with our intent of making \Coop{} extensible,
+but we can actually achieve this somewhat easily by using the technique employed
+by~\mycite{najd2017trees} for the Glasgow \Haskell{} Compiler (GHC).  Using
+generalized algebraic data types (GADTs), and type families, this technique
+allows us to build abstract syntax trees for \Chick{} that can be decorated with
+arbitrary metadata, and use type-level computations to determine what this
+metadata may be for different constructors in different contexts.
+
+For instance, we can solve the previous problem by attaching metadata about the
+number of function arguments that are marked as parameters, as opposed to being
+abstracted over.
+
+\begin{minted}{haskell}
+-- We declare the existence of a family of types for storing the
+-- metadata attached to a Definition.
+type family DefinitionMetadata ξ
+
+-- We attach this metadata to the Definition contructor.
+data Vernacular ξ
+  = Definition (DefinitionMetadata ξ) (DefinitionData ξ)
+  | ...
+
+-- We instantiate the family for the OCaml language with an
+-- integer representing the number of explicit parameters.
+type instance (DefinitionMetadata OCaml) = Int
+\end{minted}
+
+With this information attached to our \mintinline{haskell}{Definition} nodes,
+the extracter can pick the appropriate form, so as to preserve the original
+syntactic choice.
+
+\begin{minted}{haskell}
+extracterVernacularOCaml :: Vernacular 'OCaml -> StructureItem
+extracterVernacularOCaml (Definition metadata data) =
+  -- Here, metadata :: Int, tells us how many parameters should be
+  -- before the equal sign, vs. bound by a lambda
+\end{minted}
+
+Sometimes, \Chick{} might need to come up with a new datum, for which there is
+no sensible metadata it could attach to it.  For such cases, using an optional
+type for the metadata (say, \mintinline{haskell}{Maybe Int} instead of
+\mintinline{haskell}{Int} here) allows us to avoid this issue.
+
+Overall, this technique gives us great flexibility, as different languages will
+need different metadata for the same concepts.  The language of choice is
+carried throughout the \Chick{} pipeline as a type-level tag, using \Haskell{}'s
+\mintinline{haskell}{DataKinds} extension.  This also means that, anywhere in
+the pipeline, we can readily choose to inspect the tag and do something specific
+based on it.  For now, we only use this technique to pick the appropriate parser
+and pretty-printer, but it could also be used to change parts of the repair
+algorithm if some language needs specific, distinct support.

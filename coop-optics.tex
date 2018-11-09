@@ -1,0 +1,103 @@
+\section{Optics to repair unknown language constructs}\label{coop-optics}
+
+There is a big problem with the approach described in
+Section~\ref{embedding-extracting}.  Consider the following \OCaml{} code:
+
+\begin{minted}{ocaml}
+type a = ... (* some type definition *)
+
+module SomeModule =
+  struct
+    type b = ... (* some other type definition, depends on a *)
+    let f = ...  (* some function, depends on a *)
+  end
+\end{minted}
+
+Our current implementation of \Chick{} does not have a notion of modules.
+Therefore, \Coop{} has to stash away the whole module declaration in its
+\coqinline{OCamlStructureItem}, and will provide no repair for it.  This is
+unfortunate, because the module contains data type declarations, and function
+declarations, all of which we know how to repair, and could attempt to, were
+they visible.
+
+We can find a solution to this problem using functional lenses.  \define{Lenses}
+are an abstraction mechanism encompassing a pair of a getter and a setter for
+some value within some datum.  They are often described in the simplified
+version:
+
+\begin{minted}{haskell}
+data Lens s a = Lens
+  { get :: s -> a
+  , set :: s -> a -> s
+  }
+\end{minted}
+
+\noindent where \mintinline{haskell}{s} stands for the type of the store, or the
+outer structure, and \mintinline{haskell}{a} stands for the type of the value
+under focus.\footnote{Actual implementations of lenses are usually more complex,
+with two additional parameters allowing the setter to output at a different
+store type. Some instances also add a \mintinline{haskell}{Functor} constraint
+to allow getting and setting in a functorial context.}
+
+Lenses are useful because they are first-class, composable values that allow
+modifying parts of a datum while ignoring the rest of it.  This matches quite
+well with our goal: we wanted to zoom in on the inner parts of the module,
+getting and setting the components of the module we understand, ignoring the
+rest.  However, lenses only have one focus, whereas our data could contain
+an arbitrary amount of components we might want to focus upon.
+
+\define{Traversals} are a generalization of lenses with multiple foci.  They are
+also an abstraction of a getter and a setter, except that they may operate on
+multiple instances of the focus type within a datum.  In order to allow maximum
+flexibility, traversals process the foci within an applicative functor.  Uniform
+traversals over parameterized data structures can be automatically derived using
+extensions like \Haskell{}'s \mintinline{haskell}{TemplateHaskell}, but in our
+case, we will need to write our traversals manually.  This allows us to
+specifically choose the order of the traversal, as well as selectively choose
+whether some parts of data types should be traversed or not.  Let us see how we
+can define such a traversal over \OCaml{} abstract syntax trees.  For this, we
+will use type classes to capture data types that contain structures we are
+interested in.  For the \OCaml{} language, we are interested in values of type
+\mintinline{haskell}{Structure} (which correspond to our \coqinline{Vernacular}
+data type), and values of type \mintinline{haskell}{CoreType} and
+\mintinline{haskell}{Expression} (which correspond to our \coqinline{Term} data
+type).
+
+\begin{minted}{haskell}
+class HasStructure t where
+  structure :: Traversal' t Structure
+
+class HasCoreType t where
+  coreType :: Traversal' t CoreType
+
+class HasExpression t where
+  expression :: Traversal' t Expression
+\end{minted}
+
+We can then instantiate those classes for all of \OCaml{}'s abstract syntax tree
+constructs, for instance:
+
+\begin{minted}{haskell}
+instance HasStructure ModuleExprDesc where
+  structure f = \case
+    -- if something does not contain a Structure,
+    -- we can skip it entirely:
+    PmodIdent     i -> PmodIdent     <$> pure i
+    -- if something contains a Structure right here,
+    -- we can apply `f`
+    PmodStructure s -> PmodStructure <$> f s
+    -- if something may contain Structures recursively,
+    -- we keep traversing it
+    PmodApply m1 m2 -> PmodApply
+                       <$> traverseOf structure f m1
+                       <*> traverseOf structure f m2
+    ...
+\end{minted}
+
+\noindent Writing those instances is entirely systematic, so we believe it can
+be automated using \Haskell{}'s \mintinline{haskell}{TemplateHaskell}
+facilities, though we have not yet written such automation.
+
+% TODO: Talk about binders
+
+% TODO: Talk about how we probably need indices to go through Chick
