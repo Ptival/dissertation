@@ -43,7 +43,7 @@ Inductive day : Type :=
 | sunday : day
 .
 
-Definition tomorrow (d: day) : day :=
+Definition tomorrow (d : day) : day :=
   match d with
   | monday    => tuesday
   | tuesday   => wednesday
@@ -80,7 +80,7 @@ Fixpoint concat (l1 l2 : natlist) : natlist :=
   | cons h t => cons h (concat t l2)
   end.
 
-Theorem test_concat1:
+Theorem test_concat1 :
   concat (cons 1 (cons 2 nil))
          (cons 3 (cons 4 nil))
   = (cons 1 (cons 2 (cons 3 (cons 4 nil)))).
@@ -91,20 +91,20 @@ Qed.
 (* ###################################################### *)
 (** * Reasoning About Lists *)
 
-Theorem concat_nil_left : forall l : natlist,
+Theorem concat_nil_left : forall (l : natlist),
   concat nil l = l.
 Proof.
   (* FILL IN HERE *)
 Qed.
 
-Theorem concat_nil_right : forall l : natlist,
+Theorem concat_nil_right : forall (l : natlist),
   concat l nil = l.
 Proof.
   (* FILL IN HERE *)
 Qed.
 
 (* In-class exercise! *)
-Theorem concat_associativity : forall l2 l1 l3 : natlist,
+Theorem concat_associativity : forall (l2 l1 l3 : natlist),
   concat (concat l1 l2) l3 = concat l1 (concat l2 l3).
 Proof.
   (* FILL IN HERE *)
@@ -114,7 +114,7 @@ Qed.
   [snoc] adds an element [v] at the end of the list [l]:
     snoc (cons 1 (cons 2 nil)) 3 = cons 1 (cons 2 (cons 3 nil))
 *)
-Fixpoint snoc (l: natlist) (v: nat) : natlist :=
+Fixpoint snoc (l : natlist) (v : nat) : natlist :=
   match l with
   | nil      => cons v nil
   | cons h t => cons h (snoc t v)
@@ -124,7 +124,7 @@ Fixpoint snoc (l: natlist) (v: nat) : natlist :=
   [rev] reverses a list:
     rev (cons 1 (cons 2 nil)) = cons 2 (cons 1 nil)
 *)
-Fixpoint rev (l: natlist) : natlist :=
+Fixpoint rev (l : natlist) : natlist :=
   match l with
   | nil      => nil
   | cons h t => snoc (rev t) h
@@ -145,7 +145,7 @@ Proof.
   (* FILL IN HERE *)
 Qed.
 
-Theorem rev_involutive : forall l : natlist,
+Theorem rev_involutive : forall (l : natlist),
   rev (rev l) = l.
 Proof.
   (* FILL IN HERE *)
@@ -219,7 +219,7 @@ Proof.
   (* FILL IN HERE *)
 Qed.
 
-Theorem A_and_B : forall A B : Prop,
+Theorem A_and_B : forall (A B : Prop),
   A ->
   B ->
   A /\ B.
@@ -231,13 +231,13 @@ End LogicExercises.
 
 (* ###################################################### *)
 
-Theorem snoc_concat_end : forall (l: natlist) (n: nat),
+Theorem snoc_concat_end : forall (l : natlist) (n : nat),
   snoc l n = concat l (cons n nil).
 Proof.
   (* FILL IN HERE *)
 Qed.
 
-Theorem rev_distributes_over_concat : forall l1 l2 : natlist,
+Theorem rev_distributes_over_concat : forall (l1 l2 : natlist),
   rev (concat l1 l2) = concat (rev l2) (rev l1).
 Proof.
   (* FILL IN HERE *)
@@ -248,7 +248,7 @@ Qed.
     every element of a list [l].
 *)
 
-Fixpoint map (f: nat -> nat) (l: natlist) :=
+Fixpoint map (f : nat -> nat) (l : natlist) :=
   match l with
   | nil => nil
   | cons x xs => cons (f x) (map f xs)
@@ -273,7 +273,7 @@ Qed.
 (** We now introduce [fold], which processes a list with an
     accumulating function [f], starting from an initial value [b].
 *)
-Fixpoint fold (f: nat -> natlist -> natlist) (l: natlist) (b: natlist) :=
+Fixpoint fold (f : nat -> natlist -> natlist) (l : natlist) (b : natlist) :=
   match l with
   | nil => b
   | cons x xs => f x (fold f xs b)

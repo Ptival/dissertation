@@ -4,12 +4,12 @@ There is a big problem with the approach described in
 Section~\ref{embedding-extracting}.  Consider the following \OCaml{} code:
 
 \begin{minted}{ocaml}
-type a = ... (* some type definition *)
+type a = … (* some type definition *)
 
 module SomeModule =
   struct
-    type b = ... (* some other type definition, depends on a *)
-    let f = ...  (* some function, depends on a *)
+    type b = … (* some other type definition, depends on a *)
+    let  f = … (* some function, depends on a *)
   end
 \end{minted}
 
@@ -27,8 +27,8 @@ version:
 
 \begin{minted}{haskell}
 data Lens s a = Lens
-  { get :: s -> a
-  , set :: s -> a -> s
+  { get ∷ s → a
+  , set ∷ s → a → s
   }
 \end{minted}
 
@@ -65,13 +65,13 @@ type).
 
 \begin{minted}{haskell}
 class HasStructure t where
-  structure :: Traversal' t Structure
+  structure ∷ Traversal' t Structure
 
 class HasCoreType t where
-  coreType :: Traversal' t CoreType
+  coreType ∷ Traversal' t CoreType
 
 class HasExpression t where
-  expression :: Traversal' t Expression
+  expression ∷ Traversal' t Expression
 \end{minted}
 
 We can then instantiate those classes for all of \OCaml{}'s abstract syntax tree
@@ -79,25 +79,161 @@ constructs, for instance:
 
 \begin{minted}{haskell}
 instance HasStructure ModuleExprDesc where
-  structure f = \case
+  structure f = case f of
     -- if something does not contain a Structure,
     -- we can skip it entirely:
-    PmodIdent     i -> PmodIdent     <$> pure i
+    PmodIdent     i → PmodIdent <$> pure i
     -- if something contains a Structure right here,
     -- we can apply `f`
-    PmodStructure s -> PmodStructure <$> f s
+    PmodStructure s → PmodStructure <$> f s
     -- if something may contain Structures recursively,
     -- we keep traversing it
-    PmodApply m1 m2 -> PmodApply
-                       <$> traverseOf structure f m1
-                       <*> traverseOf structure f m2
-    ...
+    PmodApply m1 m2 → PmodApply
+                      <$> traverseOf structure f m1
+                      <*> traverseOf structure f m2
+    …
 \end{minted}
 
 \noindent Writing those instances is entirely systematic, so we believe it can
 be automated using \Haskell{}'s \mintinline{haskell}{TemplateHaskell}
 facilities, though we have not yet written such automation.
 
-% TODO: Talk about binders
+\subsection{TODO}
 
-% TODO: Talk about how we probably need indices to go through Chick
+Depending on how the abstract syntax tree of the source language has been
+defined, there are actually two distinct ways of building those traversals.
+This corresponds to the following two ways of defining a data type of commands
+over a datatype of expressions:
+
+\begin{minted}{haskell}
+-- Variant 1: concrete representation
+data Language
+  = DoSomething Language.Term
+  | …
+
+-- Variant 2: functorial representation
+data LanguageF e
+  = DoSomething e
+  | …
+
+type Language = LanguageF Language.Term
+\end{minted}
+
+With the \define{concrete representation}, the constructor
+\mintinline{haskell}{DoSomething} may only ever contain values of type
+\mintinline{haskell}{Language.Term}.  It is more rigid than the
+\define{functorial representation}, wherein the type of expressions is
+abstracted over.  In the functorial setting, one can instantiate the
+\mintinline{haskell}{LanguageF} functor with different types, yielding a family
+of concrete types.
+
+With the functorial approach, \Coop{} can replace the source language's
+expression type with its own type, essentially storing \Chick{} abstract syntax
+trees within the source language's abstract syntax tree:
+
+\begin{minted}{haskell}
+data Vernacular f
+  = …
+  | ForeignLanguage (LanguageF f)
+\end{minted}
+
+In this case, \Chick{} can, given a traversal for \mintinline{haskell}{LanguageF
+f}, transform all occurrences of \mintinline{haskell}{f} into
+\mintinline{haskell}{Chick.Term}, and repair those using the applicative
+functor.  While it is convenient to store our expressions within the original
+abstract syntax tree, we are forced to replace all occurrences so that the types
+match up.  Once all of this is done, we have the following endpoints:
+
+\begin{minted}{haskell}
+embed ∷ Vernacular Language.Term → Vernacular Chick.Term
+embed = …
+
+chick ∷ Vernacular Chick.Term → Vernacular Chick.Term
+chick = …
+
+extract ∷ Vernacular Chick.Term → Vernacular Language.Term
+extract = …
+\end{minted}
+
+\noindent
+and we can simply pipeline them together to obtain the resulting abstract syntax
+tree, that must finally be processed by our pretty-printer (as described in
+Section~\ref{coop-diff-pretty-printer}).
+
+In the case of the concrete representation, because we cannot store \Chick{}
+terms within the foreign language's abstract syntax tree, we must proceed with a
+level of indirection: we can use an \define{indexed} traversal to extract a list
+of all the values being traversed, turn those values into \Chick{} terms, repair
+those \Chick{} terms, turn the repaired terms back into source language terms,
+and finally reinsert those repaired terms in the proper locations using the
+indexed traversal.  The process looks like the following partial code:
+
+\begin{minted}{haskell}
+itraverseLanguage ∷
+  IndexedTraversal' Int Language.AST Language.Term
+itraverseLanguage = …
+
+getTerms ∷ Language.AST → [Language.Term]
+getTerms = toListOf itraverseLanguage
+
+-- From there, we do the following:
+-- 1. map `embed`  to get a  [Chick.Term]    (unrepaired)
+-- 2. map `repair` to get a  [Chick.Term]    (repaired)
+-- 3. map `extract` to get a [Language.Term] (repaired)
+
+insertRepairedTerms ∷
+  [Language.Term] → Language.AST → Language.AST
+insertRepairedTerms l =
+  imapOf itraverseLanguage (λ index _ → l ‼ index)
+\end{minted}
+
+The indexed traversal allows us to know where to insert the repaired terms in
+the original abstract syntax tree.
+
+\subsection{Scope-aware traversals}
+
+There remains yet another trouble with our traversals.  Consider the following
+\OCaml{} code:
+
+\begin{minted}{ocaml}
+module SomeModule (A : ModuleTypeForA) =
+  struct
+    (* ... *)
+  end
+\end{minted}
+
+Thanks to our traversals, we might be able to repair terms that appear within
+this \OCaml{} functor\footnotemark{}.  Unfortunately, while glossing over the
+\mintinline{ocaml}{module} construct, we also gloss over a binding construct,
+introducing a binder \mintinline{ocaml}{A}.  This might create problems when
+this module appears in an ambient context where some other variable
+\mintinline{ocaml}{A} is bound.  In particular, if our repair algorithm is
+trying to repair instances of the variable \mintinline{ocaml}{A}, it will,
+erroneously, attempt to repair the local references to \mintinline{ocaml}{A},
+mistaking them for references the outer \mintinline{ocaml}{A}.
+
+\footnotetext{Note that \OCaml{} uses the term \emph{functor} to describe about
+parameterized \emph{modules}, while, so far, this dissertation has been using
+the term functor to describe functorial parameterized \emph{data types}.}
+
+In order to avoid this issue, we can change our traversals so that they
+accumulate bound variables as they traverse the source language abstract syntax
+tree, and turn our focal points into a pair of the construct under focus, and
+the list of binders it lives under.  With this information, we can easily alter
+the term so that \Chick{} knows that those variables have been rebound.  This
+can be achieved in two ways:
+
+\begin{itemize}
+
+  \item either by over-populating, before running the repair algorithm, its
+local context with those binders (bound to an unknown type, represented as a
+hole), and populating the local context diff with as many
+$\MathMod{\MathSame{}}{…}$,
+
+  \item or, by adding extraneous $\lambda$-abstractions to the term, and adding
+as many extraneous $\MathModLam{\MathSame{}}{…}$ to its diff, and running the
+repair algorithm in the current global environment and local context.  This
+requires a post-processing pass to remove those extraneous lambdas from the
+repaired term, before injecting it back into its abstract syntax tree.
+
+\end{itemize}

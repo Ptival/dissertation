@@ -159,7 +159,7 @@ reserve Coq syntax for programs in the object language).  Our function computing
 the type of an eliminator has the following high-level skeleton:
 
 \begin{minted}{haskell}
-eliminatorType ... =
+eliminatorType … =
   quantifyVars  inductiveParameters                 {- 1 -}
 . mkPi          motiveType            motive        {- 2 -}
 . quantifyCases inductiveConstructors               {- 3 -}
@@ -188,12 +188,12 @@ using the following record type:
 
 \begin{minted}{haskell}
 data ΔListFold τ δτ δ = ΔListFold
-  { onInsert  ::     τ →     [τ] → δ → δ
-  , onModify  ::    δτ → τ → [τ] → δ → δ
-  , onPermute :: [Int] →     [τ] → δ → δ
-  , onRemove  ::         τ → [τ] → δ → δ
-  , onReplace ::   [τ] →     [τ] → δ → δ
-  , onSame    ::             [τ] → δ → δ
+  { onInsert  ∷     τ →     [τ] → δ → δ
+  , onModify  ∷    δτ → τ → [τ] → δ → δ
+  , onPermute ∷ [Int] →     [τ] → δ → δ
+  , onRemove  ∷         τ → [τ] → δ → δ
+  , onReplace ∷   [τ] →     [τ] → δ → δ
+  , onSame    ∷             [τ] → δ → δ
   }
 \end{minted}
 
@@ -209,9 +209,9 @@ When the entire list gets replaced, the handler receives the old list
 corresponding $\Pi$ will be added.  We then have two functions:
 
 \begin{minted}{haskell}
-δListFoldLeft, δListFoldRight ::
-  ΔListFold τ δτ δ ->
-  [τ] -> ΔList τ δτ -> Maybe (δ -> δ)
+δListFoldLeft, δListFoldRight ∷
+  ΔListFold τ δτ δ →
+  [τ] → ΔList τ δτ → Maybe (δ → δ)
 \end{minted}
 
 \noindent which take such a description, an original list, and a list diff, and

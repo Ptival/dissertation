@@ -1,3 +1,46 @@
 \section{A diff-aware pretty-printer}\label{coop-diff-pretty-printer}
 
-TODO
+So far, we have explained how we can embed the constructs and binding structure
+from the abstract syntax tree of some arbitrary source language, repair those
+constructs as part of our core language, and then extract the repaired
+constructs back into an abstract syntax tree for the original language.
+However, we need to repair the concrete syntax of the original program, not just
+the abstract syntax tree.
+
+While we could just call a naive pretty-printer with the final abstract syntax
+tree, there is a high chance that doing so would interfere with the layout of
+the original code, unless we somehow stored enough information to reproduce the
+exact original layout.  In order to minimize our impact on the concrete syntax
+of the program, we can instead try to only modify those parts of the concrete
+syntax that need being altered.
+
+To do so, we need the abstract syntax tree of the source language to contain
+location information about the provenance of its nodes.  This requirement is not
+hard to satisfy: we expect most languages to have parsers that produce such
+information, if only to be able to indicate error locations.  Now, when we
+obtain the repaired source abstract syntax tree, we can simply follow a
+simultaneous recursive descent through the original and repaired trees.  At any
+point where they differ, we can:
+
+\begin{itemize}
+
+  \item obtain the source span for the text to be replaced from the original
+tree,
+
+  \item obtain the replacement text by pretty-printing the node from the
+repaired tree.
+
+\end{itemize}
+
+\noindent
+Then, we can graft the pretty-printed repaired term in place of the original
+text span.  If the language is indentation-sensitive, we might need to be more
+clever, figuring out the level of indentation, and hanging the replacement
+text at that depth.
+
+We can also come up with extra quality of life improvements, such as retaining
+and lifting the comments from the deleted span, so that no comment is lost in
+the repair.  Repairs can also be processed sequentially, with a human in the
+loop, so that repair suggestions are reviewed by the user before being applied,
+for instance, by using a merging tool such as the ones provided for version
+control systems.
