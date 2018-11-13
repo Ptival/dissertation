@@ -55,10 +55,57 @@ the final proof context, it may have originated from an unchanged hypothesis in
 the original proof context, from a changed hypothesis in the original proof
 context, or it may be a newly introduced hypothesis.
 
-% TODO
+Examples of visual diffs are given in
+Figures~\ref{proof-tree-diffs-green-ribbon}
+and~\ref{proof-tree-diffs-red-blue-ribbons}.  The visualization uses colored
+ribbons to indicate the three type of changes that may happen to a hypothesis.
+
+\begin{figure*}[!htp]
+\includegraphics[width=\textwidth]{peacoq-diffs-green-ribbon}{\parfillskip=0pt\par}
+\caption{Proof-tree visual diff between two obligation nodes (green ribbon)}%
+\label{proof-tree-diffs-green-ribbon}
+\end{figure*}
+
+A \define{green, expanding ribbon}, as seen in
+Figure~\ref{proof-tree-diffs-green-ribbon} indicates that a hypothesis has been
+introduced in the new context.  Its shrunk left end points between two
+hypotheses if the new hypothesis appears in the resulting context between these
+two hypotheses.  Most of the times, introduced hypotheses appear last in the
+resulting context, and so their shrunk left end points at the end of the
+original context.
 
 \begin{figure*}[!htp]
 \includegraphics[width=\textwidth]{peacoq-diffs}{\parfillskip=0pt\par}
-\caption{Proof-tree visual diff between two obligation nodes}%
-\label{proof-tree-diffs}
+\caption{Proof-tree visual diff between two obligation nodes (red and blue ribbons)}%
+\label{proof-tree-diffs-red-blue-ribbons}
 \end{figure*}
+
+Conversely, a \define{red, shrinking ribbon}, as seen in
+Figure~\ref{proof-tree-diffs-red-blue-ribbons}, indicates that a hypothesis has
+disappeared in the new context.  Its shrunk right end points between the
+hypotheses that were surrounding it before its disappearance.
+
+A \define{blue, constant-size ribbon}, as also seen in
+Figure~\ref{proof-tree-diffs-red-blue-ribbons}, indicates that a hypothesis has
+either undergone any or all of those modifications: moved around, changed name,
+change type.  For instance, the blue ribbon from
+Figure~\ref{proof-tree-diffs-red-blue-ribbons}, highlights both how the
+\coqinline{EQ} has moved from the middle of the context towards the end, and
+also the fact that it has changed.
+
+\begin{figure*}[!htp]
+\includegraphics[width=\textwidth]{peacoq-diffs-sub-terms}{\parfillskip=0pt\par}
+\caption{Proof-tree visual diff between two obligation nodes (sub-term highlights)}%
+\label{proof-tree-diffs-highlights}
+\end{figure*}
+
+Finally, \define{colored inline highlights} indicate, in both the old and new
+context, sub-terms that have changed.  Those changes can appear within
+hypotheses that are part of a blue ribbon, as depicted for hypothesis
+\coqinline{EQ} in Figure~\ref{proof-tree-diffs-red-blue-ribbons}.  They can also
+appear within the goal, as is the case in both
+Figure~\ref{proof-tree-diffs-red-blue-ribbons} and
+Figure~\ref{proof-tree-diffs-highlights}.  When there are several pairs of
+sub-terms that have changed within the same hypothesis (or the same goal), each
+pair is given a unique color, so as to facilitate distinguishing related pairs
+quickly for the user.

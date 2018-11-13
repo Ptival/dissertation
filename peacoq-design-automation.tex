@@ -70,13 +70,24 @@ one and two orders of magnitude larger than the former.  Therefore, while it is
 reasonable, but expensive, to try all the proof-local variables, it would be
 very expensive to try all identifiers in scope!
 
+Finally, the set of tactics available in the \Coq{} proof assistant is not
+static: the tactic language is extensible, and users frequently define both
+general-purpose and domain-specific tactics.  These can be registered as hints
+to the built-in automation mechanism, in which case tactics like
+\coqinline{auto} will use them appropriately.  However, as far as we know, at
+the current time, there is no built-in mechanism for discovering user-defined
+tactics in scope.  An automation mechanism would most likely benefit from such
+domain-specific knowledge of tactics to be used in a given proof.
+
 \subsubsection{Which results are relevant?}
 
 While we could display all the successful tactics and their outcome to the user,
-the amount of information would, in most cases, be overwhelming.  In order for the suggestions to ever be useful, some triage is necessary.
+the amount of information would, in most cases, be overwhelming.  In order for
+the suggestions to ever be useful, some triage is necessary.
 
-After putting failing tactics out of the picture, one of our first remark is
-that many tactics produce the exact same obligations.  Here, one might want to distinguish two close categories:
+After putting failing tactics out of the picture, our first observation is that
+many tactics produce the exact same obligations.  Here, one might want to
+distinguish between two close varieties:
 
 \begin{itemize}
 
@@ -102,15 +113,6 @@ is unnecessary.  Similarly, if the assumption being used is called
 \coqinline{H}, the tactic \coqinline{exact H} should also work, but it might be
 less robust to changes, especially if the name \coqinline{H} was
 automatically introduced by \Coq{}.
-
-Finally, the set of tactics available in the \Coq{} proof assistant is not
-static: the tactic language is extensible, and users frequently define both
-general-purpose and domain-specific tactics.  These can be registered as hints
-to the built-in automation mechanism, in which case tactics like
-\coqinline{auto} will use them appropriately.  However, as far as we know, at
-the current time, there is no built-in mechanism for discovering user-defined
-tactics in scope.  An automation mechanism would most likely benefit from such
-domain-specific knowledge of tactics to be used in a given proof.
 
 \subsubsection{How to display the relevant results?}
 

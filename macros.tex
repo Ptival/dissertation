@@ -2,7 +2,13 @@
 
 %%%%% General-purpose text macros %%%%%
 \newcommand*\circled[1]{\tikz[baseline=(C.base)]\node[draw,circle,inner sep=1.2pt,line width=0.2mm,](C) {\small #1};\!}
-\newcommand*\OK{\ding{51}}
+
+\definecolor{colorblind-green}{HTML}{AEBD25}
+\definecolor{colorblind-red}{HTML}{830024}
+
+\newcommand*\OK{\textcolor{colorblind-green}{\ding{51}}}
+\newcommand*\KO{\textcolor{colorblind-red}{\ding{55}}}
+\newcommand*\YN{$\sim$} % mnemonic: Yes/No
 
 \newcommand{\participant}{\begin{tikz}\node[graduate,monitor,minimum size=0.1cm] {};\end{tikz}}
 \newcommand{\ptcpone}{  \participant{} $\times 1$}

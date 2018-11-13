@@ -7,24 +7,37 @@ study in the classroom during one quarter, and a short A-B study with beginners.
 \subsection{Longitudinal study}~\label{peacoq-longitudinal-study}
 
 The first study was conducted at the University of Washington, with the help of
-instructor Zachary Tatlock, during the Winter quarter of 2015.
+instructor Zachary Tatlock, during the Winter quarter of 2015.  The study was
+approved by the institutional review board of the University of California San
+Diego (project~\#141713), and the institutional review board of the University
+of Washington (project~\#48738).
 
-The study was approved by the institutional review board of the University of
-California, San Diego (project~\#141713), and the institutional review board of
-the University of Washington (project~\#48738).
+\paragraph{Study setup}
 
 Every student in the class was given the option to use \PeaCoq{} instead of
 other IDEs for working on their homework.  At any moment, they could opt in and
 out of using \PeaCoq{} with no overhead.  This study helped us iron out details
 on the automation and the display, based on students' feedback.
 
+\paragraph{Study material}
+
+All the material of the class is available on the website of the
+instructor~\footnotemark{}.
+
+\footnotetext{\url{https://courses.cs.washington.edu/courses/cse505/15wi}}
+
 % TODO: find UW PeaCoq notes and write it up
 
 \subsection{A-B study}~\label{peacoq-a-b-study}
 
+The second study was conducted at the University of California San Diego, with
+the help of professor Sorin Lerner, during the Spring quarter of 2015.  The
+study was approved by the institutional review board of the University of
+California San Diego (project~\#141713).
+
 Participants in the A-B study were volunteers who received no financial
-compensation, but were offered free slices of pizza, a highly sought treat in
-academic settings.
+compensation, but were offered free slices of pizza, a highly sought after treat
+in academic settings.
 
 \paragraph{Study setup}
 
@@ -179,9 +192,9 @@ list with an arbitrary other list.
 
 Table~\ref{peacoq-a-b-study-tactics} lists, for each of the exercises, which
 tactics were meant to be exercised.  The exercises were roughly sorted in order
-of difficulty, say for two points: the part introducing logical operators was
-much simpler, and \coqinline{rev_distributes_over_concat} was a challenging
-mid-point exercise.
+of difficulty, say for two points: the part introducing logical operators
+(exercises 4 through 7) was much simpler, and
+\coqinline{rev_distributes_over_concat} was a challenging mid-point exercise.
 
 \begin{table}[!htbp]
   \centering
@@ -225,33 +238,187 @@ mid-point exercise.
 
 \paragraph{Study results}
 
+\input{table-peacoq-a-b-study-timings}
+
 Table~\ref{peacoq-a-b-study-timings} lists the average timings of both groups on
 each exercise, as well as a rough estimate of the difficulty of each exercise.
 Figure~\ref{peacoq-a-b-study-cumulative} reports the cumulative time spent on
 each exercise.  Note that users were allowed to take breaks between exercises,
 and we do not report the time spent on the last exercises for those people who
 did not finish all exercises: this explains why all bars do not end at the same
-location.
-
-\PeaCoq{} users were much slower on the first exercise.  Even though it was an
-easy exercise, the automation offered several possibilities, which could have
-been overwhelming: we noticed several participants spent a long time
-scrutinizing different options before committing to one.  In the control group,
-participants were left to their own volition, and followed the previous proofs
-as examples.  Since the exercise exhibited the same pattern, it was a good
-strategy.
-
-\PeaCoq{} users were going much faster on the logic exercises
-(\coqinline{go_somewhere} through \coqinline{A_and_B}).  For these, \PeaCoq{}
-only provided a handful of options that were easily browsed through, so
-participants of group B did not waste much time.
-
-\input{table-peacoq-a-b-study-timings}
+location.  As a reminder, group A was our control group, using a version of
+\PeaCoq{} with our features disabled, while we will refer to group B as
+\define{\PeaCoq{} users}, since they used the version of \PeaCoq{} with our
+features enabled.
 
 \input{figure-peacoq-a-b-study-cumulative}
 
-All the answers provided by participants to the post-study survey are
+Looking at Figure~\ref{peacoq-a-b-study-cumulative}, we can notice several
+trends.  First, \PeaCoq{} users were much slower on the first exercise
+(\coqinline{rev_snoc}).  Even though it was an easy exercise, the automation
+offered several options, which overwhelmed the participants for their first
+proof attempt: we noticed several participants spent a long time scrutinizing
+different options (including many useless options) before committing to one.  In
+the control group, participants were left to their own volition, and followed
+the previous proofs as examples.  Since the exercise exhibited the same pattern
+as the exercises demonstrated during the lesson phase, it was a good strategy.
+
+Looking at the second exercise (\coqinline{rev_involutive}), we notice the
+opposite trend: \PeaCoq{} users seem overall faster than most participants from
+the control group, apart from group $\text{A}5$.  This group remains an outlier
+for the whole study, and our post-study survey seems to indicate that one of its
+participants had a higher mastery of functional programming and type systems
+than the norm.  For the other pairs, we have a hypothesis for the time gap.
+This exercise had almost the same proof structure as the previous one, except
+that, where the previous exercises required only \emph{one} rewrite, with the
+inductive hypothesis, this exercises required \emph{two} rewrites, first with
+the lemma proven in the previous exercise, and then with the inductive
+hypothesis.  Noticing this required some perspicacity from the participants in
+the control group.  On the other hand, \PeaCoq{}'s automation would, as part of
+its functioning, try to apply previously-proven theorems to the current context.
+Participants were therefore shown that rewriting with \coqinline{rev_snoc} was
+an option, without having to even ponder whether this was a possibility.
+
+While both groups solved the logic exercises (exercises \coqinline{go_somewhere}
+through \coqinline{A_and_B}) fairly fast, \PeaCoq{} users finished them even
+faster than the control group.  For these exercises, \PeaCoq{} only provided a
+handful of options that were easily browsed through, so participants of group B
+did not waste any time looking at confusing options.
+
+Exercise \coqinline{rev_distributes_over_concat} was one of the hardest lemmas
+overall.  While there are several ways of proving it, the proof we expected
+includes a proof by induction, rewrites with lemmas from earlier exercises, and
+rewrites with lemmas from the tutorial.  It is quite easy for a beginner to lose
+themselves and hesitate in such a proof.  Another common mistake is to try and
+prove those lemmas in this larger context, which often results in failure.  The
+data suggests that \PeaCoq{} users did much better than all control groups
+participant, except for the outlier.  We believe, again, that this is the result
+of \PeaCoq{} suggesting those rewrites with earlier lemmas, as opposed to
+control group participants who needed to recall their existence from memory, or
+by browsing back through the proof file.
+
+Exercise \coqinline{map'_unroll} exhibits one of the largest disparities between
+the control group and the \PeaCoq{} user group.  This is the case of an exercise
+with a trivial solution, but realizing that it is the case is the hard part.
+The exercise asks the participants to prove the following equality:
+
+\begin{minted}{coq}
+map' f (cons x xs) = cons (f x) (map' f xs)
+\end{minted}
+
+\noindent where \coqinline{map'} is a re-definition of the original function
+\coqinline{map} over lists, but as a \coqinline{fold} operation, whereas the
+original uses explicit recursion.  The two sides of this equation are
+judgmentally equal, which means that a simple call to the
+\coqinline{reflexivity} tactic solves this goal.  Unfortunately, because of the
+rules that govern how \coqinline{Fixpoint}s are unfolded in \Coq{}, the goal can
+not easily be simplified to look like a simple equality.  Users in the control
+group were therefore stuck, until we gave them a hint to use the
+\coqinline{unfold} tactic to turn the goal into:
+
+\begin{minted}{coq}
+fold (fun (x0 : nat) (fxs : natlist) => cons (f x0) fxs)
+  (cons x xs) nil =
+  cons (f x)
+    (fold (fun (x0 : nat) (fxs : natlist) =>
+            cons (f x0) fxs) xs nil)
+\end{minted}
+
+\noindent which is still scary, but from which one can call \coqinline{simpl}
+to finally obtain:
+
+\begin{minted}{coq}
+cons (f x) (fold (fun (x0 : nat) (fxs : natlist) =>
+                   cons (f x0) fxs) xs nil) =
+cons (f x) (fold (fun (x0 : nat) (fxs : natlist) =>
+                   cons (f x0) fxs) xs nil)
+\end{minted}
+
+\noindent The identical structure of both sides is finally more evident.  Of
+course, \PeaCoq{} users were almost immediately presented with the
+\coqinline{reflexivity} tactic, as a result of our automation, and thus solved
+the goal immediately.  While this had a significant \emph{positive} impact on
+their timings for this exercise, we also believe that it had a significant
+\emph{negative} impact on their understanding of this proof.  While the proof
+assistant could convince itself that the two terms were equal, we doubt that
+participants understood the computation rules that made this correct.
+
+Looking towards the right side of Figure~\ref{peacoq-a-b-study-cumulative}, we
+can see that users of the control group did not reach the last two exercises,
+except for the outlier group $\text{A}5$.  On the other hand, all \PeaCoq{}
+users reached the final exercise (as can be witnessed by them finishing the
+penultimate exercise), and 3 out of 5 groups also solved the final exercise
+in the allotted time.
+
+As for the post-study survey, all the answers provided by participants are
 anonymously catalogued in Appendix~\ref{appendix-peacoq-a-b-study}.
+
+One of the question asked was \emph{Did you understand all the proofs you
+completed?}.  About 6 out of 10 participants of the control group self-reported
+understanding all the proofs they completed, and about 5-to-6 out of 10
+participants of the \PeaCoq{} group.  However, users of the \PeaCoq{} group
+expressed more restraint about their answer, and explicitly mentioned that some
+proofs felt ``magical''.
+
+We also included questions about the effect of different tactics, in an attempt
+at evaluating their understanding in a way that is not self-reported.  We
+summarize our assessment of their answers in
+Table~\ref{peacoq-a-b-study-understanding}.  Overall, the understanding of
+tactics across groups is very good, with a small advantage for the control
+group.  In particular, participants using \PeaCoq{} did not quite realize what
+the \coqinline{split} tactic did.  We surmise that, because the tool suggested
+the tactic promptly, this group did not spend as much time reflecting on what
+the tactic was actually doing.
+
+\begin{table}[!htbp]
+  \centering
+  \caption{\PeaCoq{} A-B study tactic understanding}%
+  \label{peacoq-a-b-study-understanding}
+
+  This table shows whether the semantics of a given tactic was explained
+convincingly.
+
+Correct answers are indicated by a check mark \OK{}.
+
+Incorrect answers are indicated by a cross mark \KO{}.
+
+Approximate answers are indicated by a tilde \YN{}.
+
+Empty cells indicate empty answers.
+
+  \begin{tabular}{l *{6}{c}}
+  \toprule
+  & \rotatebox{90}{\safecoqinline{split}}
+  & \rotatebox{90}{\safecoqinline{intro}}
+  & \rotatebox{90}{\safecoqinline{induction}}
+  & \rotatebox{90}{\safecoqinline{reflexivity}}
+  & \rotatebox{90}{\safecoqinline{rewrite}}
+  & \rotatebox{90}{\safecoqinline{right}}
+  \\ \midrule
+  $\text{A}1_{1}$ & \OK & \OK & \OK & \OK & \YN & \OK \\
+  $\text{A}1_{2}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{A}2_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{A}2_{2}$ & \OK & \YN & \OK & \OK & \OK & \OK \\
+  $\text{A}3_{1}$ & \OK & \YN & \OK & \OK & \YN & \OK \\
+  $\text{A}3_{2}$ & \YN & \OK & \OK & \OK & \OK & \YN \\
+  $\text{A}4_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{A}4_{2}$ & \OK & \YN & \OK & \OK & \OK & \OK \\
+  $\text{A}5_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{A}5_{2}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  \midrule
+  $\text{B}1_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}1_{2}$ & \YN & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}2_{1}$ & \KO & \OK & \OK & \OK & \YN & \OK \\
+  $\text{B}2_{2}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}3_{1}$ & \KO & \YN & \OK & \OK & \OK & \OK \\
+  $\text{B}3_{2}$ & \OK & \OK & \OK & \OK & \YN & \OK \\
+  $\text{B}4_{1}$ & \KO & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}4_{2}$ &     &     & \OK & \OK & \OK & \OK \\
+  $\text{B}5_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}5_{2}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  \bottomrule
+  \end{tabular}{\parfillskip=0pt\par}
+\end{table}
 
 \paragraph{Threats to validity}
 

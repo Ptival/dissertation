@@ -98,12 +98,12 @@ instance HasStructure ModuleExprDesc where
 be automated using \Haskell{}'s \mintinline{haskell}{TemplateHaskell}
 facilities, though we have not yet written such automation.
 
-\subsection{TODO}
+\subsection{Traversals over concrete syntax and functorial syntax}
 
 Depending on how the abstract syntax tree of the source language has been
 defined, there are actually two distinct ways of building those traversals.
-This corresponds to the following two ways of defining a data type of commands
-over a datatype of expressions:
+They correspond to the following two ways of defining a data type of
+''commands'' over a datatype of ''expressions'':
 
 \begin{minted}{haskell}
 -- Variant 1: concrete representation

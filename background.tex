@@ -1,7 +1,7 @@
 \chapter{Background}
 
-This section describes, at a somewhat high level, the various concepts that are
-necessary to understand the rest of the dissertation.
+This section provides a brief high-level introduction to basic concepts used in
+the rest of the dissertation.
 
 \section{Static typing}
 \label{static-typing}
@@ -11,10 +11,10 @@ necessary to understand the rest of the dissertation.
 % Discipline of prescribing valid programs from invalid ones
 
 Programmers typically do not write programs by simply manipulating bits in the
-computer's memory: most languages offer abstraction mechanisms that lets their
-user reason at a higher level.  One such high-level abstraction is the notion of
-a \define{data type}.  A programmer will want to manipulate structured data such
-as numbers, Boolean values, or compound values made out of different values
+computer's memory: most languages offer abstraction mechanisms that let their
+users reason at a higher level.  One such high-level abstraction is the notion
+of a \define{data type}.  A programmer will want to manipulate structured data
+such as numbers, Boolean values, or compound values made out of different values
 organized together in some fashion.  They will then use, and possibly define, a
 set of operations to work on values from different data types.  Those operations
 might sometimes be entirely oblivious to what data type they are manipulating,
@@ -24,22 +24,29 @@ provide some properties for their output values.
 A \define{type system} is a mechanism that enforces some discipline about the
 proper use of values in a program according to a set of typing rules.
 \define{Typing rules} usually ascribe a type to every value of a program, and
-prescribe the ways in which values of a given type may be used in contexts of a
-given type.  A \define{type} can be anything from a simple classification of
-values according to their nature (for instance, distinguishing numbers from
-functions), to more semantic rules that may sometimes be defined by the user of
-the language.  In this dissertation, we will use the notation \mintinline{coq}{t
-: τ} to indicate that a term \coqinline{t} has type \coqinline{τ}.
+prescribe the typed contexts within which a value of a given type may be used.
+A \define{type} can be anything from a simple classification of values according
+to their nature (for instance, distinguishing numbers from functions), to more
+semantic rules that may sometimes be defined by the user of the language.  In
+this dissertation, we will use the notation \mintinline{coq}{t : τ} to indicate
+that a term \coqinline{t} has type \coqinline{τ}.
 
 A \define{static} typing discipline allows the programming environment (be it a
 compiler, an interpreter, or any other language tool) to reject programs
-\textbf{before they run}.  There can be several reasons for why one might want
-to reject a program.  The simplest one is a breach of expectation between a
-value and the context into which it is passed: this is usually called a
+\textbf{before they run}.  On the opposite, a \define{dynamic} typing discipline
+enforces its typing discipline on-the-fly, as programs execute.  This allows
+more programs to execute, as long as their execution path does not encounter a
+typing violation.  On the other hand, this provides less safety, as latent
+errors in the programs stay unnoticed until an execution path triggers them.  In
+this dissertation, we will focus solely on static typing disciplines.
+
+There can be several reasons for why one might want to reject a program, whether
+statically or dynamically.  The simplest case is a breach of expectation between
+a value and the context into which it is passed: this is usually called a
 \define{type error}.  For instance, a function declared to expect a number input
 might not be allowed to receive a string instead.
 
-An other, less obvious reason for rejecting a syntactically-valid,
+Another, less obvious, unfortunate reason for rejecting a syntactically-valid,
 semantically-valid program, is that the static enforcement of typing rules
 cannot, in general, be complete.  For instance, dependent type systems (covered
 in Section~\ref{dependent-types}) cannot safely ensure their typing discipline
@@ -51,11 +58,15 @@ While the idea of preventing programmers from running syntactically-valid
 programs might seem like a nuisance, it provides at least two benefits.  From
 the programmer's point of view, a disciplined use of the type system can help
 them catch, before their program is run, conditions that would make the program
-crash were it to be executed.  These conditions can be prevented before they
-happen, and often are indicated at locations close to the source of error.  The
-typing discipline can also provide information that can be leveraged as
-documentation, or in order to perform code analyses and transformations that
-would be intractable or unsafe without types.
+crash were it to be executed.  These conditions can often be indicated at
+locations close to the source of error.  The typing discipline can also provide
+information that can be leveraged as documentation, or in order to perform code
+analyses and transformations that would be intractable or unsafe without types.
+
+Strong typing disciplines can even benefit the programmer tenfold, by providing
+means of tracking security properties~\mycite{volpano1997type}, resource usage
+and sharing\mycite{naden2012type}, dimensions of
+units-of-measure~\mycite{kennedy1994dimension}, etc.
 
 \section{Dependent types}
 \label{dependent-types}
@@ -126,11 +137,12 @@ are syntactically equivalent, and we will favor the former (shorter) syntax.
 
 % Introduce Π-telescopes
 
-Nested $\Pi$-types can depend on the values of previously quantified variables.
-We call a \define{$\Pi$-telescope} any sequence of $\Pi$-types directly nested
-within one another.  We can summarize them in a list of bindings and their
-types, where each type is allowed to, but does not have to, depend on previous
-bindings.  For instance, the type:
+Nested $\Pi$-types, that is, ones that appear to the right of the arrow of an
+enclosing $\Pi$-type, can depend on the values of the previously quantified
+variables.  We call a \define{$\Pi$-telescope} any sequence of $\Pi$-types
+\emph{directly} nested within one another.  We can summarize them in a list of
+bindings and their types, where each type is allowed to, but does not have to,
+depend on previous bindings.  For instance, the type:
 
 \noindent
 \coqinline{Π(a : X) (b : Y(a)) (c : Z(a)) → R(a, b, c)}
@@ -161,12 +173,12 @@ using a combination of constructs we cover.
 
 \section{Proof assistants}
 
-Our work focuses mostly on programs built using a \define{proof assistant}.  A
-proof assistant is a software tool allowing a user to define mathematical
-structures, with their axioms and rules, and carry mechanized proofs of
-properties of those structures.  By \define{mechanized}, we mean that the
-software has the ability to check that a proof is correct, with respect to a set
-of rules.  Many proof assistants rely on the Curry-Howard
+Our first contribution focuses mostly on programs built using a \define{proof
+assistant}.  A proof assistant is a software tool allowing a user to define
+mathematical structures, with their axioms and rules, and carry mechanized
+proofs of properties of those structures.  By \define{mechanized}, we mean that
+the software has the ability to check that a proof is correct, with respect to a
+set of rules.  Many proof assistants rely on the Curry-Howard
 isomorphism~\cite{howard1980formulae}, bridging the gap between formal logic and
 typed programming.  In those systems, logical propositions can be readily
 expressed as types, in the same formal system within which programs can be

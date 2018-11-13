@@ -1,4 +1,4 @@
-\subsection{Global design of \PeaCoq{}}
+\subsection{Design of \PeaCoq{}}
 
 We will discuss the global architecture of \PeaCoq{} that allows us to build all
 the features we mentioned.  Each feature will then be described individually.
@@ -112,16 +112,16 @@ where one server was shared among all students, who did not need to install
 
 \subsubsection*{Front-end / Client}
 
-The front-end of \PeaCoq{} is a simple web application.  It is currently written
-in \TypeScript{}, a statically-typed dialect of \JavaScript{}.  We call driver
-the part of the code responsible for communicating with the back-end.  We use a
-reactive programming library called \RxJS{}, which provides a stream abstraction
-for sequences of values.  Messages from the back-end are published as streams,
-and each of the components involved in the front-end (namely, the editor, the
-proof-tree, and the automation layer) can subscribe to those messages they need
-to observe.  Conversely, those components publish streams of commands they'd
-like the back-end to process, which the driver subscribes to, and orchestrates
-the dispatch of.
+The front-end of \PeaCoq{} is a web application, currently written in
+\TypeScript{}, a statically-typed dialect of \JavaScript{}.  We call
+\define{driver} the part of the code responsible for communicating with the
+back-end.  We use a reactive programming library called \RxJS{}, which provides
+a stream abstraction for sequences of values.  Messages from the back-end are
+published as streams, and each of the components involved in the front-end
+(namely, the editor, the proof-tree, and the automation layer) can subscribe to
+only those messages they need to observe.  Conversely, those components publish
+streams of commands they'd like the back-end to process, which the driver
+subscribes to, and orchestrates the dispatch of.
 
 This orchestration can require some finesse.  The API provided by \Coq{} is
 fairly stateless, that is, \emph{not} in the sense that there are no states, but
@@ -131,7 +131,7 @@ explicitly state over which previous state they wish to be applied.  This
 abstraction holds well at the document level, but unfortunately, some commands
 change global, mutable flags, in ways that can be observed.
 
-In other to prevent issues with such observable, mutable state, some sequences
+In order to prevent issues with such observable, mutable state, some sequences
 of commands must be processed atomically, that is, no other action may be
 interleaved with the sequence.  In order to achieve this, the layers emit their
 commands not as a simple sequence of commands, but as a sequence of sequences of
@@ -159,7 +159,8 @@ const commandToCancel = new Add('Command To Cancel')
 
 // By convention, we put a $ sign behind stream variables.
 const answer$ =
-  added$.filter(sameTagAs(commandToCancel))
+  added$
+  .filter(sameTagAs(commandToCancel))
   .takeUntil(completed$.filter(sameTagAs(commandToCancel)))
 
 const output$ = answer$.map(...) // do what you need

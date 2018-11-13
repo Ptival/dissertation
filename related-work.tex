@@ -101,18 +101,18 @@ state.
 The literature on incremental computation focuses on the problem of reliably and
 efficiently re-computing data that is the output of some computation after the
 input undergoes a modification, which is similar to our deriving of repairing
-functions from Section~\ref{deriving}.  For instance,~\citet{acar2006},
+functions from Section~\ref{chick-deriving}.  For instance,~\citet{acar2006},
 \citet{carlsson2002}, as well as~\citet{firsov2016}, all use an abstract data
 type for values that can be efficiently recomputed, and propose a monadic
 interface to build incremental computations while providing the programmer with
 an interface that hides those details behind the scenes.  Similarly,
 \citet{chen2011} automatically transform a non-incremental program to inject
-incremental behavior into it.  While this is similar to what we do in spirit,
-we care about more than just obtaining the result of the incremental
-computation, since we sometimes reuse the diff of one data type to compute a diff
-for another, related data type.  Incremental computation techniques are
-typically not interested in this, and do not usually expose the internals of
-their functioning to the user.
+incremental behavior into it.  While this is similar to what we do in spirit, we
+care about more than just obtaining the result of the incremental computation,
+since we sometimes reuse the diff of one data type to compute a diff for
+another, related data type.  Incremental computation techniques are typically
+not interested in this, and do not usually expose the internals of their
+functioning to the user.
 
 \citet{cai2014} define a general way of using \define{derivatives} of functions
 to compute their reactions to some abstract modifications, and compute those
