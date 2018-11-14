@@ -9,8 +9,10 @@ According to the Curry-Howard correspondence, this derivation can be equally
 thought of as a well-formed tree, combining axioms and rules of the logical
 system, or, as a well-typed λ-term.  For instance, the theorem:
 
+\noindent
 \coqinline{Theorem swap : Π (A B : Prop) → A ∧ B → B ∧ A.}
 
+\noindent
 can be witnessed by the following logical derivation:
 
 \begin{figure*}[htp]
@@ -43,7 +45,7 @@ can be witnessed by the following logical derivation:
                         \inferrule*
                         { }
                         {
-                          \ldots , H_A : A , H_B : B \Entails A
+                          \ldots , H_A : A , H_B : B \Entails B
                         }
                       }
                       \and
@@ -51,12 +53,12 @@ can be witnessed by the following logical derivation:
                         \inferrule*
                         { }
                         {
-                          \ldots , H_A : A , H_B : B \Entails B
+                          \ldots , H_A : A , H_B : B \Entails A
                         }
                       }
                     }
                     {
-                      \ldots , H : A \land B , H_A : A , H_B : B \Entails A \land B
+                      \ldots , H : A \land B , H_A : A , H_B : B \Entails B \land A
                     }
                   }
                 }

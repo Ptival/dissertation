@@ -1,0 +1,84 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
+\begin{figure*}[htp]
+
+  \scalebox{0.84}{
+    \begin{minipage}[t]{\textwidth}
+
+      \begin{mathpar}
+        {
+          \inferrule*
+          {
+            \inferrule*
+            {
+              \inferrule*
+              {
+                \inferrule*
+                {
+                  {
+                    \inferrule*
+                    { }
+                    {
+                      \ldots , H : A \land B \Entails A \land B
+                    }
+                  }
+                  \and
+                  {
+                    \inferrule*
+                    {
+                      {
+                        \inferrule*
+                        { }
+                        {
+                          \ldots , H_A : A , H_B : B \Entails B
+                        }
+                      }
+                      \and
+                      {
+                        \inferrule*
+                        { }
+                        {
+                          \ldots , H_A : A , H_B : B \Entails A
+                        }
+                      }
+                    }
+                    {
+                      \ldots , H : A \land B , H_A : A , H_B : B \Entails B \land A
+                    }
+                  }
+                }
+                {
+                  \ldots , H : A \land B \Entails B \land A
+                }
+              }
+              {
+                A : \texttt{Prop}, B : \texttt{Prop} \Entails A \land B \rightarrow B \land A
+              }
+            }
+            {
+              A : \texttt{Prop} \Entails \Pi (B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
+            }
+          }
+          {
+            \Entails \Pi (A\ B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
+          }
+        }
+      \end{mathpar}
+
+    \end{minipage}
+
+  }
+
+\end{figure*}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
