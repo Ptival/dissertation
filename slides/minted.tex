@@ -1,0 +1,15 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+\begin{minted}[linenos=false,style=tango]{ocaml}
+map' f (cons x xs) = cons (f x) (map' f xs)
+\end{minted}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

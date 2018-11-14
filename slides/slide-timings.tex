@@ -1,5 +1,10 @@
-\begin{figure}
-\centering
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
 \begin{tikzpicture}
 \begin{axis}[
     xbar stacked,
@@ -66,24 +71,23 @@
 \addplot[black,fill=color16] coordinates
 {(   0,0) (   0,1) (   0,2) (   0,3) (492,4) (470,5) (1097,6) (   0,7) (  0,8) (805,9)};
 
-\addlegendentry{\quad \easy{}   \quad \coqinline{rev_snoc                   }};
-\addlegendentry{\quad \medium{} \quad \coqinline{rev_involutive             }};
-\addlegendentry{\quad \medium{} \quad \coqinline{concat_cons_snoc           }};
-\addlegendentry{\quad \easy{}   \quad \coqinline{go_somewhere               }};
-\addlegendentry{\quad \easy{}   \quad \coqinline{B_is_enough                }};
-\addlegendentry{\quad \easy{}   \quad \coqinline{more_facts                 }};
-\addlegendentry{\quad \easy{}   \quad \coqinline{A_and_B                    }};
-\addlegendentry{\quad \medium{} \quad \coqinline{snoc_concat_end            }};
-\addlegendentry{\quad \hard{}   \quad \coqinline{rev_distributes_over_concat}};
-\addlegendentry{\quad \medium{} \quad \coqinline{map_commutes               }};
-\addlegendentry{\quad \medium{} \quad \coqinline{map_fusion                 }};
-\addlegendentry{\quad \medium{} \quad \coqinline{fold_snoc                  }};
-\addlegendentry{\quad \easy{}   \quad \coqinline{map'_unroll                }};
-\addlegendentry{\quad \medium{} \quad \coqinline{map_map'                   }};
-\addlegendentry{\quad \easy{}   \quad \coqinline{In_cons                    }};
-\addlegendentry{\quad \hard{}   \quad \coqinline{In_concat_left             }};
+% \addlegendentry{\quad \easy{}   \quad \coqinline{rev_snoc                   }};
+% \addlegendentry{\quad \medium{} \quad \coqinline{rev_involutive             }};
+% \addlegendentry{\quad \medium{} \quad \coqinline{concat_cons_snoc           }};
+% \addlegendentry{\quad \easy{}   \quad \coqinline{go_somewhere               }};
+% \addlegendentry{\quad \easy{}   \quad \coqinline{B_is_enough                }};
+% \addlegendentry{\quad \easy{}   \quad \coqinline{more_facts                 }};
+% \addlegendentry{\quad \easy{}   \quad \coqinline{A_and_B                    }};
+% \addlegendentry{\quad \medium{} \quad \coqinline{snoc_concat_end            }};
+% \addlegendentry{\quad \hard{}   \quad \coqinline{rev_distributes_over_concat}};
+% \addlegendentry{\quad \medium{} \quad \coqinline{map_commutes               }};
+% \addlegendentry{\quad \medium{} \quad \coqinline{map_fusion                 }};
+% \addlegendentry{\quad \medium{} \quad \coqinline{fold_snoc                  }};
+% \addlegendentry{\quad \easy{}   \quad \coqinline{map'_unroll                }};
+% \addlegendentry{\quad \medium{} \quad \coqinline{map_map'                   }};
+% \addlegendentry{\quad \easy{}   \quad \coqinline{In_cons                    }};
+% \addlegendentry{\quad \hard{}   \quad \coqinline{In_concat_left             }};
 \end{axis}
 \end{tikzpicture}
-\caption{\PeaCoq{} A-B study timings per participant pair}
-\label{peacoq-a-b-study-cumulative}
-\end{figure}
+
+\end{document}

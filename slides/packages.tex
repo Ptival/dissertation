@@ -1,0 +1,196 @@
+\usepackage{fontspec}
+\usepackage{gfsdidot}          % makes math stuff look neat, but also overrides text stuff
+\setmainfont{TeX Gyre Pagella} % forces back text stuff to look neat too
+\setmonofont{DejaVuSansMono}   % monospace stuff should look neat too
+
+\usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz, pgfplots, etc.
+\let\iint\relax
+\let\iiint\relax
+\let\iiiint\relax
+\let\idotsint\relax
+\usepackage{amsmath} % loaded by mathtools?
+\usepackage{amssymb}
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage{calc}
+\usepackage{caption}
+\usepackage{color}
+\usepackage{DejaVuSansMono}
+\usepackage{dsfont}
+\let\textlozenge\relax
+\usepackage[inline]{enumitem}
+\usepackage{environ}
+\usepackage{etoolbox}
+\usepackage{fontawesome}
+\usepackage{forest}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{ltablex} \keepXColumns % Made me sad for appendix tables, where was it used?
+\usepackage{makecell}
+\usepackage{mathpartir}
+%\usepackage{mathtools} % \coloneqq
+\usepackage{mdframed}
+\usepackage{minted}
+\usepackage{multicol}
+\usepackage[parfill]{parskip}
+\usepackage{pgfplots}
+\usepackage{pifont} % \ding
+\usepackage{soul}
+\usepackage{syntax}
+\usepackage{tabularx}
+\usepackage[skins,theorems]{tcolorbox}
+\usepackage{tikz}
+\usepackage{tikzpeople}
+\usepackage{tikz-qtree}
+\usepackage{xpatch}
+\usepackage[breaklinks=true,pdfborder={0 0 0}]{hyperref}
+
+% gfsdidot makes ∀ and ∃ super ugly, this reverts them to something fine
+\DeclareSymbolFont{CMsymbols}{OMS}{cmsy}{b}{n}
+\SetSymbolFont{CMsymbols}{bold}{OMS}{cmsy}{ub}{n}
+\DeclareMathSymbol{\forall}{\mathord}{CMsymbols}{"38}
+\DeclareMathSymbol{\exists}{\mathord}{CMsymbols}{"39}
+
+\definecolor{monokaibg}{HTML}{272822}
+\definecolor{color01}{HTML}{E6194B}
+\definecolor{color02}{HTML}{3CB44B}
+\definecolor{color03}{HTML}{FFE119}
+\definecolor{color04}{HTML}{4363D8}
+\definecolor{color05}{HTML}{F58231}
+\definecolor{color06}{HTML}{911EB4}
+\definecolor{color07}{HTML}{46F0F0}
+\definecolor{color08}{HTML}{F032E6}
+\definecolor{color09}{HTML}{BCF60C}
+\definecolor{color10}{HTML}{FABEBE}
+\definecolor{color11}{HTML}{008080}
+\definecolor{color12}{HTML}{E6BEFF}
+\definecolor{color13}{HTML}{9A6324}
+\definecolor{color14}{HTML}{FFFAC8}
+\definecolor{color15}{HTML}{800000}
+\definecolor{color16}{HTML}{AAFFC3}
+\definecolor{color17}{HTML}{808000}
+\definecolor{color18}{HTML}{FFD8B1}
+\definecolor{color19}{HTML}{000075}
+\definecolor{color20}{HTML}{808080}
+\definecolor{color21}{HTML}{FFFFFF}
+\definecolor{color22}{HTML}{000000}
+
+\def\mathunderline#1#2{\color{#1}\underline{{\color{black}#2}}\color{black}}
+
+\forestset{
+  default preamble={
+    for tree={
+      align=center,
+      draw=black,
+      edge={
+        ultra thick,
+      },
+      edge path={
+        \noexpand\path[\forestoption{edge}]
+        (!u.parent anchor)
+        -- +(0,-10pt)
+        -| (.child anchor)
+        \forestoption{edge label};
+      },
+      font=\bfseries,
+      % inner sep=10pt,
+      l sep=30pt,
+      % line width=2pt,
+      minimum height=20pt,
+      minimum width=30pt,
+      parent anchor=south,
+      rectangle,
+      ultra thick,
+    }
+  }
+}
+
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+% defines safecoqinline, a command like coqinline but works in tabular
+% environments
+\makeatletter
+\def\safecoqinline#1{%
+\ifx\@footnotetext\TX@trial@ftn
+\detokenize{#1}%
+\else
+\coqinline{#1}%
+\fi}
+\makeatother
+
+\captionsetup{
+  justification=centering,
+}
+
+\usetikzlibrary{arrows, calc, fit, positioning, shapes, tikzmark}
+
+\tikzset{
+bicolor/.style 2 args={
+  dashed,dash pattern=on 4pt off 4pt,#1,
+  postaction={draw,dashed,dash pattern=on 4pt off 4pt,#2,dash phase=4pt}
+  },
+}
+
+\tikzstyle{Matching}=[
+black,
+dashed,
+line width=3pt,
+]
+
+\tikzstyle{RoundedDottedPath}=[
+densely dotted,
+color05,
+line width=3pt,
+rounded corners=10pt,
+]
+
+\tikzstyle{RoundedRectangle}=[
+dashed,
+draw,
+line width=3pt,
+rounded corners=10pt,
+]
+
+\tikzstyle{NodeLabel}=[
+black,
+circle,
+draw,
+fill=white,
+font=\bfseries,
+inner sep=1pt,
+ultra thick,
+]
+
+\graphicspath{ {./images/} }
+
+% Fix a mdframed bug where skipbelow is ignored
+% \makeatletter
+% \xpatchcmd{\endmdframed}
+%   {\aftergroup\endmdf@trivlist\color@endgroup}
+%   {\endmdf@trivlist\color@endgroup\@doendpe}
+%   {}{}
+% \makeatother
+
+% \surroundwithmdframed[
+% backgroundcolor=monokaibg,
+% linecolor=white,
+% skipabove=1em,
+% skipbelow=1em,
+% leftmargin=10pt,
+% innertopmargin=1pt,
+% innerbottommargin=0pt
+% ]{minted}
+
+\setminted{
+  % DO NOT use bgcolor, use mdframed instead
+  % bgcolor=monokaibg,
+  linenos=true,
+  style=emacs,
+  breaklines=true,
+  encoding=utf8,
+  fontsize=\large,
+  baselinestretch=1,
+}
+
+% need bgcolor for the display to be nice in rules
+\newmintinline{coq}{bgcolor=white}
