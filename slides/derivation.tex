@@ -7,72 +7,73 @@
 
 \begin{figure*}[htp]
 
-  \scalebox{0.84}{
-    \begin{minipage}[t]{\textwidth}
+\scalebox{0.70}{
 
-      \begin{mathpar}
+  \begin{minipage}{1.3\textwidth}
+
+    \begin{mathpar}
+      {
+        \inferrule*[Right=$\Pi$-intro]
         {
-          \inferrule*
+          \inferrule*[Right=$\Pi$-intro]
           {
-            \inferrule*
+            \inferrule*[Right=$\Pi$-intro]
             {
-              \inferrule*
+              \inferrule*[Right=$\land$-elim]
               {
-                \inferrule*
                 {
+                  \inferrule*
+                  { }
                   {
-                    \inferrule*
-                    { }
-                    {
-                      \ldots , H : A \land B \Entails A \land B
-                    }
-                  }
-                  \and
-                  {
-                    \inferrule*
-                    {
-                      {
-                        \inferrule*
-                        { }
-                        {
-                          \ldots , H_A : A , H_B : B \Entails B
-                        }
-                      }
-                      \and
-                      {
-                        \inferrule*
-                        { }
-                        {
-                          \ldots , H_A : A , H_B : B \Entails A
-                        }
-                      }
-                    }
-                    {
-                      \ldots , H : A \land B , H_A : A , H_B : B \Entails B \land A
-                    }
+                    \ldots , H : A \land B \Entails \coqinline{H} \HasType A \land B
                   }
                 }
+                \and
                 {
-                  \ldots , H : A \land B \Entails B \land A
+                  \inferrule*[Right=$\land$-intro]
+                  {
+                    {
+                      \inferrule*
+                      { }
+                      {
+                        \ldots , H_A : A , H_B : B \Entails \coqinline{HA} \HasType A
+                      }
+                    }
+                    \and
+                    {
+                      \inferrule*
+                      { }
+                      {
+                        \ldots , H_A : A , H_B : B \Entails \coqinline{HB} \HasType B
+                      }
+                    }
+                  }
+                  {
+                    \ldots , H : A \land B , H_A : A , H_B : B \Entails \coqinline{conj HB HA} \HasType A \land B
+                  }
                 }
               }
               {
-                A : \texttt{Prop}, B : \texttt{Prop} \Entails A \land B \rightarrow B \land A
+                \ldots , H : A \land B \Entails \coqinline{match H with conj HA HB => conj HB HA end} \HasType B \land A
               }
             }
             {
-              A : \texttt{Prop} \Entails \Pi (B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
+              A : \texttt{Prop}, B : \texttt{Prop} \Entails \coqinline{λ H → match ... end} \HasType A \land B \rightarrow B \land A
             }
           }
           {
-            \Entails \Pi (A\ B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
+            A : \texttt{Prop} \Entails \coqinline{λ B H → match ... end} \HasType \Pi (B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
           }
         }
-      \end{mathpar}
+        {
+          \Entails \coqinline{λ A B H → match ... end} \HasType \Pi (A\ B : \texttt{Prop}) \rightarrow A \land B \rightarrow B \land A
+        }
+      }
+    \end{mathpar}
 
-    \end{minipage}
+  \end{minipage}
 
-  }
+}
 
 \end{figure*}
 

@@ -6,4 +6,98 @@ flourished from an academic object of interest to a trending topic in both
 academia and industry.  Concepts that used to be mostly relevant in the context
 of functional programming languages, for instance, \emph{anonymous functions},
 \emph{currying}, \emph{monads}, or \emph{dependent types}, are percolating into
-many functional languages as well as mainstream imperative languages.
+many functional languages, as well as mainstream imperative languages.
+
+Unfortunately, these concepts tend to have a higher level of abstraction than
+their imperative counterparts, and are often dismissed by programmers as
+esoteric, until their benefits are made clear.  This has happened repeatedly
+over the history of programming languages: structured programming seemed
+restrictive until its maintenance benefits became clear, garbage collection
+seemed non-viable until their implementation became fast enough, monads
+were just a mathematical concept until their relationship with effectful
+computations was made crisp.
+
+Proof assistants, that is, software tools that allow programmers to reason
+formally about their code, are currently in a shifting period.  While they have
+existed for several decades, their recognition as a valuable tool is still in
+progress.  There are multiple explanations for this.  First, the underlying
+meta-theories are still under active research, and as a result, the software
+implementations are often not as polished as their mainstream programming
+counterparts.  Second, learning to use these proof assistants is a hard task,
+often requiring extensive research and academic readings.  Compared to
+mainstream programming languages, tutorials for proof assistants are both
+scarce and terse.  Finally, there are but a few examples of successful,
+broadly-used software built within proof assistants.
+
+On this subject, a few pioneer projects have helped make the case for using
+proof assistants.  The CompCert C compiler~\mycite{leroy2009formally}
+demonstrated that a verified compiler for a ``real-world'' programming language
+was not only feasible, but was independently proven to be more robust than its
+competitors by~\mycite{yang2011finding} and~\mycite{le2014compiler}.  The seL4
+micro-kernel~\mycite{klein2009sel4} also demonstrated that verified software can
+build such low-level artifacts as the kernel of an operating system.  On a more
+theoretical side, the \Coq{} proof assistant was also used to build a mechanized
+proof of the four-color theorem~\mycite{gonthier2008formal}, as well as the
+odd-order theorem~\mycite{gonthier2013machine}.  These proof efforts not only
+helped make software verification more broadly known and respected, they also
+provided several libraries and design principles for software verification.  The
+Mathematical Components library~\mycite{gonthier2013engineering}, for instance,
+was built alongside the two theorems previously mentioned, and offers a vast
+array of reusable mathematical objects, as well as a methodology for developing
+large-scale proofs using small-scale reflection, packaged in a library called
+\define{SSReflect}.
+
+For proof assistants to become popular, we believe it will take efforts on
+multiple fronts.  In order to be approachable, we need better course material,
+accessible to programmers outside of academic settings.  We also need tools that
+are more suitable to beginners, with softer edges, so to speak.  There is good
+progress on this front.  The Software Foundations~\mycite{pierce2010software}
+collection of books has been incrementally designed over the past decade, and is
+regarded as one of the best introductions to the \Coq{} proof assistant and
+mechanized theorem proving in general.  Other languages are also providing their
+own learning material, for instance, Programming Language
+Foundations~\footnote{\url{https://plfa.github.io/}} for \Agda{}, or the
+\Idris{}
+tutorial~\footnote{\url{http://docs.idris-lang.org/en/latest/tutorial/}}.
+
+The design of proof assistants, their libraries, and the programming languages
+they are based upon, will also need refining.  Proof engineering is still a
+fairly new endeavor, and will require years of effort before proper abstraction
+mechanisms, design principles, and tools are designed, evaluated, and adopted.
+For instance, there are two separate mechanisms for ad hoc overloading in
+\Coq{}, with each their strength and weaknesses, namely \define{type classes}
+and \define{canonical structures}.  The former is not very robust, often
+resulting in undecipherable error messages, while the latter is more powerful,
+but requires abusing other features of the proof assistant to program it.
+
+In this dissertation, we want to explore two aspects of the interaction of users
+of proof assistants.  The first aspect of interest is the barrier to entry
+previously mentioned.  The author noticed several rough edges in the process of
+learning to use a proof assistant, both through their own learning experience,
+and through teaching other beginners to use the \Coq{} proof assistant.  These
+problems range from conceptual ones, like the ability to make proper mental
+models for what happens ``behind the scenes'' when one interacts with a proof
+assistant, to more practical issues, like being able to find the relevant
+theorems, lemmas, tactics, etc.
+
+The second aspect we are interested in caters to a broader audience.  Beginners
+often lack the foresight to get their data type definitions to be well tailored
+for a problem on the first try.  Experts often need to refactor, add or remove
+features, to an existing program.  In both cases, the user will want to go back
+to existing definitions, update them, and re-execute the existing proofs to get
+back to their problem at hand.  Unfortunately, in most proof assistants, and
+programming languages in general, an update in some definition will have
+repercussions throughout a code base, that will require the user's attention to
+fix.  While some of these changes indeed require scrutinizing, either because
+new values or new proofs need to be created from scratch, often times, a decent
+fraction of the changes necessary are systematic, deterministic consequences of
+the changes made upstream.
+
+This slows down beginners in their learning process, especially since they will
+lack the knowledge necessary to make their code and proof robust to such
+changes.  It also occasionally slows down experts, who need to update existing,
+working proofs, if only to rename variables, reorder arguments to a function or
+constructor, etc.  We are interested in the possibility of eliminating the
+tedium out of this process, accelerating users by automatically figuring out the
+systematic changes, and leaving them only the task of filling the blanks that
+require creativity or expertise.
