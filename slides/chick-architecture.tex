@@ -1,0 +1,76 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
+\begin{figure}[!htp]
+
+  \resizebox {\columnwidth} {!} {
+  \begin{tikzpicture}[node distance=0.8cm]
+
+    \tikzstyle{box} = [%
+    align=center,
+    draw=black,
+    font=\bfseries,
+    inner sep=2ex,
+    line width=3pt,
+    rectangle,
+    %ultra thick,
+    ];
+
+    \tikzstyle{doc}=[%
+    align=center,
+    draw=black,
+    shape=document,
+    inner sep=2ex,
+    shape=document,
+    thick,
+    ]
+
+    \tikzstyle{hidden} = [draw=white,color=white];
+
+    \node[doc]                           (modified) {Partially\\refactored\\program};
+    \node[doc,below=of modified]         (original) {Original\\program};
+    \node[box,right=of modified]         (guess)    {Guess\\diff};
+    \node[doc,right=of guess]            (guessed)  {Partial\\refactoring\\diff};
+    \node[box,right=of guessed]          (repair)   {Repair};
+    \node[doc,right=of repair]           (repaired) {Completed\\refactoring\\diff};
+    \node[box] at (repaired |- original) (patch)    {Patch};
+    \node[doc,below=of patch]            (patched)  {Refactored\\program};
+
+    \draw[->,rounded corners,ultra thick]
+    (original.east)
+    -- (guess.south |- original.east)
+    -- (guess.south)
+    ;
+
+    \draw[->,ultra thick] (modified.east) -- (guess.west);
+    \draw[->,ultra thick] (guess.east)    -- (guessed.west);
+
+    \draw[->,rounded corners,ultra thick]
+    (original.east)
+    -- (repair.south |- original.east)
+    -- (repair.south)
+    ;
+
+    \draw[->,ultra thick] (guessed.east) -- (repair.west);
+    \draw[->,ultra thick] (repair.east)  -- (repaired.west);
+
+    \draw[->,ultra thick] (original.east)  -- (patch.west);
+    \draw[->,ultra thick] (repaired.south) -- (patch.north);
+    \draw[->,ultra thick] (patch.south)    -- (patched.north);
+
+  \end{tikzpicture}
+
+  }
+
+\end{figure}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

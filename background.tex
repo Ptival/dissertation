@@ -40,14 +40,14 @@ typing violation.  On the other hand, this provides less safety, as latent
 errors in the programs stay unnoticed until an execution path triggers them.  In
 this dissertation, we will focus solely on static typing disciplines.
 
-There can be several reasons for why one might want to reject a program, whether
-statically or dynamically.  The simplest case is a breach of expectation between
-a value and the context into which it is passed: this is usually called a
-\define{type error}.  For instance, a function declared to expect a number input
-might not be allowed to receive a string instead.
+There can be many reasons for wanting to reject a program, whether statically or
+dynamically.  The simplest case is a breach of expectation between a value and
+the context into which it is passed: this is usually called a \define{type
+error}.  For instance, a function declared to expect a number input might not be
+allowed to receive a string instead.
 
 Another, less obvious, unfortunate reason for rejecting a syntactically-valid,
-semantically-valid program, is that the static enforcement of typing rules
+semantically valid program, is that the static enforcement of typing rules
 cannot, in general, be complete.  For instance, dependent type systems (covered
 in Section~\ref{dependent-types}) cannot safely ensure their typing discipline
 in the presence of arbitrary recursion.  In order to reject all \define{unsafe}
@@ -409,30 +409,4 @@ re-derive an existing theorem.
 
 \section{Program refactoring}
 
-\begin{itemize}
-
-  \item Define the notion of a refactoring
-
-        \begin{itemize}
-
-          \item Define the notion of semantic preservation
-
-          \item X
-
-          \item X
-
-        \end{itemize}
-
-  \item X
-
-        \begin{itemize}
-
-          \item X
-
-          \item X
-
-          \item X
-
-        \end{itemize}
-
-\end{itemize}
+TODO

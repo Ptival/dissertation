@@ -1,0 +1,60 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
+\tikzset{>=latex}
+
+\begin {figure}
+  \centering
+  \resizebox {\columnwidth} {!} {
+  \begin{tikzpicture}[node distance=1.5cm]
+
+  % \tikzstyle{state} = [draw, very thick, fill=white, rectangle, minimum height=3em, minimum width=7em, node distance=8em, font={\sffamily\bfseries}]
+  % \tikzstyle{stateEdgePortion} = [black,thick];
+  % \tikzstyle{stateEdge} = [stateEdgePortion,->];
+  % \tikzstyle{edgeLabel} = [pos=0.5, text centered, font={\sffamily\small}];
+  \tikzstyle{hidden} = [draw=white,color=white];
+
+  \tikzstyle{outer} = [rectangle,draw = black,thick,inner sep = 10pt];
+  \tikzstyle{inner} = [rectangle,rounded corners,draw = black,thick];
+  \tikzstyle{arrow} = [thick];
+
+  \node [inner]                         (snap)       {Snap Server};
+  \node [inner,below=of snap]           (sapi)       {SerTop (SerAPI)};
+  \node [below=of sapi]                 (coq-label)  {Coq};
+  \node [inner, below=0cm of coq-label] (plugin)     {PeaCoq plug-in};
+
+  \node [inner,fit={(coq-label) (plugin)}] (coq) {};
+
+  \node [above=0.5cm of snap] (backend-label) {Back-end};
+  \node [outer,fit={(backend-label) (snap) (sapi) (coq)}] (backend) {};
+
+  \draw[<->,ultra thick] (snap.south) -- (sapi.north);
+  \draw[<->,ultra thick] (sapi.south) -- (coq.north);
+
+  \node [inner,right=5.5cm of snap] (driver)     {Driver};
+  \node [inner,below=of driver]     (editor)     {Editor};
+  \node [inner,left=of editor]      (prooftree)  {Proof-tree};
+  \node [inner,right=of editor]     (automation) {Automation};
+
+  \draw[<->,ultra thick] (driver.south west) -- (prooftree.north);
+  \draw[<->,ultra thick] (driver.south) -- (editor.north);
+  \draw[<->,ultra thick] (driver.south east) -- (automation.north);
+
+  \node [above=0.5cm of driver] (frontend-label) {Front-end};
+  \node [outer,fit={(frontend-label) (driver) (prooftree) (editor) (automation)}] (frontend) {};
+
+  \draw[<->,ultra thick] (snap.east) -- (driver.west);
+
+\end{tikzpicture}
+}
+\end{figure}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

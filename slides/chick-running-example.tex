@@ -1,0 +1,95 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
+% Pygments/minted put annoying boxes on Unicode because the Coq lexer is stupid
+\makeatletter
+\expandafter\def\csname PYGlovelace@tok@err\endcsname{\def\PYGlovelace@bc##1{\textcolor[rgb]{0.0,0.0,0.0}{##1}}}
+\makeatother
+
+\begin{figure}[!htp]
+
+  \noindent%
+  \begin{minipage}[t]{0.50\columnwidth}
+    \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
+Inductive nat : Set :=
+| O : nat
+| S : ∀ (n : nat), nat.
+
+Inductive list (A : Type)
+: Type :=
+| nil : list A
+| cons : A →
+    list A → list A.
+
+Definition a_list
+: list nat :=
+  cons nat (S O)
+    (nil nat).
+
+Definition length :
+  ∀ (T : Type),
+    list T → nat :=
+  λ T l, list_rect T (λ _, nat) O
+    (λ _ _ lt, S lt) l.
+
+Fixpoint map :
+  ∀ (A B : Type), (A → B) →
+    list A →
+    list B :=
+  λ _ B f l,
+    match l with
+    | nil _      => nil B
+    | cons _ h t =>
+      cons B (f h)
+           (map A B f t)
+    end.
+  \end{minted}
+\end{minipage}%
+\begin{minipage}[t]{\columnwidth}
+  \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
+Inductive nat : Set :=
+| O : nat
+| S : ∀ (n : nat), nat.
+
+Inductive @\modified{vec}@ (A : Type)
+: @\modified{nat →}@ Type :=
+| @\modified{vnil}@ : @\modified{vec}@ A @\modified{O}@
+| @\modified{vcons}@ : A → @\modified{∀ (n : nat),}@ @\modified{vec}@ A @\modified{n}@ → @\modified{vec}@ A @\modified{(S n)}@.
+
+Definition a_list
+: @\repaired{vec}@ nat @\repaired{(\_ : nat)}@ :=
+  @\repaired{vcons}@ nat @\repaired{(\_ : nat)}@ (S O)
+    (nil nat).
+
+Definition length :
+  ∀ (T : Type),
+    @\repaired{vec}@ T @\repaired{(\_ : nat)}@ → nat :=
+  λ T l, @\repaired{vec\_rect}@ T (λ _, nat) O
+    (λ _ _ lt, S lt) l.
+
+Fixpoint map :
+  ∀ (A B : Type), (A → B) →
+    @\repaired{vec}@ A @\repaired{(\_ : nat)}@ →
+    @\repaired{vec}@ B @\repaired{(\_ : nat)}@ :=
+  λ _ B f l,
+    match l with
+    | nil _         => nil B
+    | @\repaired{vcons}@ _ @\repaired{\_}@ h t =>
+      @\repaired{vcons}@ B @\repaired{\_}@ (f h)
+            (map A B f t)
+    end.
+  \end{minted}
+\end{minipage}
+
+\end{figure}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

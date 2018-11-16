@@ -1,0 +1,49 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
+\begin{table}[!htbp]
+
+  \begin{tabular}{l *{6}{c}}
+  \toprule
+  & \rotatebox{90}{\safecoqinline{split}}
+  & \rotatebox{90}{\safecoqinline{intro}}
+  & \rotatebox{90}{\safecoqinline{induction}}
+  & \rotatebox{90}{\safecoqinline{reflexivity}}
+  & \rotatebox{90}{\safecoqinline{rewrite}}
+  & \rotatebox{90}{\safecoqinline{right}}
+  \\ \midrule
+  $\text{A}1_{1}$ & \OK & \OK & \OK & \OK & \YN & \OK \\
+  $\text{A}1_{2}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{A}2_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{A}2_{2}$ & \OK & \YN & \OK & \OK & \OK & \OK \\
+  $\text{A}3_{1}$ & \OK & \YN & \OK & \OK & \YN & \OK \\
+  $\text{A}3_{2}$ & \YN & \OK & \OK & \OK & \OK & \YN \\
+  $\text{A}4_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{A}4_{2}$ & \OK & \YN & \OK & \OK & \OK & \OK \\
+  $\text{A}5_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{A}5_{2}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  \midrule
+  $\text{B}1_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}1_{2}$ & \YN & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}2_{1}$ & \KO & \OK & \OK & \OK & \YN & \OK \\
+  $\text{B}2_{2}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}3_{1}$ & \KO & \YN & \OK & \OK & \OK & \OK \\
+  $\text{B}3_{2}$ & \OK & \OK & \OK & \OK & \YN & \OK \\
+  $\text{B}4_{1}$ & \KO & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}4_{2}$ &     &     & \OK & \OK & \OK & \OK \\
+  $\text{B}5_{1}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  $\text{B}5_{2}$ & \OK & \OK & \OK & \OK & \OK & \OK \\
+  \bottomrule
+  \end{tabular}{\parfillskip=0pt\par}
+\end{table}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

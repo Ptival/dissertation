@@ -140,7 +140,7 @@ Inductive @\modified{vec}@ (A : Type)
 Definition a_list
 : @\repaired{vec}@ nat @\repaired{(\_ : nat)}@ :=
   @\repaired{vcons}@ nat @\repaired{(\_ : nat)}@ (S O)
-    (nil nat).
+    (@\repaired{vnil}@ nat).
 
 Definition length :
   ∀ (T : Type),
@@ -154,7 +154,7 @@ Fixpoint map :
     @\repaired{vec}@ B @\repaired{(\_ : nat)}@ :=
   λ _ B f l,
     match l with
-    | nil _         => nil B
+    | @\repaired{vnil}@ _         => @\repaired{vnil}@ B
     | @\repaired{vcons}@ _ @\repaired{\_}@ h t =>
       @\repaired{vcons}@ B @\repaired{\_}@ (f h)
             (map A B f t)
