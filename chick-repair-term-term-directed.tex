@@ -1,7 +1,7 @@
 \subsubsection*{Term-directed term repair algorithm}
 
-The algorithm for $\repairTermThreeOp$ is directed by the syntax of the term
-being repaired.
+$\repairTermThreeOp$ is an algorithm directed by the syntax of the term being
+repaired, used when no information is known about its type and type diff.
 
 For repairing variables (Rule \rulename{\UTRVar}) and function applications
 (Rule \rulename{\UTRApp}), we use another helper, $\repairArgsOp$, to compute

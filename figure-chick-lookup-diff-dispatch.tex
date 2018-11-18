@@ -1,0 +1,36 @@
+\begin{Rules}
+  {lookup-diff-dispatch}
+  { Diff lookup rules (local context and global environment) }
+
+\begin{mathpar}
+  {
+    \inferrule*
+    [lab=Diff-\LookupCtxt]
+    {\turnstile%
+      { \diff{\Gamma}{\delta_\Gamma} }
+      { \declDiff{ v }{ \delta_v }{ \delta_{\tau} } }
+    }
+    {\turnstile%
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \declDiff{ v }{ \delta_v }{ \delta_{\tau} } }
+    }
+  }
+
+  {
+    \inferrule*
+    [lab=Diff-\LookupEnv]
+    {
+      {\turnstile%
+        { \diff{E} {\delta_E} }
+        { \declDiff{ v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+    {\turnstile%
+      { \dcontext{E} {\delta_E} {\Gamma} {\delta_\Gamma} }
+      { \declDiff{ v } { \delta_v } { \delta_{\tau} } }
+    }
+  }
+
+\end{mathpar}
+
+\end{Rules}

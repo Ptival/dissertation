@@ -1,6 +1,19 @@
 \chapter{\Chick{}: a core dependently-typed language and its repair
 algorithm}~\label{chick}
 
+Another pain point that both beginners and experts encounter frequently is that
+of refactoring existing programs and proofs.  Often times, one might realize,
+while working on a proof, that an earlier data type must be updated to add
+additional information.  One might also need to update existing data types and
+functions when they want to extend an existing formalization.  In both
+situations, after updating their definition, the programmer must perform a
+series of corrections to the rest of their code base to account for the
+newly-modified definitions.  Many of those changes are mechanical, structural
+changes that require no knowledge of the program domain, and no creative input
+from the programmer.  We would like to lower the burden on the programmer for
+such maintenance tasks, only leaving the complex parts of the refactoring to
+them.
+
 This chapter will focus on the development and evaluation of a tool (named
 \Chick{}\footnotemark{}) whose purpose is to help functional programmers
 propagate changes, made to some of their definitions, to the rest of their code.

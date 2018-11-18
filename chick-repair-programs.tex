@@ -38,6 +38,8 @@ definition has been processed, $E$ would contain, in order, \coqinline{nat}, and
 \coqinline{list}, and $\delta_E$ would still keep the former intact, but would
 register the diff turning \coqinline{list} into \coqinline{vec}.
 
+\input{figure-chick-repair-program}
+
 The repair algorithm for programs takes as input the original program $p$, and
 the user-provided modification $\delta_p$.  From those, it outputs a repaired
 modification $\out{\delta_p'}$, that propagates the changes introduced by
@@ -45,133 +47,34 @@ $\delta_E$ and $\delta_p$ to the rest of the program $p$.  The algorithm
 essentially folds over the sequence of vernacular commands that make up the
 program, propagating changes from previous commands to subsequent ones.
 
-\paragraph{\rulename{\RProgMod}}
-
-\[ \RuleRProgModify{} \]
-
-This rule does the bulk of the work, dispatching the repair of each vernacular
-command to the repair algorithm for vernacular commands $\repairVernacOp$
-(described in Section~\ref{repair-vernacular}).  First, the head vernacular
-command $v$ is repaired (using $\repairVernacOp$), returning a repaired diff
-$\out{\delta_v'}$.  Then, we want to repair the rest of the program, but the
-changes made to $v$ may affect the global environment for the subsequent
-commands.  For instance, in our motivating example, the vernacular command
-defining the inductive type \coqinline{list} gets modified to define the
+Rule \rulename{\RProgMod} does the bulk of the work, dispatching the repair of
+each vernacular command to the repair algorithm for vernacular commands
+$\repairVernacOp$ (described in Section~\ref{repair-vernacular}).  First, the
+head vernacular command $v$ is repaired (using $\repairVernacOp$), returning a
+repaired diff $\out{\delta_v'}$.  Then, we want to repair the rest of the
+program, but the changes made to $v$ may affect the global environment for the
+subsequent commands.  For instance, in our motivating example, the vernacular
+command defining the inductive type \coqinline{list} gets modified to define the
 inductive type \coqinline{vec} instead: when we repair the rest of the program,
 we must remember that the original program was defined in a global environment
 where \coqinline{list} was defined, and that the updated program must replace it
 with \coqinline{vec}.  We therefore repair the rest of the program $p$ in the
 appropriate updated environment and its diff.
 
+\rulename{\RProgSameCons} simply defers to \rulename{\RProgMod}: even though it
+processes unchanged commands, they might need repairs to account for changes in
+their dependencies, as accounted for in the global environment diff.
+
+TODO: other RProg
+
 \paragraph{Note} While our presentation makes it look like vernacular commands
 each add exactly one element to the global environment, it is not always as
 simple: inductive data type definitions add \begin{enumerate*} \item the
 inductive type (e.g. \coqinline{list}), \item all its constructors
-(e.g. \coqinline{nil}, \coqinline{cons}), \item and all its eliminators
+(e.g. \coqinline{nil}, \coqinline{cons}), and \item all its eliminators
 (e.g. \coqinline{list_rec}, \coqinline{list_ind}, as described later in
 Section~\ref{deriving}) \end{enumerate*}.  For simplifying diff operations, the
 whole $\InductiveText$ effectively acts as a placeholder, in our formalism, for
 all of those at once.  The lookup rules, given in Appendix~\ref{appendix-chick},
 encapsulate the complexity of accounting for all the definitions arising from
 one inductive data type definition.
-
-\rulename{\RProgSameCons} simply defers to \rulename{\RProgMod}: even though it
-processes unchanged commands, they might need repairs to account for changes in
-their dependencies, as accounted for in the global environment diff.
-
-\begin{Rules}{fig:repair-program}%
-  { Rules for repairing programs ($\repairProgOp$) }
-
-  \begin{mathpar}
-    \RuleRProgSameNil{}
-
-    {
-      \inferrule*
-          [lab=\RProgSameCons]
-          {
-            {\turnstile%
-              { \denv{E}{\delta_E} }
-              { \repairProg%
-                {\MathCons{v}{p}}
-                {\MathMod{\MathSameVernacular{}}{\MathSameProgram{}}}
-                {\delta}
-              }
-            }
-          }
-          {\turnstile%
-            { \denv{E}{\delta_E} }
-            { \repairProg{\MathCons{v}{p}}{\MathSameProgram{}}{\delta} }
-          }
-    }
-
-    {
-      \inferrule*
-          [lab=\RepairProg{Replace}]
-          % {\turnstile%
-          %   { \denv{E}{\delta_E} }
-          %   { \repairProg{q}{\MathSameProgram{}}{\delta} }
-          % }
-          % {\turnstile%
-          %   { \denv{E}{\delta_E} }
-          %   { \repairProg{p}{\MathReplace{q}}{\delta} }
-          % }
-          { }
-          {\turnstile%
-            { \denv{E}{\delta_E} }
-            { \repairProg{p}{\MathReplace{q}}{\MathReplace{q}} }
-          }
-    }
-
-    {
-      \inferrule*
-          [lab=\RepairProg{Insert}]
-          {\turnstile%
-            { \denv%
-              {\MathCons{v}{E}}
-              {\MathMod{\MathSameVernacular{}}{\delta_E}}
-            }
-            { \repairProg{p}{\delta_{p}}{\delta} }
-          }
-          {\turnstile%
-            { \denv{E}{\delta_E} }
-            { \repairProg{p}{\MathIns{v}{\delta_{p}}}{\delta} }
-          }
-    }
-
-    \RuleRProgModify{}
-
-    {
-      \inferrule*
-          [lab=\RepairProg{Drop}]
-          {
-            {\turnstile%
-              { \denv{v \Cons{} E}{\MathDrop{\delta_E}} }
-              { \repairProg{p}{\delta_p}{\delta_p'} }
-            }
-          }
-          {\turnstile%
-            { \denv{E}{\delta_E} }
-            { \repairProg{\MathCons{v}{p}}{\MathDrop{\delta_p}}{\MathDrop{\delta_p'}} }
-          }
-    }
-
-    {
-      \inferrule*
-          [lab=\RepairProg{Permute}]
-          {
-            { \MathPatches{q}{\MathPermute{p}{}}{q'} }
-            \and
-            {\turnstile%
-              { \denv{E}{\delta_E} }
-              { \repairProg{q'}{\delta}{\delta'} }
-            }
-          }
-          {\turnstile%
-            { \denv{E}{\delta_E} }
-            { \repairProg{q}{\MathPermute{p}{\delta}}{\MathPermute{p}{\delta'}} }
-          }
-    }
-
-    \end{mathpar}
-
-\end{Rules}

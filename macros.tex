@@ -220,6 +220,8 @@
 \newcommand{\ModifyGlobalDefinition}[3]{ \delta_{\GlobalDefinitionText}(\{ #1, #2, #3 \}) }
 \newcommand{\ModifyGlobalInductive}[5]{ \delta_{\GlobalInductiveText}(\{ #1, #2, #3, #4, #5 \}) }
 
+\newcommand{\ModifyConstructor}[3]{ \delta_{\ConstructorText}(\{ #1, #2, #3 \}) }
+
 \newcommand{\GlobalDefinitionAnon}{\GlobalDefinitionText(\{ \ldots \})}
 \newcommand{\GlobalInductiveAnon}{\GlobalInductiveText(\{ \ldots \})}
 
@@ -357,9 +359,9 @@
 }
 
 \newcommand{\deltaConstructorTypeOp}{\op{\delta_{\text{ConstructorType}}}}
-\newcommand{\deltaConstructorType}[8]{ \deltaConstructorTypeOp\op{(}
-\diff{#1}{#2} \op{,} \diff{#3}{#4} \op{,} \diff{#5}{#6} \op{,}\ #7 \op{) =\ }
-\out{#8} }
+\newcommand{\deltaConstructorType}[5]{
+  \deltaConstructorTypeOp\op{(} \diff{#1}{#2} \op{,} \diff{#3}{#4} \op{) =\ }\out{#5}
+}
 
 \newcommand{\deltaEliminatorTypeOp}{\op{\delta_{\text{EliminatorType}}}}
 \newcommand{\deltaEliminatorNameOp}{\op{\delta_{\text{EliminatorName}}}}
@@ -396,6 +398,10 @@
 \newcommand{\pctor}{\overline{p_{\text{ctor}}}}
 \newcommand{\ictor}{\overline{i_{\text{ctor}}}}
 
+\newcommand{\dnctor}{\delta_{n_{\text{ctor}}}}
+\newcommand{\dpctor}{\delta_{\overline{p_{\text{ctor}}}}}
+\newcommand{\dictor}{\delta_{\overline{i_{\text{ctor}}}}}
+
 \newcommand{\uelim}{u_\text{elim}}
 
 %\newcommand{\MathLabel}[1]{\normalfont \coqinline[fontsize=\scriptsize]{#1}}
@@ -411,6 +417,7 @@
 
 \newcommand{\MathSameLabel}[1]{\MathSame{}_{\MathLabel{#1}}}
 
+\newcommand{\MathSameBinder}[1]{\MathSameLabel{Binder}}
 \newcommand{\MathSameInductive}{\MathSameLabel{Inductive}}
 \newcommand{\MathSameList}{\MathSameLabel{List}}
 \newcommand{\MathSameProgram}[1]{\MathSameLabel{Program}}

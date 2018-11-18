@@ -1,0 +1,96 @@
+\begin{Rules}
+{rules-lookup-environment-drop}
+{Lookup in the global environment (drop)}
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=Diff-\GEDrop-Here]
+      {
+        {
+          \begin{cases}
+            \phantom{\text{\ or\ }}
+            e = \Definition{k}{v}{\tau}{t} \\
+            \text{\ or\ }
+            \begin{cases}
+              \phantom{\text{\ and\ }}
+              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
+              \text{\ and\ }
+              \begin{cases}
+                \phantom{\text{\ or\ }}
+                v = \nind{} \\
+                \text{\ or\ }
+                \exists\ \uelim{} \in \coqinline{Universe} \text{\ such that\ }
+                v = \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
+                \text{\ or\ }
+                \exists\ C \in \overline{c} \text{\ such that\ }
+                C = \Constructor{v}{\pctor{}}{\ictor{}}
+              \end{cases}
+            \end{cases}
+          \end{cases}
+        }
+        \\
+        {
+          \op{\text{Deprecate}(} v \op{)} = \out{v'}
+        }
+      }
+      {
+        \turnstile%
+        {
+          \diff%
+          {\MathCons{e}{E}}
+          {\MathDrop{\delta_{E}}}}
+        { \declDiff{v}{\MathReplace{v'}}{\MathReplace{\MathHole{}}} }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEDrop-There]
+      {
+        {
+          \begin{cases}
+            \phantom{\text{\ or\ }}
+            e = \Definition{k}{w}{\tau}{t} \text{\ and\ } v \neq w \\
+            \text{\ or\ }
+            \begin{cases}
+              \phantom{\text{\ and\ }}
+              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
+              \text{\ and\ }
+              \begin{cases}
+                \phantom{\text{\ and\ }}
+                v \neq \nind{} & \\
+                \text{\ and\ }
+                \forall\ \uelim{} \in \coqinline{Universe},
+                v \neq \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
+                \text{\ and\ }
+                \forall\ \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
+                \in \cind{}, v \neq \nctor{}
+              \end{cases}
+            \end{cases}
+          \end{cases}
+        }
+        \\
+        {
+          \turnstile%
+          { \diff%
+            {E}
+            {\delta_{E}}
+          }
+          { \declDiff{v}{\delta_v}{\delta_\tau} }
+        }
+      }
+      {
+        \turnstile%
+        { \diff%
+          {
+            \MathCons%
+            {e}
+            {E}
+          }
+          {\MathDrop{\delta_{E}}} }
+        { \declDiff{v}{\delta_v}{\delta_\tau} }
+      }
+    }
+  \end{mathpar}
+\end{Rules}

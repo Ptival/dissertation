@@ -1,0 +1,111 @@
+\begin{Rules}{lookup-diff-context}{ Diff lookup rules (local context) }
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=Diff-\LCSame]
+      {
+        { \turnstile {\Gamma} {\hasType { v } { \out{\tau_v} } } }
+      }
+      {\turnstile
+        { \diff {\Gamma} {\MathSame} }
+        { \declDiff { v } { \MathSame } { \MathSame } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\LCIns]
+      {\turnstile
+        { \diff {\Gamma} {\delta_{\Gamma}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+      {\turnstile
+        { \diff {\Gamma} {\MathIns{ (\delta_w : \delta_{\tau_{w}}) }{\delta_{\Gamma}}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\LCMod-Here]
+      {
+      }
+      {\turnstile
+        { \diff {\MathCons{\MathLocalAssum{v}{\tau}}{\Gamma}} {\MathMod{(\delta_v : \delta_{\tau})}{\delta_{\Gamma}}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\LCMod-There]
+      {
+        w \neq v
+        \and
+        {\turnstile
+          { \diff {\Gamma} {\delta_{\Gamma}} }
+          { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+        }
+      }
+      {\turnstile
+        { \diff {\MathCons{\MathLocalAssum{w}{\tau}}{\Gamma}} {\MathMod{(\delta_v : \delta_{\tau})}{\delta_{\Gamma}}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\LCDrop-Here]
+      { \op{\text{Deprecate}(} v \op{)} = \out{v'} }
+      {\turnstile%
+        { \diff%
+          { \MathCons{\MathLocalAssum{v}{\tau}}{\Gamma} }
+          { \MathDrop{\delta_{\Gamma}} }
+        }
+        { \declDiff { v } { \MathReplace{v'} } { \MathReplace{\MathHole{}} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\LCDrop-There]
+      {
+        w \neq v
+        \and
+        {\turnstile
+          { \diff {\Gamma} {\delta_{\Gamma}} }
+          { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+        }
+      }
+      {\turnstile%
+        { \diff%
+          { \MathCons{\MathLocalAssum{v}{\tau}}{\Gamma} }
+          { \MathDrop{\delta_{\Gamma}} }
+        }
+        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\LCPermute]
+      {\turnstile%
+        { \diff%
+          { \permuteOp{p}{\Gamma} }
+          { \delta_{\Gamma} }
+        }
+        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+      }
+      {\turnstile%
+        { \diff%
+          { \Gamma }
+          { \MathPermute{p}{\delta_{\Gamma}} }
+        }
+        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+      }
+    }
+
+\end{mathpar}
+
+\end{Rules}

@@ -1,0 +1,116 @@
+\begin{Rules}
+{rules-lookup-environment-mod}
+{Lookup in the global environment (modification)}
+
+  \begin{mathpar}
+    { % don't break this line or things get out of center
+      \inferrule*
+      [lab=Diff-\GEMod{Here}]
+      {
+        {
+          \begin{cases}
+            e = \Definition{k}{v}{\tau}{t}
+            \text{\ and\ }
+            \delta_{e} = \ModifyDefinition{\delta_k}{\out{\delta_v}}{\out{\delta_\tau}}{\delta_t}
+            \\
+            \text{\ or\ } \\
+            \begin{cases}
+              \phantom{\text{\ and\ }}
+              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
+              \text{\ and\ }
+              \delta_{e} = \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}} \\
+              \text{\ and\ }
+              \begin{cases}
+                \phantom{\text{\ or\ }}
+                \begin{cases}
+                  \phantom{\text{\ and\ }}
+                  v = \nind{}
+                  \\
+                  \text{\ and\ }
+                  \delta_{n} = \out{\delta_{v}}
+                  \\
+                  \text{\ and\ }
+                  \deltaInductiveType%
+                  {\diff{\nind{}}{\dnind{}}}
+                  {\diff{\pind{}}{\dpind{}}}
+                  {\diff{\iind{}}{\diind{}}}
+                  {\diff{\uind{}}{\duind{}}}
+                  {\delta_{\tau}}
+                \end{cases}
+                \\
+                \text{\ or\ }
+                \begin{cases}
+                  \phantom{\text{\ and\ }}
+                  \exists\ \uelim{} \in \coqinline{Universe}\\
+                  \phantom{\text{\ and\ }}
+                  \text{\ such that\ }
+                  v = \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}
+                  \\ \text{\ and\ }
+                  \deltaEliminatorName{e}{\delta_{e}}{\uelim{}}{\delta_{v}}
+                  \\ \text{\ and\ }
+                  \deltaEliminatorType{e}{\delta_{e}}{\uelim{}}{\delta_{\tau}}
+                \end{cases}
+              \end{cases}
+            \end{cases}
+          \end{cases}
+        }
+      }
+      {\turnstile
+        { \diff
+          {\MathCons{e}{E}}
+          {\MathMod{\delta_e}{\delta_{E}}}
+        }
+        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEMod{There}]
+      {
+        {
+          \begin{cases}
+            \phantom{\text{\ or\ }}
+            e = \Definition{k}{w}{\tau}{t} \text{\ and\ } v \neq w \\
+            \text{\ or\ }
+            \begin{cases}
+              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
+              \text{\ and\ }
+              \begin{cases}
+                \phantom{\text{\ and\ }} v \neq \nind{}\\
+                \text{\ and\ }
+                \forall\ \uelim{} \in \coqinline{Universe},
+                v \neq \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
+                \text{\ and\ }
+                \forall\ \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
+                \in \cind{}, v \neq \nctor{}
+              \end{cases}
+            \end{cases}
+          \end{cases}
+        }
+        \\\\\\
+        {
+          \turnstile%
+          { \diff%
+            {E}
+            {\delta_{E}}
+          }
+          { \declDiff{v}{\delta_v}{\delta_\tau} }
+        }
+      }
+      {
+        \turnstile%
+        { \diff%
+          {
+            \MathCons%
+            {e}
+            {E}
+          }
+          {\MathMod{\delta_{e}}{\delta_{E}}} }
+        { \declDiff{v}{\delta_v}{\delta_\tau} }
+      }
+    }
+
+  \end{mathpar}
+
+\end{Rules}

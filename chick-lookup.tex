@@ -112,7 +112,7 @@ three previous rules hold.
           v = \nind{}
           & \text{\ and\ } \InductiveType{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\tau} \\
           \text{\ or\ }
-          \exists\ \uelim{} \text{\ such that\ } \\
+          \exists\ \uelim{} \in \coqinline{Universe} \text{\ such that\ } \\
           \phantom{\text{\ or\ }}
           \quad v = \op{\text{EliminatorName}(} I \op{,\ } \uelim{} \op{)}
           & \text{\ and\ }
@@ -143,7 +143,7 @@ three previous rules hold.
           \phantom{\ and\ }
           v \neq \nind{} & \\
           \text{\ and\ }
-          \forall\ \uelim{},
+          \forall\ \uelim{} \in \coqinline{Universe},
           v \neq \op{\text{EliminatorName}(} I \op{,\ } \uelim{} \op{)}\\
           \text{\ and\ }
           \forall\ \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
@@ -199,44 +199,11 @@ The rules in Figure~\ref{lookup-diff-dispatch} summarize the global strategy of
 first looking up in the local context, and then falling back to the global
 environment, analogously to the process in Figure~\ref{lookup-type-dispatch}.
 
-\begin{Rules}
-  {lookup-diff-dispatch}
-  { Diff lookup rules (local context and global environment) }
-
-\begin{mathpar}
-  {
-    \inferrule*
-    [lab=Diff-\LookupCtxt]
-    {\turnstile%
-      { \diff{\Gamma}{\delta_\Gamma} }
-      { \declDiff{ v }{ \delta_v }{ \delta_{\tau} } }
-    }
-    {\turnstile%
-      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \declDiff{ v }{ \delta_v }{ \delta_{\tau} } }
-    }
-  }
-
-  {
-    \inferrule*
-    [lab=Diff-\LookupEnv]
-    {
-      {\turnstile%
-        { \diff{E} {\delta_E} }
-        { \declDiff{ v } { \delta_v } { \delta_{\tau} } }
-      }
-    }
-    {\turnstile%
-      { \dcontext{E} {\delta_E} {\Gamma} {\delta_\Gamma} }
-      { \declDiff{ v } { \delta_v } { \delta_{\tau} } }
-    }
-  }
-
-\end{mathpar}
-
-\end{Rules}
+\input{figure-chick-lookup-diff-dispatch}
 
 \subsubsection{Lookup rules for diffs in the local context}
+
+\input{figure-chick-lookup-diff-context}
 
 Figure~\ref{lookup-diff-context} shows how we proceed to lookup for the diff of
 a variable from the original program in the local context.  Note that, since we
@@ -253,110 +220,19 @@ program (Rule \rulename{Diff-\LCIns}).
 When we find the target variable in the local context, there are only two
 remaining possibilities for the diff: either it is a $\MathModPiOp$, or a
 $\MathDropPiOp$.  When it has been modified, we have found exactly the
-information we were looking for, so we can simply output it
-(Rule \rulename{Diff-\LCMod-Here}).  If it has been dropped, then there is no
+information we were looking for, so we can simply output it (Rule
+\rulename{Diff-\LCMod-Here}).  If it has been dropped, then there is no
 satisfactory result, the variable is no longer in the program.  In order to make
 sure the user notices, we rename the variable using the helper
 $\op{\text{Deprecate}}$, and make its diff as uninformative as possible using a
-hole (Rule \rulename{Diff-\LCMod-There}).
+hole (Rule \rulename{Diff-\LCDrop-Here}).
 
-The last cases to handle are that of a variable other than our target being
-modified (Rule \rulename{Diff-\LCDrop}), in which case we simply keep looking
-recursively into the context, and that of a permutation
-(Rule \rulename{Diff-\LCPermute}), in which case we can perform the permutation
-and keep looking recursively.
-
-\begin{Rules}{lookup-diff-context}{ Diff lookup rules (local context) }
-
-  \begin{mathpar}
-    {
-      \inferrule*
-      [lab=Diff-\LCSame]
-      {
-        { \turnstile {\Gamma} {\hasType { v } { \out{\tau_v} } } }
-      }
-      {\turnstile
-        { \diff {\Gamma} {\MathSame} }
-        { \declDiff { v } { \MathSame } { \MathSame } }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\LCIns]
-      {\turnstile
-        { \diff {\Gamma} {\delta_{\Gamma}} }
-        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
-      }
-      {\turnstile
-        { \diff {\Gamma} {\MathIns{ (\delta_w : \delta_{\tau_{w}}) }{\delta_{\Gamma}}} }
-        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\LCMod-Here]
-      {
-      }
-      {\turnstile
-        { \diff {\MathCons{\MathLocalAssum{v}{\tau}}{\Gamma}} {\MathMod{(\delta_v : \delta_{\tau})}{\delta_{\Gamma}}} }
-        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\LCMod-There]
-      {
-        w \neq v
-        \and
-        {\turnstile
-          { \diff {\Gamma} {\delta_{\Gamma}} }
-          { \declDiff { v } { \delta_v } { \delta_{\tau} } }
-        }
-      }
-      {\turnstile
-        { \diff {\MathCons{\MathLocalAssum{w}{\tau}}{\Gamma}} {\MathMod{(\delta_v : \delta_{\tau})}{\delta_{\Gamma}}} }
-        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\LCDrop]
-      { \op{\text{Deprecate}(} v \op{)} = \out{v'} }
-      {\turnstile%
-        { \diff%
-          { \MathCons{\MathLocalAssum{v}{\tau}}{\Gamma} }
-          { \MathDrop{\delta_{\Gamma}} }
-        }
-        { \declDiff { v } { \MathReplace{v'} } { \MathReplace{\MathHole{}} } }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\LCPermute]
-      {\turnstile%
-        { \diff%
-          { \permuteOp{p}{\Gamma} }
-          { \delta_{\Gamma} }
-        }
-        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
-      }
-      {\turnstile%
-        { \diff%
-          { \Gamma }
-          { \MathPermute{p}{\delta_{\Gamma}} }
-        }
-        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
-      }
-    }
-
-\end{mathpar}
-
-\end{Rules}
+In the cases were a variable other than our target is being modified (Rule
+\rulename{Diff-\LCMod-There}), or being dropped (Rule
+\rulename{Diff-\LCDrop-There}), we simply keep looking recursively into the
+remaining context.  Finally, if the context has undergone a permutation (Rule
+\rulename{Diff-\LCPermute}), we can permute the context appropriately and keep
+looking recursively.
 
 \subsubsection{Lookup rules for diffs in the global environment}
 
@@ -378,62 +254,7 @@ keep looking recursively (Rule \rulename{Diff-\GEIns}).  Finally, when the
 environment has undergone a permutation, we can simply proceed recursively on
 the appropriately permuted environment (Rule \rulename{Diff-\GEPermute}).
 
-\begin{Rules}
-{rules-lookup-environment-same}
-{Lookup in the global environment (identity, insertion, permutation)}
-
-  \begin{mathpar}
-    { % don't break this line or things get out of center
-      \inferrule*
-      [lab=Diff-\GESame]
-      {
-        { \turnstile {E} {\hasType { v } { \out{\tau_v} } } }
-      }
-      {\turnstile
-        { \diff {E} {\MathSame} }
-        { \declDiff { v } { \MathSame } { \MathSame } }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\GEIns]
-      {\turnstile
-        { \diff {E} {\delta_{E}} }
-        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
-      }
-      {\turnstile
-        { \diff%
-          {E}
-          {
-            \MathIns{e}{\delta_{E}}
-          }
-        }
-        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\GEPermute]
-      {\turnstile%
-        { \diff%
-          { \permuteOp{p}{E} }
-          { \delta_{E} }
-        }
-        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
-      }
-      {\turnstile%
-        { \diff%
-          { E }
-          { \MathPermute{p}{\delta_{E}} }
-        }
-        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
-      }
-    }
-
-  \end{mathpar}
-\end{Rules}
+\input{figure-chick-rules-lookup-environment-same}
 
 When an element has been removed from the environment
 (Figure~\ref{rules-lookup-environment-drop}), we need to check whether it was
@@ -445,102 +266,7 @@ then we indicate that the variable has been removed by using
 $\op{\text{Deprecate}}$ again (Rule \rulename{Diff-\GEDrop-Here}).  Otherwise,
 we keep looking recursively (Rule \rulename{Diff-\GEDrop-There}).
 
-\begin{Rules}
-{rules-lookup-environment-drop}
-{Lookup in the global environment (drop)}
-
-  \begin{mathpar}
-    {
-      \inferrule*
-      [lab=Diff-\GEDrop-Here]
-      {
-        {
-          \begin{cases}
-            \phantom{\text{\ or\ }}
-            e = \Definition{k}{v}{\tau}{t} \\
-            \text{\ or\ }
-            \begin{cases}
-              \phantom{\text{\ and\ }}
-              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
-              \text{\ and\ }
-              \begin{cases}
-                \phantom{\text{\ or\ }}
-                v = \nind{} \\
-                \text{\ or\ }
-                \exists\ \uelim{} \text{\ such that\ }
-                v = \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
-                \text{\ or\ }
-                \exists\ C \in \overline{c} \text{\ such that\ }
-                C = \Constructor{v}{\pctor{}}{\ictor{}}
-              \end{cases}
-            \end{cases}
-          \end{cases}
-        }
-        \\
-        {
-          \op{\text{Deprecate}(} v \op{)} = \out{v'}
-        }
-      }
-      {
-        \turnstile%
-        {
-          \diff%
-          {\MathCons{e}{E}}
-          {\MathDrop{\delta_{E}}}}
-        { \declDiff{v}{\MathReplace{v'}}{\MathReplace{\MathHole{}}} }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\GEDrop-There]
-      {
-        {
-          \begin{cases}
-            \phantom{\text{\ or\ }}
-            e = \Definition{k}{w}{\tau}{t} \text{\ and\ } v \neq w \\
-            \text{\ or\ }
-            \begin{cases}
-              \phantom{\text{\ and\ }}
-              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
-              \text{\ and\ }
-              \begin{cases}
-                \phantom{\text{\ and\ }}
-                v \neq \nind{} & \\
-                \text{\ and\ }
-                \forall\ \uelim{},
-                v \neq \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
-                \text{\ and\ }
-                \forall\ \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
-                \in \cind{}, v \neq \nctor{}
-              \end{cases}
-            \end{cases}
-          \end{cases}
-        }
-        \\
-        {
-          \turnstile%
-          { \diff%
-            {E}
-            {\delta_{E}}
-          }
-          { \declDiff{v}{\delta_v}{\delta_\tau} }
-        }
-      }
-      {
-        \turnstile%
-        { \diff%
-          {
-            \MathCons%
-            {e}
-            {E}
-          }
-          {\MathDrop{\delta_{E}}} }
-        { \declDiff{v}{\delta_v}{\delta_\tau} }
-      }
-    }
-  \end{mathpar}
-\end{Rules}
+\input{figure-chick-rules-lookup-environment-drop}
 
 When an element has been modified in the environment
 (Figure~\ref{rules-lookup-environment-mod}), we again need to check whether our
@@ -550,176 +276,8 @@ definitions, yielding Rule \rulename{Diff-\GEMod{Here}} for cases where the
 target variable is being modified, and Rule \rulename{Diff-\GEMod{There}} for
 cases where other variables than our target are being modified.
 
-\begin{Rules}
-{rules-lookup-environment-mod}
-{Lookup in the global environment (modification)}
-
-  \begin{mathpar}
-    { % don't break this line or things get out of center
-      \inferrule*
-      [lab=Diff-\GEMod{Here}]
-      {
-        {
-          \begin{cases}
-            e = \Definition{k}{v}{\tau}{t}
-            \text{\ and\ }
-            \delta_{e} = \ModifyDefinition{\delta_k}{\out{\delta_v}}{\out{\delta_\tau}}{\delta_t}
-            \\
-            \text{\ or\ } \\
-            \begin{cases}
-              \phantom{\text{\ and\ }}
-              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
-              \text{\ and\ }
-              \delta_{e} = \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}} \\
-              \text{\ and\ }
-              \begin{cases}
-                \phantom{\text{\ or\ }}
-                \begin{cases}
-                  \phantom{\text{\ and\ }}
-                  v = \nind{}
-                  \\
-                  \text{\ and\ }
-                  \delta_{n} = \out{\delta_{v}}
-                  \\
-                  \text{\ and\ }
-                  \deltaInductiveType%
-                  {\diff{\nind{}}{\dnind{}}}
-                  {\diff{\pind{}}{\dpind{}}}
-                  {\diff{\iind{}}{\diind{}}}
-                  {\diff{\uind{}}{\duind{}}}
-                  {\delta_{\tau}}
-                \end{cases}
-                \\
-                \text{\ or\ }
-                \begin{cases}
-                  \phantom{\text{\ and\ }}
-                  \exists\ \uelim{} \text{\ such that\ }
-                  v = \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}
-                  \\ \text{\ and\ }
-                  \deltaEliminatorName{e}{\delta_{e}}{\uelim{}}{\delta_{v}}
-                  \\ \text{\ and\ }
-                  \deltaEliminatorType{e}{\delta_{e}}{\uelim{}}{\delta_{\tau}}
-                \end{cases}
-              \end{cases}
-            \end{cases}
-          \end{cases}
-        }
-      }
-      {\turnstile
-        { \diff
-          {\MathCons{e}{E}}
-          {\MathMod{\delta_e}{\delta_{E}}}
-        }
-        { \declDiff { v } { \delta_v } { \delta_{\tau} } }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\GEMod{There}]
-      {
-        {
-          \begin{cases}
-            \phantom{\text{\ or\ }}
-            e = \Definition{k}{w}{\tau}{t} \text{\ and\ } v \neq w \\
-            \text{\ or\ }
-            \begin{cases}
-              e = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}} \\
-              \text{\ and\ }
-              \begin{cases}
-                \phantom{\text{\ and\ }} v \neq \nind{}\\
-                \text{\ and\ }
-                \forall\ \uelim{},
-                v \neq \op{\text{EliminatorName}(} e \op{,\ } \uelim{} \op{)}\\
-                \text{\ and\ }
-                \forall\ \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
-                \in \cind{}, v \neq \nctor{}
-              \end{cases}
-            \end{cases}
-          \end{cases}
-        }
-        \\\\\\
-        {
-          \turnstile%
-          { \diff%
-            {E}
-            {\delta_{E}}
-          }
-          { \declDiff{v}{\delta_v}{\delta_\tau} }
-        }
-      }
-      {
-        \turnstile%
-        { \diff%
-          {
-            \MathCons%
-            {e}
-            {E}
-          }
-          {\MathMod{\delta_{e}}{\delta_{E}}} }
-        { \declDiff{v}{\delta_v}{\delta_\tau} }
-      }
-    }
-
-  \end{mathpar}
-
-\end{Rules}
+\input{figure-chick-rules-lookup-environment-mod}
 
 TODO
 
-\begin{Rules}
-{rules-lookup-environment-constructor}
-{Lookup in the global environment (constructor rules)}
-
-  \begin{mathpar}
-    % Possibilities:
-    % (v + cs), (δv +mod δcs)
-    % (v + cs), (-drop δcs)
-    % (v + cs), (+keep δcs)
-    % (v + cs), (permute p δcs)
-    % (v + cs), (v' +ins δcs)
-    % (v' + cs), (δv +mod δcs)
-    % (v' + cs), (-drop δcs)
-    % (v' + cs), (+keep δcs)
-    % (v' + cs), (permute p δcs)
-    % (v' + cs), (v'' +ins δcs)
-    {
-      \inferrule*
-      [lab=Diff-\GEMod{Constructor}]
-      {
-        {
-          I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}
-        }
-        \\\\\\
-        {
-          \delta_{I} = \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
-        }
-        \\\\\\
-        {
-          C = \Constructor{\nctor{}}{\pctor{}}{\ictor{}}
-        }
-        \\\\\\
-        {
-          \deltaConstructorType{\pind{}}{\dpind{}}{\iind{}}{\diind{}}{C}{\delta_{C}}
-          {v}
-          {(\delta_v, \delta_\tau)}
-        }
-      }
-      {\turnstile
-        { \diff
-          {\MathCons
-            {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}}
-            {E}
-          }
-          {\MathMod
-            {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}}
-            {\delta_{E}}
-          }
-        }
-        { \declDiff{v}{\delta_v}{\delta_{\tau}} }
-      }
-    }
-
-  \end{mathpar}
-
-\end{Rules}
+\input{figure-chick-rules-lookup-environment-constructor}

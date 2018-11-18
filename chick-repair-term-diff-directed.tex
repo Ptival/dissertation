@@ -30,7 +30,7 @@ binder $\chi$ with the same variable.  Unfortunately, we can't always choose $x$
 because the body of the type abstraction $\tau_2$ might depend on an existing
 $x$ in either the global environment or local context, neither can we always
 choose $\chi$ because the body of the term abstraction $t$ might depend on such
-a $\chi$ too.  The $\freshTwoOp$ algorithm picks such a suitably fresh variable
+a $\chi$ too.  The $\freshTwoOp$ helper picks such a suitably fresh variable
 $z$.  This $z$ is only necessary for the algorithm, and will never be shown to
 the programmer.
 

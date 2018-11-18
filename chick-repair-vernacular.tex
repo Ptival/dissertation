@@ -16,6 +16,8 @@ judgment:
 \noindent which can be read analogously to $\repairProgOp$ as described in
 Section~\ref{repair-program}.
 
+\input{figure-chick-repair-vernacular}
+
 Rule \rulename{\RepairVernac{Def}} shows how we attempt to repair a vernacular
 term definition.  It is quite involved because we account for the possibility of
 a non-recursive definition becoming recursive and vice-versa.  We want to
@@ -53,109 +55,3 @@ self-reference for recursive definitions.  The side conditions defining $\Gamma$
 and $\delta_\Gamma$ make sure that the local context is appropriately set in all
 possible combinations of the recursive flag before and after the
 user-modification.
-
-\begin{Rules}
-  {fig:repair-vernac}
-  { Rules for repairing vernacular commands ($\repairVernacOp$) }
-
-  \begin{mathpar}
-    {
-      \inferrule*
-      [lab=\RepairVernac{Definition}]
-      {
-        {\MathPatches{\tau}{\delta_\tau}{\tau'}}
-        \and
-        {\turnstile
-          { \dcontext{E}{\delta_E}{[]}{\MathSame} }
-          { \repairTerm{\tau'}{\delta_\tau'}{\MathType}{\MathSame} }
-        }
-        \and
-        {\MathPatches{\tau'}{\delta_\tau'}{\tau''}}
-        \\\\\\
-        {\turnstile
-          {\denv{E}{\delta_E}}
-          {\freshOne{n}{\delta_n}{\delta_{n}'}}
-        }
-        \and
-        {\MathPatches{n}{\delta_{n}'}{n'}}
-        \and
-        {
-          \Gamma \op{=}
-          \begin{cases}
-            []                                      & \text{if } k = \text{Definition}\\
-            \MathCons{\MathLocalAssum{n}{\tau}}{[]} & \text{if } k = \text{Fixpoint}
-          \end{cases}
-        }
-        \\\\\\
-        {
-          \delta_\Gamma \op{=}
-          \begin{cases}
-            \MathIns{\MathLocalAssum{n'}{\tau''}}{\MathSame} & \text{when } k = \text{Definition}\\
-                                                             & \phantom{\text{when }} \delta_k = \MathReplace{\text{Fixpoint}}\\
-            \MathDrop{\MathSame}                             & \text{when } k = \text{Fixpoint}\\
-                                                             & \phantom{\text{when }} \delta_k = \MathReplace{\text{Definition}}\\
-            \MathSame                                        & \text{otherwise}
-          \end{cases}
-        }
-        \\\\\\
-        {\MathPatches{t}{\delta_t[\subst{\delta_n}{\delta_{n}'}]}{t'}}
-        \and
-        {\turnstile
-          {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
-          {\repairTerm{t'}{\delta_{t}'}{\tau}{\delta_\tau'}}
-        }
-      }
-      {\turnstile
-        { \denv{E}{\delta_E} }
-        { \repairVernac
-          {\Definition{k}{n}{\tau}{t}}
-          {\ModifyDefinition{\delta_k}{\delta_n}{\delta_\tau}{\delta_t}}
-          {\ModifyDefinition{\delta_k}{\delta_n'}{\delta_\tau'}{\delta_t'}}
-        }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=\RepairVernac{Inductive}]
-      {
-        I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}
-        \\\\\\
-        \delta_{I} = \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
-        \\\\\\
-        {
-          \turnstile%
-          {\denv{E}{\delta_E}}
-          {\freshOne{\nind{}}{\dnind{}}{\dnind{}'}}
-        }
-        \\\\\\
-        {\turnstile%
-          {
-            \denv%
-            {E}
-            {\delta_E}
-          }
-          {
-            \repairInd%
-            {\diff{\nind{}}{\dnind{}}}
-            {\diff{\pind{}}{\dpind{}}}
-            {\diff{\iind{}}{\diind{}}}
-            {\diff{\uind{}}{\duind{}}}
-            {\diff{\cind{}}{\dcind{}}}
-            {(\dpind{}', \diind{}', \dcind{}')}
-          }
-        }
-      }
-      {
-        \turnstile%
-        { \denv{E}{\delta_E} }
-        { \repairVernac{I}{\delta_{I}}
-          {
-            \ModifyInductive{\dnind{}'}{\dpind{}'}{\diind{}'}{\duind{}}{\dcind{}'}
-          }
-        }
-      }
-    }
-  \end{mathpar}
-
-\end{Rules}

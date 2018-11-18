@@ -81,7 +81,9 @@ Second, this list of differences is used to compute a repair of the program.
 Here again, we do not directly compute a repaired program (a value of type
 \coqinline{program}), but instead compute a value of type $\DeltaProgram$ (as
 described in Section~\ref{chick-diffs}) describing how the program must be
-modified in order to be repaired.
+modified in order to be repaired.  We do so because the diff contains more
+information about the changes than the repaired program, as we will demonstrate
+in Section~\ref{chick-diffs-importance}.
 
 Third and finally, the repaired program is obtained by simply applying the
 repaired diff to the original program.
@@ -103,7 +105,7 @@ Inductive list (A : Type)
 
 Definition a_list
 : list nat :=
-  cons nat (S O)
+  cons nat (S (S (S O)))
     (nil nat).
 
 Definition length :
@@ -139,7 +141,7 @@ Inductive @\modified{vec}@ (A : Type)
 
 Definition a_list
 : @\repaired{vec}@ nat @\repaired{(\_ : nat)}@ :=
-  @\repaired{vcons}@ nat @\repaired{(\_ : nat)}@ (S O)
+  @\repaired{vcons}@ nat @\repaired{(\_ : nat)}@ (S (S (S O)))
     (@\repaired{vnil}@ nat).
 
 Definition length :
@@ -174,34 +176,38 @@ the left-hand side is an original program, prior to any attempt at refactoring
 it.  In this example, the user defined a data type \coqinline{list}, and a
 couple of definitions and functions over this data type.  Let us now assume they
 would like to replace this type list with a richer type of length-indexed lists.
-This is a bit contrived, but it will bring up many of the feature we would like
-to have.  On the right-hand side of the same figure, the orange part is the
-partial refactoring the user has manually done.  The green parts on the
-right-hand side constitute the rest of the refactoring, as automatically
-produced by our tool.
+We chose this example because it brings up many of the feature we would like to
+have.  On the right-hand side of the same figure, the orange part is the partial
+refactoring the user has manually done.  The green parts on the right-hand side
+constitute the rest of the refactoring, as automatically produced by our tool.
 
 In the \coqinline{a_list} definition, the type must be renamed, and a type index
 must be added.  While the repair algorithm knows that an index must be inserted,
-it does not know what value to use.  Instead, a typed hole \coqinline{(_ : nat)}
-is inserted.  The user might need to eventually provide a concrete value of type
-\coqinline{nat}, though, there are cases where the type system will infer such
-value without any user assistance.  The term of the definition was also updated,
-to rename the constructor and add a type hole for its new argument.  While this
-change seems trivial, it relies on our ability to match constructors from the
-old inductive definition to constructors in the new inductive definition.  In
-order to guess that \coqinline{nil} and \coqinline{vnil} are related, and that
-\coqinline{cons} and \coqinline{vcons} are related, our analysis must evaluate
-the most likely pairs of matching constructors.  Since a user might also have
-removed a constructor, and created an entirely different one, we also want to
-assess our confidence in matching two constructors.
+it does not know what value to use: here, because the length is static, the
+right value would be \coqinline{S O}, but in more complex cases (as in the next
+function, \coqinline{length}), the value can be a new variable, or the result of
+an arbitrary computation, so guessing what it should be is a hard problem.
+Instead, we simply insert a typed hole \coqinline{(_ : nat)}.  The user might
+need to eventually provide a concrete value of type \coqinline{nat}, though,
+there are cases where the type system will infer such value without any user
+assistance.  The term of the definition was also updated, to rename the
+constructor and add a type hole for its new argument.  While this change seems
+trivial, it relies on our ability to match constructors from the old inductive
+definition to constructors in the new inductive definition.  In order to guess
+that \coqinline{nil} and \coqinline{vnil} are related, and that \coqinline{cons}
+and \coqinline{vcons} are related, our analysis must evaluate the most likely
+pairs of matching constructors.  Since a user might also have removed a
+constructor, and created an entirely different one, we also want to assess our
+confidence in matching two constructors.
 
 The definition of \coqinline{length} is updated in a similar way, but notice
-that the function call being updated is a call to the eliminator
-\coqinline{vec_rect}.  This eliminator is never explicitly defined in the user
-code: it is a function that is automatically generated when the \coqinline{vec}
-definition is accepted.  Our tool supports patching such functions, as long as
-we describe to it how those functions change when the inductive definition
-changes.
+that the function call being updated is a call to the \define{eliminator}
+\coqinline{vec_rect}.  We will describe eliminators later, in
+Section~\ref{chick-deriving}, but for now, all we need to highlight is that this
+eliminator is never explicitly defined in the user code: it is a function that
+is automatically generated when the \coqinline{vec} definition is accepted.  Our
+tool supports patching such functions, as long as we describe to it how those
+functions change when the inductive definition they are generated from changes.
 
 Finally, in the definition of \coqinline{map}, the patterns of a
 \coqinline{match} construct are updated.  This will require some care since it

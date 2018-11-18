@@ -10,16 +10,16 @@ $\Delta_{\tau}$ as a descriptor for how some value $v_{1}$ of type $\tau$ can be
 transformed into another value $v_{2}$.
 
 It is important to clarify how we intend to use those diff types.  We will want
-to describe changes made to the data types in the abstract syntax tree of the
-user's program.  An example will help us avoid some misconception: consider the
-user program and its modification in Figure~\ref{bool-modification}.  While,
-from the program point of view, a value of type \coqinline{Bool} was modified
-from the value \coqinline{True} to the value \coqinline{False}, we will
-\emph{not} use the type $\Delta_{\coqinline{Bool}}$ to describe this change!
-From the point of view of the abstract syntax tree, a value of type
-\coqinline{term} has changed from the original value \coqinline{Var "True"} to
-the value \coqinline{Var "False"}, which we will capture using the diff type
-$\Delta_{\coqinline{Term}}$.
+to describe changes made to the data types in the abstract syntax tree
+(\define{AST}) of the user's program.  An example will help us avoid some
+misconception: consider the user program and its modification in
+Figure~\ref{bool-modification}.  While, from the program point of view, a value
+of type \coqinline{Bool} was modified from the value \coqinline{True} to the
+value \coqinline{False}, we will \emph{not} use the type
+$\Delta_{\coqinline{Bool}}$ to describe this change!  From the point of view of
+the abstract syntax tree, a value of type \coqinline{term} has changed from the
+original value \coqinline{Var "True"} to the value \coqinline{Var "False"},
+which we will capture using the diff type $\Delta_{\coqinline{Term}}$.
 
 To be precise, we will have to describe how a \coqinline{Definition} has
 changed, and describe how its name has remained \coqinline{a}, its type has
@@ -88,15 +88,18 @@ refactoring:
 
 Intuitively, we want to capture changes like insertion, modifications,
 deletions, and permutations, at all syntactic levels of the meta-language
-(within terms, within inductive declarations).  We will use the same
+(within terms, within inductive declarations, etc.).  We will use the same
 descriptions to capture user-provided and repair-generated modifications.
 
-Every diff type is accompanied by a patching function, which, given an element
-of the diffed type and an element of the diff type produces, when successful, a
-patched element.  This operation is partial for many diff types, because they
-often capture modifications that only make sense for certain constructors of the
-diffed type: for instance, a diff that says the head of a list has been modified
-does not apply to the empty list.  We will overload the notation
+Every diff type is accompanied by a patching function.  Given an element of the
+diffed type, say $\MathLocalAssum{x}{\chi}$, and an element of the diff type for
+that particular type, say $\MathLocalAssum{\delta_{x}}{\Delta_{\chi}}$, the
+patching function produces, when successful, a patched element (with the same
+type as the original one), say $\MathLocalAssum{x'}{\chi}$.  This operation is
+partial for many diff types, because they often capture modifications that only
+make sense for certain constructors of the diffed type: for instance, a diff
+stating that the head of a list has been modified can not be meaningfully
+applied to an empty list.  We will overload the notation
 $\MathPatches{x}{\delta_x}{x'}$ to indicate that $x'$ is the (optional) value
 obtained when (successfully) patching $x$ according to the diff $\delta_x$,
 using the relevant patching function for that diff type.  In all of our
@@ -145,9 +148,28 @@ constructors.
 
 \subsection{List diff}~\label{list-diff}
 
-For lists, we provide a rich selection of diff operations.  The aim is not to
-have a canonical representation, but rather to capture closely the intent of
-the user modifications:
+We will now describe our diff type for lists.  \emph{Again}, the subject of
+discourse is \emph{not} lists as they appear in the user's program, but lists of
+abstract syntax tree constructs, as they appear in the AST of said program.  We
+refer the reader to Section~\ref{chick-syntax-terms} and
+Section~\ref{chick-syntax-programs}, to remind themselves of the nature of such
+lists and their prevalence: the patterns of a \coqinline{match} construct, the
+parameters and indices to an inductive type, as well as programs themselves, are
+all instances of lists of syntactic constructs.
+
+We provide a rich selection of diff operations for lists.  The aim is not to
+have a canonical representation, but rather to capture closely the intent of the
+user modifications.  We give the abstract syntax for these operators as prefix
+and infix operators, following a visual intuition of what happens to a list
+\coqinline{h ∷ t}, though the reader is encouraged to read the semantics,
+immediately following, in order to understand the intent of each construct, as
+it will probably feel opaque on first glance.  We also provide a concrete
+example of a diff in Section~\ref{chick-diffs-example} that uses many of these
+constructs.%
+%
+\footnote{Note that we omit the constructor for the atomic list diff, even
+though our implementation requires it to lift values of the atomic diff type to
+the corresponding list diff type.}.
 
 \begin{grammar}
 <$\DeltaList{}\ \tau \ \Delta_{\tau}$> ::= \ %trick LaTeX
@@ -232,8 +254,8 @@ these:
 abstraction)
 \alt $\oIns{\Pi}$ (\synt{v} : \synt{$\DeltaTerm{}$}),
 \synt{$\DeltaTerm{}$} \hfill (insert type abstraction)
-\alt ... \hfill (other insertions)
-\alt ... \hfill (removals/modifications/permutations)
+\alt … \hfill (other insertions)
+\alt … \hfill (removals/modifications/permutations)
 \end{grammar}
 
 \noindent Note that we use an infix dollar sign ($\$$) as a symbol for function
@@ -286,7 +308,7 @@ Inductive data type definitions, as well as constructor definitions, behave
 essentially like a tuple of all their arguments, so their diff type is derived
 accordingly.
 
-\subsection{Example of a program diff}
+\subsection{Example of a program diff}~\label{chick-diffs-example}
 
 With all of this machinery, we can define the original diff for our running
 example (again, referring to the changes seen on Figure~\ref{listtovec}).  The
@@ -298,7 +320,14 @@ of space, they are abbreviated as $\delta \coqinline{nil}$ and $\delta
 
 \begin{figure*}[!htp]
 
-  \noindent%
+  \centering
+
+  We demonstrate a diff between the following two programs.  The constructors
+are elided, and their diff ($\delta\coqinline{nil}$ and
+$\delta\coqinline{cons}$) is shown in Figures~\ref{diff-list-vec-nil}
+and~\ref{diff-list-vec-cons} respectively.
+
+\noindent%
   \begin{minipage}[t]{0.50\textwidth}
     \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
 Inductive nat : Set :=
@@ -306,9 +335,9 @@ Inductive nat : Set :=
 | S : ∀ (n : nat), nat.
 
 Inductive list (A : Type)
-: Type := ...
+: Type := …
 
-(* rest of program *)
+… (* rest of first program *)
     \end{minted}
   \end{minipage}%
   \begin{minipage}[t]{0.50\textwidth}
@@ -318,9 +347,9 @@ Inductive nat : Set :=
 | S : ∀ (n : nat), nat.
 
 Inductive @\modified{vec}@ (A : Type)
-: @\modified{nat →}@ Type := ...
+: @\modified{nat →}@ Type := …
 
-(* identical rest of program *)
+… (* identical *)
     \end{minted}
   \end{minipage}
 
@@ -344,27 +373,27 @@ Inductive @\modified{vec}@ (A : Type)
 
 \end{figure*}
 
-While the inductive diff should be somewhat straightforward, readers might be
-surprised by $\delta\coqinline{nil}$ in Figure~\ref{diff-list-vec-nil} not
-mentioning the renaming of \coqinline{list} (on the left) into \coqinline{vec}
-on the right.  While this renaming appears syntactically in the concrete syntax,
-it is only a surface-level syntactic requirement that constructors repeat the
-type they inhabit.  In practice, the abstract syntax tree only contains the list
-of indices, and does not repeat the name of the type or the parameters of the
-inductive type.
+While the inductive diff should be somewhat straightforward, the reader might be
+surprised by $\delta\coqinline{nil}$ (in Figure~\ref{diff-list-vec-nil})
+\emph{not} mentioning the renaming of \coqinline{list} (on the left) into
+\coqinline{vec} on the right.  While this renaming appears syntactically in the
+concrete syntax, it is only a surface-level syntactic requirement that
+constructors repeat the type they inhabit.  The abstract syntax tree only
+contains the list of indices, and does \emph{not} repeat the name of the inductive
+type, nor the parameters of the inductive type, in every constructor.
 
 \begin{figure*}[!htp]
 
   \noindent%
   \begin{minipage}[t]{0.50\textwidth}
     \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
-...
+…
 | nil : list A
   \end{minted}
 \end{minipage}%
 \begin{minipage}[t]{0.50\textwidth}
   \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
-...
+…
 | @\modified{vnil}@ : @\modified{vec}@ A @\modified{O}@
   \end{minted}
 \end{minipage}
@@ -386,31 +415,19 @@ inductive type.
 
 \end{figure*}
 
-One might also find the modification of the parameter in
-Figure~\ref{diff-list-vec-cons} hard to read.  The diff
-$\MathInsApp{\coqinline{n}}{\MathModApp{\MathReplace{\coqinline{vec}}}{\MathSame{}}}$
-might seem inverted, but it only appears so because function application is
-left-associative.  Therefore, when comparing \coqinline{list A} with
-\coqinline{vec A n}, the outermost application node of the latter does not
-correspond to any application node in the former.  The whole original term,
-\coqinline{list A}, in fact corresponds to the left-child of the outermost
-application node, i.e. \coqinline{vec A}.  Again, the reader might want to refer
-to rule \rulename{\InsApp} from Section~\ref{chick-diffs-term-diff} for the
-semantics of $\MathInsApp{}{}$.
-
 \begin{figure*}[!htp]
 
   \noindent%
   \begin{minipage}[t]{0.50\textwidth}
     \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
-...
+…
 | cons : A →
     list A → list A.
   \end{minted}
 \end{minipage}%
 \begin{minipage}[t]{0.50\textwidth}
   \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
-...
+…
 | @\modified{vcons}@ : A → @\modified{∀ (n : nat),}@
     @\modified{vec}@ A @\modified{n}@ → @\modified{vec}@ A @\modified{(S n)}@.
   \end{minted}
@@ -424,12 +441,14 @@ semantics of $\MathInsApp{}{}$.
 & \qquad \qquad \MathReplace{\coqinline{vcons}}, & && \text{modify constructor name} \\
 & \qquad \qquad \MathSame{} & \MathMod{}{} && \text{keep the first parameter} \\
 & \qquad \qquad ( \coqinline{n} : \coqinline{nat} ) & \MathIns{}{} && \text{insert a second parameter} \\
-& \qquad \qquad ( \MathSame{}_{\text{binder}} : \MathInsApp{\coqinline{n}}{\MathModApp{\MathReplace{\coqinline{vec}}}{\MathSame{}}} )
-  & \MathMod{}{}
-  && \text{modify \coqinline{list A} into \coqinline{vec A O}} \\
+& \qquad \qquad ( \MathSameBinder{} : \MathInsApp
+  {(\MathModApp{\MathReplace{\coqinline{vec}}}{\MathSameTerm{}})}
+  {\coqinline{n}}
+) & \MathMod{}{}
+  && \text{modify \coqinline{list A} into \coqinline{vec A n}} \\
 & & && \text{while keeping binder anonymous} \\
-& \qquad \qquad \MathSame{},                       & && \text{no other parameter} \\
-& \qquad \qquad \MathIns{\coqinline{(S n)}}{\MathSame{}} &
+& \qquad \qquad \MathSameList{}, & && \text{no other parameter} \\
+& \qquad \qquad \MathIns{\coqinline{(S n)}}{\MathSameList{}} &
   && \text{instantiate the \coqinline{nat} index, no other index} \\
 & \qquad ) && \\
   \end{align*}
@@ -439,7 +458,110 @@ semantics of $\MathInsApp{}{}$.
 
 \end{figure*}
 
+One might also find the modification of the parameter in
+Figure~\ref{diff-list-vec-cons} hard to read.  The diff $\MathInsApp
+{(\MathModApp{\MathReplace{\coqinline{vec}}}{\MathSameTerm{}})} {\coqinline{n}}$
+might seem inverted, but it only appears so because function application is
+left-associative.  Therefore, when comparing \coqinline{list A} with
+\coqinline{vec A n}, we are comparing \coqinline{(app list A)} and
+\coqinline{(app (app vec A) n)}.  In this form, we can better see that the
+outermost application of \coqinline{(app list A)} corresponds to the innermost
+application of \coqinline{(app (app vec A) n)}, that is, \coqinline{(app vec
+A)}.  This should make it clear that the diff between these two terms needs to
+insert an application node first (the one with argument \coqinline{n}), and then
+will modify the leftmost argument from \coqinline{list} to \coqinline{vec}.  The
+reader might want to refer to rule \rulename{\InsApp} from
+Section~\ref{chick-diffs-term-diff} for the semantics of $\MathInsApp{}{}$.
+
 Again, the diff shown in Figure~\ref{diff-list-vec} would be the input to our
 repair algorithm, alongside the original program.  The repair algorithm should
 propagate changes in such a way as to generate all the other fixes seen in teal
 in Figure~\ref{listtovec}.
+
+\subsection{Why compute diffs rather than repaired
+values?}~\label{chick-diffs-importance}
+
+We have now hinted multiple times to the importance of computing and storing
+diffs for our repair algorithm, rather than just computing and storing the
+repaired data.  We now have the necessary syntax and semantics to explain how
+the two differ.  Consider an original function \coqinline{f}, with type
+\coqinline{nat → bool → string}.  Now consider the following two diffs that can
+change this type to \coqinline{bool → nat → string}:
+
+\begin{align*}
+\delta_{1} & = \MathPermutePis{[1, 0]}{\MathSame{}}\\
+\delta_{2} & =
+  \MathDropPi{\MathModPi
+             {\MathSame{}}
+             {\MathSame{}}
+             {\MathInsPi{\coqinline{_}}{\coqinline{nat}}{\MathSame{}}}
+             }
+\end{align*}
+
+\noindent%
+%
+Indeed if we run our patching function, we obtain:
+
+\begin{align*}
+\MathPatches
+{\coqinline{nat → bool → string}}
+{\delta_{1}}
+{\coqinline{bool → nat → string}}\\
+\MathPatches
+{\coqinline{nat → bool → string}}
+{\delta_{2}}
+{\coqinline{bool → nat → string}}
+\end{align*}
+
+Now, consider some client code that calls this function \coqinline{f}.  For
+instance, prior to repairing, let's say that we have a call:
+
+\begin{minted}{coq}
+let result := f (S n) b in …
+\end{minted}
+
+If the only information we have available, about the type of \coqinline{f}, is
+that its new type is \coqinline{bool → nat → string}, all we can do is make a
+wild guess as to how we should modify this function call:
+
+\begin{itemize}
+\item should the \coqinline{bool} argument be \coqinline{b}?
+\item should the \coqinline{nat} argument be \coqinline{(S n)}?
+\end{itemize}
+
+Knowing which diff turned the old type of \coqinline{f} into the new type gives
+us much more structural information, allowing us to make an educated guess.  If
+the diff was $\delta_{1}$, that is, $\MathPermutePis{[1, 0]}{\MathSame{}}$, then
+it appears the arguments were swapped, and so we should patch the client code as
+follows:
+
+\begin{minted}{coq}
+let result := f b (S n) in …
+\end{minted}
+
+\noindent%
+%
+On the other hand, if the diff was $\delta_{2}$, that is,
+$\MathDropPi{\MathModPi{\MathSame{}}{\MathSame{}}
+{\MathInsPi{\coqinline{_}}{\coqinline{nat}}{\MathSame{}}}}$, then it appears
+that the parameter of type \coqinline{bool} has moved to first position, but the
+parameter of type \coqinline{nat} is a brand new parameter, unrelated to the one
+that was present in the old type.  Therefore, the patch to the client code
+should rather produce the following:
+
+\begin{minted}{coq}
+let result := f b (_ : nat) in …
+\end{minted}
+
+\noindent where we inserted a typed hole of type \coqinline{nat} rather than
+conserve the value \coqinline{(S n)} from the old program, as our diff indicates
+it is not relevant.
+
+This should illustrate how diffs contain more information than before-after
+pairs.  As long as we keep propagating changes through the program as diffs,
+rather than patched constructs, we can retain the semantic intent of the changes
+throughout our repair algorithm.  However, this relies on obtaining an original
+diff, based on the refactoring attempt from the user, that captures their
+intent.  We will describe how we can guess satisfactory diffs in
+Section~\ref{chick-guess}, though we will sometimes need the programmer to
+disambiguate their intent explicitly.

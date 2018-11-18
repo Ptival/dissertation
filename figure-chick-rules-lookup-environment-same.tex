@@ -1,0 +1,56 @@
+\begin{Rules}
+{rules-lookup-environment-same}
+{Lookup in the global environment (identity, insertion, permutation)}
+
+  \begin{mathpar}
+    { % don't break this line or things get out of center
+      \inferrule*
+      [lab=Diff-\GESame]
+      {
+        { \turnstile {E} {\hasType { v } { \out{\tau_v} } } }
+      }
+      {\turnstile
+        { \diff {E} {\MathSame} }
+        { \declDiff { v } { \MathSame } { \MathSame } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEIns]
+      {\turnstile
+        { \diff {E} {\delta_{E}} }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+      {\turnstile
+        { \diff%
+          {E}
+          {
+            \MathIns{e}{\delta_{E}}
+          }
+        }
+        { \declDiff { v } { \delta_v } { \delta_{\tau_v} } }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEPermute]
+      {\turnstile%
+        { \diff%
+          { \permuteOp{p}{E} }
+          { \delta_{E} }
+        }
+        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+      }
+      {\turnstile%
+        { \diff%
+          { E }
+          { \MathPermute{p}{\delta_{E}} }
+        }
+        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+      }
+    }
+
+  \end{mathpar}
+\end{Rules}

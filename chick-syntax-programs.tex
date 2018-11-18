@@ -40,3 +40,107 @@ parameters : $\overline{ ( \synt{binder}, \synt{term} ) }$,\\
 indices : $\overline{ \synt{term} }$\\
 \})
 \end{grammar}
+
+For a presentation of inductive data type declarations, we refer the reader
+to~\mycite{coquand1990inductively} for an academic description, or
+to~\mycite{pierce2010software} for some educational material.  We will briefly
+recall the difference between \define{inductive parameters}, \define{inductive
+indices}, \define{constructor parameters}, and \define{constructor indices}.
+
+\define{Inductive parameters} indicate that a type is generic in some input
+type.  Most often, this type parameter will be a type that the constructors may
+contain instances of, or operate on values of.  For instance, many containers
+will have a carrier type for the type of values they may contain.  The choice of
+type to be contained does \emph{not} restrict the shapes that the container may
+take: we say that it behaves \emph{parametrically}.  For instance, the type of
+list of boolean values, \coqinline{list bool}, and the type of list of natural
+number values, \coqinline{list nat}, contain the same ``shapes'':
+\coqinline{[]}, \coqinline{_ ∷ []}, \coqinline{_ ∷ _ ∷ []}, etc.  The choice of
+the type parameter only tells us what values we are allowed to put in those
+holes, but does not dictate which of those shapes we may or may not instantiate.
+
+On the other hand, \define{inductive indices} can affect what inhabitants we may
+find in an inductive type.  Instead of being called an inductive type, one that
+is indexed is often instead called an \define{inductive family of types}, or
+\define{inductive type family}, to capture the idea that the choice of index has
+an effect on what inhabitants may exist.  Knowing the index of an inductive
+value gives us information about what shape it may have.  For instance, we could
+build a type of lists indexed by whether their length is odd or even as:%
+%
+\footnote{\Coq{} syntax does not let us define constructors that look like
+operators, but we do it here to keep the code clear and concise.}%
+%
+\textsuperscript{,}%
+%
+\footnote{In constructor \coqinline{(∷)}, we use curly braces \coqinline{p} to
+mark the constructor parameter as implicit, indicating it can be implicitly
+inserted unambiguously by Coq when the next constructor parameter,
+\coqinline{t}, is supplied.}
+
+\begin{minted}{coq}
+Inductive parity : Type :=
+| Even : parity
+| Odd  : parity
+.
+
+Definition next_parity (p : parity) : parity :=
+  match p with
+  | Even => Odd
+  | Odd  => Even
+  end.
+
+Inductive parity_list (T : Type) : parity → Type :=
+| []  : parity_list T Even
+| (∷) : ∀ (h : T) {p : parity} (t : parity_list T p) →
+        parity_list T (next_parity p)
+.
+\end{minted}
+
+Now, if we consider the type family \coqinline{parity_list T p} as a whole, for
+a given choice of carrier type \coqinline{T}, the possible shapes of values are
+still the same as for \coqinline{list}: \coqinline{[]}, \coqinline{_ ∷ []},
+\coqinline{_ ∷ _ ∷ []}, etc.  However, for a given choice of \coqinline{p}, the
+valid shapes become restricted by construction.  The type \coqinline{parity_list
+T Even} only contains shapes \coqinline{[]}, \coqinline{_ ∷ _ ∷ []},
+\coqinline{_ ∷ _ ∷ _ ∷ _ ∷ []}, etc.  Dually, the type \coqinline{parity_list T
+Odd} only contains shapes \coqinline{_ ∷ []}, \coqinline{_ ∷ _ ∷ _ ∷ []}, etc.
+
+In general, different families may have entirely disjoint shapes, as presented
+here, or partially-overlapping shapes (for instance, the type family of finite
+sets), or even all the same shapes (in which case, the index might be used as a
+type-level marker for some information, a technique often called \coqinline{phantom
+type} in statically-typed languages).
+
+\define{Constructor parameters} are just arguments that are passed to a given
+constructor.  They are completely independent for each constructor, and are
+simply used to store data relevant to the given constructor.  For instance, in
+our \coqinline{parity_list} example, \coqinline{h}, \coqinline{p}, and
+\coqinline{t} are three constructor parameters for constructor \coqinline{(∷)}.
+
+The return type of a constructor must indicate in what family is exists.  To do
+so, it must provide values for the inductive indices.  We call those values the
+\define{constructor indices}.  For instance, in our \coqinline{parity_list}
+example, the inductive index of type \coqinline{parity} is instantiated with
+value \coqinline{(next_parity p)} in the \coqinline{(∷)} constructor.  Note that
+it is possible to have indices be computed values, as is the case here.
+
+Finally, let us discuss scope for those constructs.
+
+\begin{itemize}
+
+\item Following \Coq{}'s convention, inductive parameters \emph{must} be named.
+They are naturally in scope for the whole definition of the inductive type.
+
+\item Inductive indices \emph{may} be anonymous, or named, and they form a
+telescope (as described in Section~\ref{dependenty-types}).  They are \emph{not}
+scoped over the rest of the definition.  Therefore, the only purpose for named
+indices is to create dependent indices.
+
+\item Constructor parameters \emph{may} be anonymous, or named.  They also form
+a telescope all the way to the constructor's return type, such that both
+subsequent parameters, as well as the constructor's indices, may refer to them.
+
+\item Constructor indices \emph{must} be passed as explicit arguments to the
+return type, and as such, there is no binding involved.
+
+\end{itemize}
