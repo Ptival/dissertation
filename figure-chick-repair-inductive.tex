@@ -1,0 +1,61 @@
+\begin{Rules}
+  {fig:repair-inductive}
+  { Rules for repairing inductive data type definitions ($\repairIndOp$) }
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=\RepairVernac{Inductive}]
+      {
+        {
+          \turnstile%
+          {\dcontext{[]}{\MathSame{}}{E}{\delta_E}}
+          {\repairParameters{\pind{}}{\dpind{}}
+            {(\blackdiff{\Gamma}{\delta_{\Gamma}}, \dpind{}')}
+          }
+        }
+        \\\\\\
+        {
+          \turnstile%
+          {\dcontext{\Gamma}{\delta_{\Gamma}}{E}{\delta_E}}
+          {\repairIndices{\iind{}}{\diind{}}{\diind{}'}}
+        }
+        \\\\\\
+        \InductiveType{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\tau}
+        \\\\\\
+        \deltaInductiveType%
+        {\diff{\nind{}}{\dnind{}}}
+        {\diff{\pind{}}{\dpind{}}}
+        {\diff{\iind{}}{\diind{}}}
+        {\diff{\uind{}}{\duind{}}}
+        {\delta_{\tau}}
+        \\\\\\
+        {
+          \turnstile%
+          {
+            \dcontext%
+            {\MathCons{\MathLocalAssum{\nind{}}{\tau}}{[]}}
+            {\MathMod{\MathLocalAssum{\dnind{}}{\delta_{\tau}}}{\MathSame{}}}
+            {E}
+            {\delta_E}
+          }
+          {\repairConstructors{\cind{}}{\dcind{}}{\dcind{}'}}
+        }
+      }
+      {
+        {\turnstile%
+          {\denv{E}{\delta_E}}
+          {\repairInd%
+            {\diff{\nind{}}{\dnind{}}}
+            {\diff{\pind{}}{\dpind{}}}
+            {\diff{\iind{}}{\diind{}}}
+            {\diff{\uind{}}{\duind{}}}
+            {\diff{\cind{}}{\dcind{}}}
+            {(\dpind{}', \diind{}', \dcind{}')}
+          }
+        }
+      }
+    }
+  \end{mathpar}
+
+\end{Rules}

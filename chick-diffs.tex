@@ -448,14 +448,11 @@ type, nor the parameters of the inductive type, in every constructor.
   && \text{modify \coqinline{list A} into \coqinline{vec A n}} \\
 & & && \text{while keeping binder anonymous} \\
 & \qquad \qquad \MathSameList{}, & && \text{no other parameter} \\
-& \qquad \qquad \MathIns{\coqinline{(S n)}}{\MathSameList{}} &
-  && \text{instantiate the \coqinline{nat} index, no other index} \\
+& \qquad \qquad \coqinline{(S n)} & \MathIns{}{} && \text{instantiate the \coqinline{nat} index} \\
+& \qquad \qquad \MathSameList{}, & && \text{no other index} \\
 & \qquad ) && \\
   \end{align*}
-
-  \caption{Diff for our running example (\coqinline{cons} constructor only)}
-  \label{diff-list-vec-cons}
-
+  \caption{Diff for our running example (\coqinline{cons} constructor only)}\label{diff-list-vec-cons}
 \end{figure*}
 
 One might also find the modification of the parameter in

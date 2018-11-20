@@ -42,11 +42,11 @@ environment.
 
 \end{enumerate}
 
-\noindent $\freshOneOp$ takes care of these two situations: it takes as input a
-name $n$, and a desired modification for it $\delta_n$, and returns a suitable
-modification $\delta_n'$, that first tries to preserve $\delta_n$ when possible,
-otherwise tries to preserve $n$ when possible, or finally, comes up with a fresh
-name when neither of these conditions can be met.
+\noindent The helper function $\freshOneOp$ takes care of these two situations:
+it takes as input a name $n$, and a desired modification for it $\delta_n$, and
+returns a suitable modification $\delta_n'$, that first tries to preserve
+$\delta_n$ when possible, otherwise tries to preserve $n$ when possible, or
+finally, comes up with a fresh name when neither of these conditions can be met.
 
 Finally, in order to repair the body of the definition, we need to build an
 initial local context (as described in Section~\ref{chick-lookup}).  This

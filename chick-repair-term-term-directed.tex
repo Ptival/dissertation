@@ -1,51 +1,147 @@
 \subsubsection*{Term-directed term repair algorithm}
 
-$\repairTermThreeOp$ is an algorithm directed by the syntax of the term being
-repaired, used when no information is known about its type and type diff.
+\input{figure-chick-repair-term-3}
 
-For repairing variables (Rule \rulename{\UTRVar}) and function applications
-(Rule \rulename{\UTRApp}), we use another helper, $\repairArgsOp$, to compute
-the diff.  First, we syntactically extract as many application nodes as
-possible, building a list of the arguments, until the function symbol (in the
-case of a variable, this corresponds to an empty list of arguments).  Once we
-lookup the type diff for the function symbol (resp. $\delta_{\tau_v}$ and
-$\delta_{\tau_f}$), we can start producing the output diff.  An example will be
-illustrative of the $\repairArgsOp$ algorithm: consider the case where a
-function $f$ had type $(A \rightarrow C)$ and undergoes the transformation
-$\MathModPi{\MathSame}{\MathSame}{(\MathInsPi{B}{\_}{\MathSame})}$, yielding the
-type $(A \rightarrow B \rightarrow C)$.  Suppose the original code contains a
-call to $f$, for instance $(f\ a)$.  A repaired version of this call would look
-like $(f\ a\ (\MathAnnot{\MathHole}{B}))$.  This means the repair diff should be
-$(\MathInsApp{(\MathModApp{\MathSame}{\MathSame})}{(\MathAnnot{\MathHole}{B})})$.
-Notice how the outermost term modification, $\MathInsAppOp$, corresponds to the
-innermost type modification $\MathInsPiOp$.  This is not surprising: a function
-$g$ whose type is $(A \rightarrow (B \rightarrow (C \rightarrow D)))$, and its
+$\repairTermThreeOp$ (described in Figure~\ref{fig:repair-term-3}) is an
+algorithm directed by the syntax of the term being repaired, and is used when no
+information is known about its type, or how that type might have changed.  Let
+us again go through the rules one by one.
+
+\paragraph{\rulename{\UTRVar}}
+
+$$\RepairTermTwoVar{}$$
+
+This rule applies when repairing a variable.  By using our lookup rules (from
+Section~\ref{chick-lookup}), we can hope to obtain a diff for $v$,
+$\out{\delta_{v}}$, telling us whether it has been renamed or not.  Naively, we
+might want to call this the answer, and move on.  But, our lookup also lets us
+know how the type of $v$ has changed, captured in the output
+$\out{\delta_{\tau_{v}}}$.  And it could be that the type of $v$ has changed,
+for instance, from a constant to a function of some number of arguments!  Were
+this the case, repairing an occurrence of $v$ properly would require adding
+values for these new arguments.
+
+This is just a special case of repairing a function application, that we will
+see in the next rule (Rule \rulename{\UTRApp}).  We will solve the problem by
+using a helper function, $\repairArgsOp{}$, which repairs an arbitrary function
+applied to some number of arguments.  A variable is simply a special case where
+the list of arguments is empty, i.e. $[]$.
+
+\paragraph{\rulename{\UTRApp}}
+
+$$\RepairTermTwoApp{}$$
+
+This rule applies when the term is a function application.  Repairing nested
+function applications is not as trivial as it could seem.  Consider some
+function $f$, whose type used to be $(A \rightarrow C)$, and undergoes the
+transformation:
+
+\noindent%
+%
+$\delta_{\tau} = \MathModPi{\MathSame}{\MathSame}{(\MathInsPi{B}{\_}{\MathSame})}$
+
+\noindent%
+%
+yielding the type $(A \rightarrow B \rightarrow C)$.  Suppose the original code
+contains a call to $f$, for instance $(f\ a)$.  The repaired function call ought
+to be $(f\ a\ (\MathAnnot{\MathHole}{B}))$.  This means that the repair diff
+ought to be:
+
+\noindent%
+%
+$\delta_{t} = (\MathInsApp{(\MathModApp{\MathSame}{\MathSame})}{(\MathAnnot{\MathHole}{B})})$.
+
+\noindent%
+%
+Notice how the outermost term modification in $\delta_{t}$,
+i.e. $\MathInsAppOp{}$, corresponds to the innermost type modification in
+$\delta_{\tau}$, i.e.  $\MathInsPiOp{}$.  This is not surprising: a function $g$
+whose type is $(A \rightarrow (B \rightarrow (C \rightarrow D)))$, and its
 application to arguments $(((g\ a)\ b)\ c)$, exhibit the same inversion.  For
-this reason, $\repairArgsOp$ works by processing the $\Pi$-telescope type diff
-(i.e. a sequence of nested $\Pi$s) from outside-in, and builds the applications
-term diff from inside-out.  We omit the rules for $\repairArgsOp$ as they would
-be cumbersome and not enlightening.
+this reason, $\repairArgsOp{}$ works by processing the $\Pi$-telescope type diff
+(a sequence of nested modification of $\Pi$s, such as $\delta_{\tau}$) from
+outside-in, and builds the term applications diff (such as $\delta_{t}$) from
+inside-out.
 
-We also omit the rules for repairing a \coqinline{match} construct behind the
-symbol $\repairBranchesOp$.  Once the discriminee is repaired, the branches must
-be repaired: first, the discriminated inductive data type is identified, and its
-diff is retrieved from the global environment.  From this, the list of branches
-is repaired, with proper care for the binding structure of the patterns.  Our
-current implementation only supports non-nested pattern matches, and proceeds by
-computing a permutation from the order in which patterns appear in the program
-to the order in which they appear in the inductive data type declaration.  The
-process of repairing the branches is then straightforward: if a constructor was
-added, a branch is added, if a constructor was removed, its branch (if any) is
-removed, and modifications to constructors impact the pattern and arm of its
-matching branch.  Notice that we do not support the full power of
-dependently-typed elimination yet: our \coqinline{match} construct does not have
-an index binding declaration or a return type annotation (respectively known as
-the \coqinline{in}-clause and the \coqinline{return}-clause in \Gallina{}).
+In order to do so, we syntactically extract as many nested applications as
+possible, yielding a sequence of arguments of some arbitrary length
+$\range{n}{a_{i}}$, and pass this array of arguments to $\repairArgsOp{}$.
+
+TODO: decide on this
+
+We omit the rules for $\repairArgsOp{}$ as they would be cumbersome and not
+enlightening.
+
+\paragraph{\rulename{\UTRPi}}
+
+$$\RepairTermTwoPi{}$$
+
+This rule applies to repair a dependent function space.  It is a somewhat
+straightforward process.  Once again, we need to possibly refresh the binder,
+using $\freshOneOp{}$, for the same reasons as explained for Rule
+~\rulename{\RModPi}.
+
+\paragraph{\rulename{\UTRMatch}}
+
+$$\RepairTermTwoMatch{}$$
+
+This rule applies to repair a \coqinline{match} construct. The repair process is
+fairly simple, but cumbersome, so we abstract over it with the
+$\repairBranchesOp{}$ helper function.  The discriminee, $t$, is repaired
+independently.
+
+Subsequently, each branch can be repaired independently.  Repairing a branch
+requires repairing its pattern, its optional guard, and its body.  Repairing the
+pattern is the hard part, as we need to recognize what constructor we are
+looking at, and what inductive type this constructor belongs to, so that we can
+figure out changes to the type of said constructor, and update the pattern
+variables accordingly.  We use some heuristics that let us guess the type being
+eliminated without user annotation.  Once the pattern is repaired, we can update
+the local context and its diff accordingly, and simply repair the optional guard
+and the body, who are just terms, using $\repairTermThreeOp{}$.
+
+\TODO{Mention how it's cool that we add branches automatically, so that we don't
+accidentally capture new cases in wildcard patterns!}
+
+We have not yet extended it to dependent pattern matching, of the form:
+
+\noindent%
+%
+\coqinline{match … as … in … return … with … end}
+
+\noindent%
+%
+as found in \Coq{}, but we believe it should not pose a significant challenge:
+the \coqinline{as} clause, \coqinline{in} clause, and \coqinline{return} clause,
+should be repaired in order, with proper care taken about what variables come in
+and out of scope.  They can be repaired independently from the discriminee and
+the branches.  When a \coqinline{return} clause is present, however, we might be
+able to use $\repairTermOneOp{}$, rather than $\repairTermThreeOp{}$, to repair
+the body of each branch, since we know what type to expect from the branch!
+
+\TODO{Decide whether to type up rules for $\repairBranchesOp{}$}
+
+\paragraph{\rulename{\UTRAnnot}}
+
+$$\RepairTermTwoAnnot{}$$
+
+WRITEME
+
+\paragraph{\rulename{\UTROtherwise}}
+
+$$\RepairTermTwoOtherwise{}$$
+
+WRITEME
+
+
+
+
+
+
+
 
 Also of note, in Rule \rulename{\UTRAnnot}, we actually retrieve type
 information from the annotation, and can repair the annotated term with more
 information.  In practice however, we don't expect much code to contain type
 annotations.  Finally, Rule \rulename{\UTROtherwise} captures terms such as
 holes, and universes, which we repair by doing nothing.
-
-\input{chick-rules-unknown-repair}

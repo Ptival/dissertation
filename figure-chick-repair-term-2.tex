@@ -1,0 +1,109 @@
+\newcommand{\RepairTermOneDropPi}{
+  \inferrule*
+  [lab=\RDropPi]
+  {
+    {\turnstile
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+      {\freshOne{\blackdiff{x}{\MathSame}}{\blackdiff{\chi}{\MathSame}}{z}}
+    }
+    \\\\\\
+    {\turnstile
+      {\dcontext
+        {E}{\delta_E}
+        {\MathCons{\MathLocalAssum{z}{\tau_1}}{\Gamma}}
+        {\MathDrop{\delta_\Gamma}}
+      }
+      {\repair
+        {t[\subst{x}{z}]}
+        {\delta_{t}}
+        {\tau[\subst{\chi}{z}]}
+        {\delta_{\tau_2}}
+      }
+    }
+  }
+  {
+    \turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    { \repair
+      {\MathLam{x}{t}}
+      {\MathDropLam{\delta_{t}}}
+      {\MathPi{\tau_1}{\chi}{\tau_2}}
+      {\MathDropPi{\delta_{\tau_2}}}
+    }
+  }
+}
+
+\newcommand{\RepairTermOnePermutePis}{
+  \inferrule*
+  [lab=\RPermutePis]
+  {\turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    {\repair
+      % { \MathLam{x_{p(1)} \ldots x_{p(|p|)}}{t} }
+      { \MathLam{\permutationRange{x_{p(i)}}}{t} }
+      { \delta }
+      { \mkMathPiRaw{\permutationRange{(\chi_{p(i)} : \tau_{p(i)})}}{\tau}{}{} }
+      { \dtau{} }
+    }
+  }
+  {\turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    {\repair
+      % { \MathLam{x_1 \ldots x_{|p|}}{t} }
+      { \MathLam{\permutationRange{x_{i}}}{t} }
+      { \MathPermuteLams{p}{\delta} }
+      { \mkMathPiRaw{\permutationRange{(\chi_{i} : \tau_{i})}}{\tau}{} }
+      { \MathPermutePis{p}{\dtau{}} }
+    }
+  }
+}
+
+\newcommand{\RepairTermOneReplace}{
+  \inferrule*
+  [lab=\RReplace]
+  { }
+  {\turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    { \repair
+      {t}
+      {\MathReplace{\MathAnnot{\MathHole}{\tau'}}}
+      {\tau}
+      {\MathReplace{\tau'}}
+    }
+  }
+}
+
+\newcommand{\RepairTermOneOtherwise}{
+  \inferrule*
+  [lab=\RepairTermPrefix-Otherwise]
+  {\turnstile%
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    { \repairTermWithoutType%
+      { t }
+      { \delta_t }
+    }
+  }
+  {\turnstile%
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    {\repair%
+      { t }
+      { \delta_t }
+      { \tau }
+      { \delta_\tau }
+    }
+  }
+}
+
+\begin{Rules}{fig:repair-term-2}{ Rules for repairing terms, diff-directed ($\repairTermOneOp$, part 2/2) }
+
+\begin{mathpar}
+  \RepairTermOneDropPi{}
+
+  \RepairTermOnePermutePis{}
+
+  \RepairTermOneReplace{}
+
+  \RepairTermOneOtherwise{}
+\end{mathpar}
+
+\end{Rules}

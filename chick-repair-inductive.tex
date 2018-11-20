@@ -29,6 +29,8 @@ inductive data type being defined in their parameters.
 
 \end{enumerate}
 
+\input{figure-chick-repair-inductive}
+
 We omit most of the details of repairing an inductive data type definition
 behind the symbol $\repairIndOp$.  It essentially needs to go recursively in all
 parameters and indices of both the inductive type itself and all of its
@@ -36,220 +38,39 @@ constructors and repair them.  Each subsequent parameter must be repaired in a
 local context where its predecessor parameter has been accounted, so as to react
 to possible modifications: for instance, if the first parameter must be renamed,
 and the second parameter's type refers to the first parameter's name, the type
-will need to be repaired.  Indices also must repaired in the context of the
+will need to be repaired.  Indices must also be repaired in the context of the
 repaired parameters.  Constructors are repaired one by one, in isolation, but
 the repairing of their parameters.  Constructor indices are simply instances of
 the inductive indices with terms: they are simply repaired in isolation.
 
-\begin{Rules}
-  {fig:repair-inductive}
-  { Rules for repairing inductive data type definitions ($\repairIndOp$) }
-
-  \begin{mathpar}
-    {
-      \inferrule*
-      [lab=\RepairVernac{Inductive}]
-      {
-        {
-          \turnstile%
-          {\dcontext{[]}{\MathSame{}}{E}{\delta_E}}
-          {\repairParameters{\pind{}}{\dpind{}}
-            {(\blackdiff{\Gamma}{\delta_{\Gamma}}, \dpind{}')}
-          }
-        }
-        \\\\\\
-        {
-          \turnstile%
-          {\dcontext{\Gamma}{\delta_{\Gamma}}{E}{\delta_E}}
-          {\repairIndices{\iind{}}{\diind{}}{\diind{}'}}
-        }
-        \\\\\\
-        \InductiveType{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\tau}
-        \\\\\\
-        \deltaInductiveType%
-        {\diff{\nind{}}{\dnind{}}}
-        {\diff{\pind{}}{\dpind{}}}
-        {\diff{\iind{}}{\diind{}}}
-        {\diff{\uind{}}{\duind{}}}
-        {\delta_{\tau}}
-        \\\\\\
-        {
-          \turnstile%
-          {
-            \dcontext%
-            {\MathCons{\MathLocalAssum{\nind{}}{\tau}}{[]}}
-            {\MathMod{\MathLocalAssum{\dnind{}}{\delta_{\tau}}}{\MathSame{}}}
-            {E}
-            {\delta_E}
-          }
-          {\repairConstructors{\cind{}}{\dcind{}}{\dcind{}'}}
-        }
-      }
-      {
-        {\turnstile%
-          {\denv{E}{\delta_E}}
-          {\repairInd%
-            {\diff{\nind{}}{\dnind{}}}
-            {\diff{\pind{}}{\dpind{}}}
-            {\diff{\iind{}}{\diind{}}}
-            {\diff{\uind{}}{\duind{}}}
-            {\diff{\cind{}}{\dcind{}}}
-            {(\dpind{}', \diind{}', \dcind{}')}
-          }
-        }
-      }
-    }
-  \end{mathpar}
-
-\end{Rules}
-
 \subsubsection{Repairing inductive parameters}
 
-Figure~\ref{fig:repair-inductive-parameters} gives the algorithm for repairing
-inductive parameters, named $\repairParametersOp{}$.
+Figures~\ref{fig:repair-inductive-parameters}
+and~\ref{fig:repair-inductive-parameters-2} show the rules for
+$\repairParametersOp{}$, the algorithm for repairing inductive parameters.  As
+previously mentioned, the algorithm must return its final local context (and
+diff), so that the inductive indices may be repaired in the proper context.
+While our formalization in this dissertation returns the contexts explicitly,
+our implementation uses a \define{state monad} to pass around local context and
+global environment.
 
-\begin{Rules}
-  {fig:repair-inductive-parameters}
-  { Rules for repairing inductive parameters ($\repairParametersOp$) }
+\input{figure-chick-repair-inductive-parameters}
 
-  \begin{mathpar}
-    {
-      \inferrule*
-      [lab=\RepairParameters{Same}]
-      {
-        {\turnstile%
-          {\dcontext
-            {E}{\delta_E}
-            {\Gamma}{\delta_{\Gamma}}
-          }
-          {\repairParameters%
-            {\MathCons{\MathLocalAssum{v}{\tau}}{\pind{}}}
-            {\MathMod{\MathLocalAssum{\MathSameVariable{}}{\MathSameTerm{}}}{\dpind{}}}
-            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \dpind{}')}}
-        }
-      }
-      {
-        {\turnstile%
-          {\dcontext
-            {E}{\delta_E}
-            {\Gamma}{\delta_{\Gamma}}
-          }
-          {\repairParameters%
-            {\MathCons{\MathLocalAssum{v}{\tau}}{\pind{}}}
-            {\MathSameList{}}
-            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \dpind{}')}
-          }
-        }
-      }
-    }
+\input{figure-chick-repair-inductive-parameters-2}
 
-    {
-      \inferrule*
-      [lab=\RepairParameters{Mod}]
-      {
-        {
-          \freshOne{v}{\delta_{v}}{\delta_{v}'}
-        }
-        \\
-        {
-          \MathPatches{\tau}{\delta_{\tau}}{\tau'}
-        }
-        \\
-        {
-          \turnstile
-          { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-          { \repair{\tau}{\delta_{\tau}'}{\coqinline{Type}}{\MathSame{}} }
-        }
-        \\\\\\
-        {\turnstile%
-          {\dcontext
-            {E}{\delta_E}
-            {\MathCons{\MathLocalAssum{v}{\tau}}{\Gamma}}
-            {\MathMod{\MathLocalAssum{\delta_{v}'}{\delta_{\tau}'}}{\delta_{\Gamma}}}
-          }
-          {\repairParameters%
-            {\pind{}}
-            {\dpind{}}
-            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'},
-              \MathMod{\MathLocalAssum{\delta_{v}'}{\delta_{\tau}'}}{\dpind{}'})}}
-        }
-      }
-      {
-        {\turnstile%
-          {\dcontext
-            {E}{\delta_E}
-            {\Gamma}{\delta_{\Gamma}}
-          }
-          {\repairParameters%
-            {\MathCons{\MathLocalAssum{v}{\tau}}{\pind{}}}
-            {\MathMod{\MathLocalAssum{\delta_{v}}{\delta_{\tau}} }{\dpind{}}}
-            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \dpind{}')}}
-        }
-      }
-    }
+TODO: describe those too
 
-    {
-      \inferrule*
-      [lab=\RepairParameters{Drop}]
-      {
-        {\turnstile%
-          {\dcontext
-            {E}{\delta_E}
-            {\MathCons{\MathLocalAssum{v}{\tau}}{\Gamma}}
-            {\MathDrop{\delta_{\Gamma}}}
-          }
-          {\repairParameters%
-            {\pind{}}
-            {\dpind{}}
-            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'},\dpind{}')}
-          }
-        }
-      }
-      {
-        {\turnstile%
-          {\dcontext
-            {E}{\delta_E}
-            {\Gamma}{\delta_{\Gamma}}
-          }
-          {\repairParameters%
-            {\MathCons{\MathLocalAssum{v}{\tau}}{\pind{}}}
-            {\MathDrop{\dpind{}}}
-            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \dpind{}')}}
-        }
-      }
-    }
+\subsubsection{Repairing inductive indices}
 
-    {
-      \inferrule*
-      [lab=\RepairParameters{Ins}]
-      {
-        {\turnstile%
-          {\dcontext
-            {E}{\delta_E}
-            {\MathCons{\MathLocalAssum{v}{\tau}}{\Gamma}}
-            {\MathDrop{\delta_{\Gamma}}}
-          }
-          {\repairParameters%
-            {\pind{}}
-            {\dpind{}}
-            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'},\dpind{}')}
-          }
-        }
-      }
-      {
-        {\turnstile%
-          {\dcontext
-            {E}{\delta_E}
-            {\Gamma}{\delta_{\Gamma}}
-          }
-          {\repairParameters%
-            {\pind{}}
-            {\MathIns{\MathLocalAssum{v}{\tau}}{\dpind{}}}
-            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \dpind{}')}
-          }
-        }
-      }
-    }
-  \end{mathpar}
+Figures~\ref{fig:repair-inductive-parameters}
+and~\ref{fig:repair-inductive-parameters-2} show the rules for
+$\repairParametersOp{}$, the algorithm for repairing inductive parameters.  As
+previously mentioned, the algorithm must return its final local context (and
+diff), so that the inductive indices may be repaired in the proper context.
+While our formalization in this dissertation returns the contexts explicitly,
+our implementation uses a \define{state monad} to pass around local context and
+global environment.
 
-\end{Rules}
+\input{figure-chick-repair-inductive-parameters}
+
+\input{figure-chick-repair-inductive-parameters-2}

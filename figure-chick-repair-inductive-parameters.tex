@@ -1,0 +1,101 @@
+\begin{Rules}
+  {fig:repair-inductive-parameters}
+  { Rules for repairing inductive parameters ($\repairParametersOp$, part 1/2) }
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=\RepairParameters{Same}]
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}{\delta_{\Gamma}}
+          }
+          {\repairParameters%
+            {\MathCons{\MathLocalAssum{v}{\tau}}{\pind{}}}
+            {\MathMod{\MathLocalAssum{\MathSameVariable{}}{\MathSameTerm{}}}{\MathSameList{}}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \delta)}}
+        }
+      }
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}{\delta_{\Gamma}}
+          }
+          {\repairParameters%
+            {\MathCons{\MathLocalAssum{v}{\tau}}{\pind{}}}
+            {\MathSameList{}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \delta)}
+          }
+        }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=\RepairParameters{Replace}]
+      {
+        {
+          \Gamma' =
+          \MathIns{p_{\text{ind}_{ \big| \pindprime{} \big| }}'}{(
+            \MathIns{\ldots}{(
+              \MathIns{p_{\text{ind}_{1}}'}
+              {\Gamma}
+            )}
+          )}
+        }
+      }
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}{\delta_{\Gamma}}
+          }
+          {\repairParameters%
+            {\pind{}}
+            {\MathReplace{\pindprime{}}}
+            {(\blackdiff{\Gamma}{\delta_{\Gamma}'}, \MathReplace{\pindprime{}})}
+          }
+        }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=\RepairParameters{Permute}]
+      {
+        {
+          \MathPatches{\pind{}}{\MathPermute{p}{}}{\pindprime{}}
+        }
+        \and
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}{\delta_{\Gamma}}
+          }
+          {\repairParameters%
+            {\pindprime{}}
+            {\delta}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \delta')}
+          }
+        }
+      }
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}{\delta_{\Gamma}}
+          }
+          {\repairParameters%
+            {\pind{}}
+            {\MathPermute{p}{\delta}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \delta')}
+          }
+        }
+      }
+    }
+  \end{mathpar}
+
+\end{Rules}

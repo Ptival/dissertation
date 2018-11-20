@@ -180,8 +180,8 @@ for any \coqinline{fold} in general, we can describe how a given folding
 operation \coqinline{f} reacts to differences in the input list \coqinline{l} in
 the call \coqinline{(fold f l b)}.  From this description, we can derive the
 diff-propagating function for the whole \coqinline{fold} operation.  To make
-things more concrete, let's focus on \coqinline{quan\-tify\-Variables} and build
-its corresponding, diff-propagating version \coqinline{δquan\-tify\-Variables}.
+things more concrete, let's focus on \coqinline{quantifyVariables} and build
+its corresponding, diff-propagating version \coqinline{δquantifyVariables}.
 The original function is a right-fold that universally quantifies over every
 element encountered. We can describe how it reacts to changes in the input list
 using the following record type:
@@ -220,7 +220,7 @@ makes sense for the list.  Receiving the original list lets us check the sanity
 of the list diff at each step (e.g.\ a diff should not ask to drop the head from
 an empty list), and lets us pass the element being modified or removed to the
 handlers who need the information.  With all this machinery ready, we can derive
-\coqinline{δEliminator\-Type} as:
+\coqinline{δEliminatorType} as:
 
 \begin{minted}{haskell}
 δEliminatorType ... =
@@ -235,7 +235,7 @@ handlers who need the information.  With all this machinery ready, we can derive
 \end{minted}
 
 \noindent which matches closely the original definition of
-\coqinline{Eliminator\-Type}.  We use the same mechanism to derive a
+\coqinline{EliminatorType}.  We use the same mechanism to derive a
 diff-propagating version of the function that computes the type of an inductive
 type family (based on the diff of its parameters and indices lists), and a
 diff-propagating version of the function that computes the type of a constructor
@@ -315,8 +315,10 @@ have the following property:
 \]
 
 \noindent i.e., \coqinline{δEliminatorType} produces the correct diff to
-transport the old eliminator type to the new eliminator type.  In fact, we even
-have the following corollary:
+transport the old eliminator type to the new eliminator type.
+
+\paragraph{Remark}
+In fact, we even have the following corollary:
 
 \[
   {
@@ -358,6 +360,6 @@ have the following corollary:
   }
 \]
 
-\noindent making \coqinline{eliminatorType} redundant as it coincides with a
-modification where each field of the inductive data type definition is replaced
-with a new value.
+\noindent which makes $\MathMkElimTypeOp{}$ seem redundant, as it coincides
+exactly with the result of $\MathMkΔElimTypeOp{}$ when passed a diff replacing
+all pre-existing data from the inductive type.

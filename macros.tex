@@ -308,14 +308,14 @@
 
 \newcommand{\UTRApp}{\UnknownTypeRepair{Application}}
 \newcommand{\UTRMatch}{\UnknownTypeRepair{Match}}
-\newcommand{\UTRPi}{\UnknownTypeRepair{Pi}}
+\newcommand{\UTRPi}{\UnknownTypeRepair{$\Pi$}}
 \newcommand{\UTRType}{\UnknownTypeRepair{Universe}}
 \newcommand{\UTRVar}{\UnknownTypeRepair{Variable}}
 \newcommand{\UTRAnnot}{\UnknownTypeRepair{Annotation}}
 \newcommand{\UTRHole}{\UnknownTypeRepair{Hole}}
 \newcommand{\UTROtherwise}{\UnknownTypeRepair{Otherwise}}
 
-\newcommand{\repairArgsOp}{\op{R_{Fn}}}
+\newcommand{\repairArgsOp}{\op{R_{\text{Arguments}}}}
 
 \newcommand{\repairArgs}[5]{
   \op{\repairArgsOp(}#1\op{,} #2\op{,} #3\op{,} #4\op{) =}\ \out{#5}
@@ -327,10 +327,12 @@
       { \diff{ \op{?} }{ \out{#3} } }
 }
 
-\newcommand{\MathMatch}[2]{ \text{match}\ #1\ \text{with}\ #2 }
+\newcommand{\MathMatch}[2]{ \coqinline{match}\ #1\ \coqinline{with}\ #2 }
 
 %%% For `deriving`
 
+\newcommand{\MathMkElimTypeOp}{\op{\text{EliminatorType}}}
+\newcommand{\MathMkΔElimTypeOp}{\op{\text{ΔEliminatorType}}}
 \newcommand{\MathMkΔElimType}[2]{\op{\text{ΔEliminatorType}(} #1 \op{,\ } #2 \op{)}}
 \newcommand{\MathMkElimType}[1]{\op{\text{EliminatorType}(} #1 \op{)}}
 
@@ -384,12 +386,14 @@
 
 \newcommand{\nind}{n_{\text{ind}}}
 \newcommand{\pind}{\overline{p_{\text{ind}}}}
+\newcommand{\pindprime}{\overline{p'_{\text{ind}}}}
 \newcommand{\iind}{\overline{i_{\text{ind}}}}
 \newcommand{\uind}{u_{\text{ind}}}
 \newcommand{\cind}{\overline{c_{\text{ind}}}}
 
 \newcommand{\dnind}{\delta{n_{\text{ind}}}}
 \newcommand{\dpind}{\delta{\overline{p_{\text{ind}}}}}
+\newcommand{\dpindprime}{\delta{\overline{p'_{\text{ind}}}}}
 \newcommand{\diind}{\delta{\overline{i_{\text{ind}}}}}
 \newcommand{\duind}{\delta{u_{\text{ind}}}}
 \newcommand{\dcind}{\delta{\overline{c_{\text{ind}}}}}
@@ -410,6 +414,7 @@
 % {\normalfont ...} is the same as \textnormal{...}
 \newcommand{\DiffType}[1]{\Delta_{\MathLabel{#1}}}
 \newcommand{\DeltaAtomic}{\DiffType{Atomic}}
+\newcommand{\DeltaBinder}{\DiffType{Binder}}
 \newcommand{\DeltaInductive}{\DiffType{Inductive}}
 \newcommand{\DeltaList}{\DiffType{List}}
 \newcommand{\DeltaTerm}{\DiffType{Term}}
@@ -429,3 +434,11 @@
 \newcommand{\deltaType}[1]{\delta_{\MathLabel{#1}}}
 \newcommand{\deltaConstructor}{\deltaType{Constructor}}
 \newcommand{\deltaInductive}{\deltaType{Inductive}}
+
+\newcommand{\range}[2]{\overline{#2}^{i \in \{ 1, …, #1 \}}}
+\newcommand{\permutationRange}[1]{\range{|p|}{#1}}
+%\newcommand{\permutationRange}[1]{\overline{#1}^{i \in \{ 1, …, |p| \}}}
+\newcommand{\deprecateOp}[1]{\op{\text{Deprecate}}}
+\newcommand{\deprecate}[1]{\op{\deprecateOp{}(} #1 \op{)}}
+
+\newcommand{\TODO}[1]{\noindent\colorbox{yellow}{#1}}

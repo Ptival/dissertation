@@ -1,233 +1,179 @@
 \subsubsection*{Diff-directed term repair algorithm}
 
-The algorithm for $\repairTermOneOp$ is directed by the syntax of the diff for
-the type of the term being repaired.
+\input{figure-chick-repair-term-1}
 
-Rules \rulename{\RSamePi} and \rulename{\RSame} apply when the type has not
-been modified.  The first one turns the $\MathSame$ diff for a $\Pi$-type into a
-$\MathModPiOp$, to defer the handling of the $\lambda$'s binder, and the
-populating of the local context, to the rule \rulename{\RModPi} described
-further below.  The second one deals with all other types.  Naively, one might
-expect the output to simply be $\MathSame$, however, this would not account for
-changes to definitions in the global environment and local context.  The rule
-therefore defers this work to the type-directed term repair algorithm
-$\repairTermTwoOp$.
+\input{figure-chick-repair-term-2}
 
-The rule that handles the modification of a dependent $\Pi$-type for an explicit
-$\lambda$ function, Rule \rulename{\RModPi}, requires a lot of care.  A simple
-version of it would not alter the binder $x$ in the term abstraction.
-Unfortunately, there is a potential for a binder conflict.  Consider the term
-$(\MathLam{a}{b\ a})$ defined in a global environment where $b$ is bound, and
-suppose the user renamed that global $b$ into $a$.  The algorithm will
-eventually need to replace the occurrence of $b$ in the term abstraction with an
-$a$, but in order to do so without capture, we had better $\alpha$-rename the
-abstraction's binder with a variable that is fresh in the repaired program.  We
-use $\freshOneOp$ again to pick a suitable binder.
+$\repairTermOneOp$ (described in Figures~\ref{fig:repair-term-1}
+and~\ref{fig:repair-term-2}) is a repair algorithm for terms, directed by the
+syntax of the diff for the type of the term being repaired.  We will describe
+these rules one by one, as they are often quite complex.
+
+\paragraph{\rulename{\RSamePi}}
+
+$$\RepairTermOneSamePi{}$$
+
+This rule applies when the type of the term being repaired used to be a
+dependent function type, such as $\MathPi{\tau_{1}}{\chi}{\tau_{2}}$, and this
+type has not been modified.  In order to not repeat ourselves, this rule simply
+expands $\MathSameTerm{}$ into the equivalent
+$\MathModPi{\MathSameTerm{}}{\MathSameBinder{}}{\MathSameTerm{}}$, so that rule
+\rulename{\RModPi} applies.
+
+\paragraph{\rulename{\RSame}}
+
+$$\RepairTermOneSameOther{}$$
+
+This rule applies when the type of the term being repaired has not been
+modified, for all other cases than a dependent function type.  Naively, one
+might expect the output to simply be $\out{\MathSame}$, however, this would not
+account for changes to definitions in the global environment and local context,
+that may have repercussions within $t$.  The rule therefore defers to the
+term-directed repair algorithm $\repairTermTwoOp$.
+
+\paragraph{\rulename{\RModPi}}
+
+$$\RepairTermOneModPi{}$$
+
+This rule requires a lot of care.  It applies when the term is an explicit term
+abstraction, of the form $\MathLam{x}{t}$, its type is an explicit type
+abstraction, of the form $\MathPi{\tau_{1}}{\chi}{\tau_{2}}$, and the diff to
+its type is an explicit modification of the type abstraction, of the form
+$\MathModPi{\delta_{\tau_1}}{\delta_\chi}{\delta_{\tau_2}}$.
+
+Perhaps surprisingly, the first thing we'll do is possibly find a fresh name for
+$x$.  Consider that the term abstraction under repair could be $(\MathLam{x}{f
+x})$, where $f$ was a function in scope.  Now consider what happens in the rare
+but possible case where the user renamed $f$ into $x$.  If we aim to repair the
+term abstraction, we will want to rename the occurrence of $f$ into $x$, but it
+would be wrong to do so, because this $x$ would be accidentally captured by the
+term abstraction!  In order to repair such an $f$ within the term abstraction,
+we had better alpha-rename it first, using a suitably fresh variable, say
+$(\MathLam{y}{f y})$.  This lets us safely perform the renaming, obtaining
+$(\MathLam{y}{x y})$.  We use a helper function, $\freshOneOp$, in order to
+detect the conditions within which the variable $x$ would require freshening.
+The output of the helper has type $\DeltaBinder$, and will be either
+$\out{\MathSame{}}$ when the variable does not need to be refreshed, or
+$\out{\MathReplace{y}}$ when the variable needs to be refreshed and $y$ is a
+suitable fresh variable.
 
 A similar issue arises when we want to repair the body of the abstraction: we
-want to instantiate the term abstraction's binder $x$ and the type abstraction's
-binder $\chi$ with the same variable.  Unfortunately, we can't always choose $x$
-because the body of the type abstraction $\tau_2$ might depend on an existing
-$x$ in either the global environment or local context, neither can we always
-choose $\chi$ because the body of the term abstraction $t$ might depend on such
-a $\chi$ too.  The $\freshTwoOp$ helper picks such a suitably fresh variable
-$z$.  This $z$ is only necessary for the algorithm, and will never be shown to
-the programmer.
+want to introduce the variable being abstracted over in our local context, but
+it already has two names, $x$ in the term abstraction, and $\chi$ in the type
+abstraction.  For the same reason as in the previous paragraph, neither $x$, nor
+$\chi$, might always be suitable in the repaired program.  We need a new helper
+function, $\freshTwoOp$, to pick a suitably fresh variable, $\out{z}$, that can
+be substituted in both the term abstraction \emph{and} the type abstraction
+without accidental capture.  In many cases, $z$ will simple be $x$ or $\chi$,
+but in some cases, it might need to be a new variable.
 
-Now armed with $\delta_x$ and $z$, we can introduce $(z : \tau_1)$ in the local
-context, and have it not need be renamed in the diffed context.  In this
-enriched context, we can repair the body of the abstraction, $t$, after having
-performed the substitution of $z$ for $x$.  We must perform similar
-substitutions in $\tau_2$ and $\delta_{\tau_2}$.  We obtain the diff
-$\delta_\tau$, which repairs the body of the abstraction when its binder is
-named $z$.  However, in the original program, we will use $\delta_x$ to repair
-the binder.  We must therefore substitute back instances of $\MathReplace{x}$
-where we find free instances of $\MathReplace{x}$ in $\delta_\tau$.  The same
-considerations must be taken into account when a $\Pi$ is inserted
-(\rulename{\RInsPi}).
+Now armed with $\out{\delta_x}$ and $\out{z}$, we can introduce $(z : \tau_1)$
+in the local context.  As for the local context diff, we preserve the binding,
+using $\MathLocalAssum{\MathReplace{z}}{\delta_{\tau_{1}}}$.  Using
+$\MathReplace{z}$ for the binder diff ensures that all occurrences of $z$, that
+is, old occurrences of $x$, get properly rewritten into $z$.  We must now
+perform appropriate substitutions so as to keep the body of the term
+abstraction, the body of the type abstraction, and the diff of the body the type
+abstraction, all in agreement.  For the body of the term abstraction, we
+substitute $z$ for $x$.  For the body of the type abstraction, we substitute $z$
+for $\chi$.  But how should we alter the diff of this body, that is,
+$\delta_{\tau_{2}}$?  Looking back at the provenance of $\delta_{\tau_{2}}$, we
+see it is a diff that has been created under the assumption that variable $\chi$
+was to undergo modification $\delta_{\chi}$.  However, we changed this
+resolution so that variable $\chi$ will instead become $x$.  Therefore, within
+$\delta_{\tau_{2}}$, we should replace occurrences of $\chi'$, the variable that
+$\delta_{\tau_{2}}$ was expecting, to $z$, the variable that will actually be in
+scope.  Since the only diff construct that mentions variables is
+$\MathReplace{}$, this means we must substitute $\MathReplace{z}$ everywhere we
+see a free $\MathReplace{\chi'}$.
 
-To deal properly with $\Pi$-permutations (\rulename{\RPermutePis}), we must be
-able to syntactically extract as many $\lambda$s as the length of the
-permutation.  When we can do so, the repair proceeds recursively after having
-permuted both the term and the type abstractions.  When the original type $\tau$
-gets replaced by an arbitrary type $\tau'$ (\rulename{\RReplace}), we have no
-better option than inserting a typed hole.  The final rule
-(\rulename{\RepairTermPrefix-Otherwise-\GenericRepairPrefix}) triggers if none
-of the previous rules have, and dispatches the repair to the type-directed term
-repair algorithm $\repairTermTwoOp$.
+Repairing the body of the term abstraction gives us back a diff,
+$\out{\delta_{t}}$.  However, remember that this diff was built with $z$
+substituted for the bound variable.  Repairing the term abstraction does
+\emph{not} require renaming $x$ to $z$ though, this was only necessary to
+account for the dependent function type in repairing the body.  In fact,
+remember we had decided that variable $x$ should change according to
+$\delta_{x}$.  We can therefore build the appropriate output diff by replacing
+the binder following $\delta_{x}$, and performing a diff substitution within
+$\delta_{t}$, substituting $\MathReplace{x'}$ everywhere we see a free
+$\MathReplace{z}$, where $x'$ is the variable chosen by $\delta_{x}$.
 
-\begin{Rules}{fig:repair-term}{ Rules for repairing terms, diff-directed ($\repairTermOneOp$) }
+\paragraph{\rulename{\RInsPi}}
 
-\begin{mathpar}
-  {
-    \inferrule*
-    [lab=\RSamePi]
-    {
-      {\turnstile
-        { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-        { \repair
-          {\MathLam{x}{t}}
-          {\delta}
-          {\MathPi{\tau_1}{\chi}{\tau_2}}
-          {\MathModPi{\MathSame}{\MathSame}{\MathSame}}
-        }
-      }
-    }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repair
-        {\MathLam{x}{t}}
-        {\delta}
-        {\MathPi{\tau_1}{\chi}{\tau_2}}
-        {\MathSame}
-      }
-    }
-  }
+$$\RepairTermOneInsPi{}$$
 
-  {
-    \inferrule*
-    [lab=\RSame]
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairTermWithoutType{t}{\delta_{t}}}
-    }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repair{t}{\delta_{t}}{\tau}{\MathSame} }
-    }
-  }
+This rule applies when the type of a term $t$ has changed to include a new type
+abstraction, as in $\MathInsPi{\delta_{\tau_1}}{\chi}{\delta_{\tau_2}}$.  To
+allow the term to receive this new argument, we will want to turn it into a term
+abstraction.  But what name should we pick for the variable to abstract over?
+The obvious candidate is $\chi$, the same variable that appears in the type
+abstraction.  However, once again, there is a chance that some unrelated $\chi$
+appears free in $t$.  Abstracting over the same variable would result in an
+accidental capture!  We must pick a suitably fresh name, possibly $\chi$, in the
+current context.  This is once again achieved using $\freshOneOp{}$, and we
+obtain a diff, $\out{\delta_{\chi}}$, which will either be $\MathSame{}$ if it
+is possible to name the binder $\chi$, or $\MathReplace{y}$ with a suitably
+fresh $y$ otherwise.  Let us name $\out{x}$ the variable name that was picked.
 
-  \input{repair-term-diff-mod-pi}
-  \RepairTermDiffModPi{}
+We can compute the type that this $x$ should have, $\tau_{1}$, and add a binding
+$\MathLocalAssum{x}{\tau_{1}}$ to the local context as we repair $t$.  Once
+again, we must perform a diff substitution, because $\delta_{\tau_{2}}$ was
+built under the assumption that the value abstracted over would be named $\chi$,
+but we instead chose to name it $x$.  The resulting $\out{\delta_{t}}$ is how we
+want to repair the body of our soon-to-be term abstraction.  The final output is
+simply $\out{\MathInsLam{x}{\delta_{t}}}$.  We do \emph{not} need to undo the
+diff substitution, because $\delta_{t}$ indeed appears under a binder named $x$.
 
-  {
-    \inferrule*
-    [lab=\RInsPi]
-    {
-      {\turnstile
-        {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
-        {\freshOne{\chi}{\MathSame}{\delta_\chi}}
-      }
-      \and
-      {\MathPatches{\chi}{\delta_\chi}{x}}
-      \and
-      {\MathPatches{\tau}{\delta_{\tau_1}}{\tau_1}}
-      \\\\\\
-      \turnstile
-      {\dcontext{E}{\delta_E}{\Gamma}
-        {\MathIns{\MathLocalAssum{x}{\tau_1}}{\delta_\Gamma}}
-      }
-      { \repair{t}{\delta_{t}}{\tau}
-        {\delta_{\tau_2}[\subst{\MathReplace{\chi}}{\MathReplace{x}}]}
-      }
-    }
-    {
-      \turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repair
-        {t}
-        { \MathInsLam{x}{\delta_{t}} }
-        {\tau}
-        { \MathInsPi{\delta_{\tau_1}}{\chi}{\delta_{\tau_2}} }
-      }
-    }
-  }
+\paragraph{\rulename{\RDropPi}}
 
-  {
-    \inferrule*
-    [lab=\RDropPi]
-    {
-      {\turnstile
-        {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
-        {\freshTwo{\blackdiff{x}{\MathSame}}{\blackdiff{\chi}{\MathSame}}{z}}
-      }
-      \\
-      {\turnstile
-        {\dcontext
-          {E}{\delta_E}
-          {\MathCons{\MathLocalAssum{z}{\tau_1}}{\Gamma}}
-          {\MathDrop{\delta_\Gamma}}
-        }
-        {\repair
-          {t[\subst{x}{z}]}
-          {\delta_{t}}
-          {\tau[\subst{\chi}{z}]}
-          {\delta_{\tau_2}}
-        }
-      }
-    }
-    {
-      \turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repair
-        {\MathLam{x}{t}}
-        {\MathDropLam{\delta_{t}}}
-        {\MathPi{\tau_1}{\chi}{\tau_2}}
-        {\MathDropPi{\delta_{\tau_2}}}
-      }
-    }
-  }
+$$\RepairTermOneDropPi{}$$
 
-  {
-    \inferrule*
-    [lab=\RPermutePis]
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      {\repair
-        { \MathLam{x_{p(1)} \ldots x_{p(|p|)}}{t} }
-        { \delta }
-        { \mkMathPiRaw{(\chi_{p(1)} : \tau_{p(1)}) \ldots (\chi_{p(|p|)} : \tau_{p(|p|)})}{\tau}{}{} }
-        { \dtau{} }
-      }
-    }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      {\repair
-        { \MathLam{x_1 \ldots x_{|p|}}{t} }
-        { \MathPermuteLams{p}{\delta} }
-        { \mkMathPiRaw{(\chi_{1} : \tau_i) \ldots (\chi_{|p|} : \tau_{|p|})}{\tau}{} }
-        { \MathPermutePis{p}{\dtau{}} }
-      }
-    }
-  }
+This rules applies when some explicit term abstraction, $\MathLam{x}{t}$, had an
+explicit type abstraction for its type, $\MathPi{\tau_1}{\chi}{\tau_2}$, but no
+longer receives this argument.  In this case, we will want to drop the $λ$, but
+repair its body.  Once again, we will use $\freshTwoOp{}$ to pick a suitably
+fresh variable that will neither be captured by $x$ in $t$, nor by $\chi$ in
+$\tau_{2}$.  We simply add the binding $\MathLocalAssum{z}{\tau_{1}}$ to the
+local context, and $\MathDrop{}$ for its diff.  Thanks to our lookup rules (from
+Section~\ref{chick-lookup-diff-context}), any reference to $z$ will be replaced
+with a deprecated variable name.  We simply need to repair the body at the
+appropriate type and type diff.  The result, $\out{\delta_{\tau}}$, will contain
+both repairs to $t$, and remove all references to the now obsolete binder $x$,
+replacing those with some variable name, depending on the implementation of
+$\deprecateOp{}$.
 
-  {
-    \inferrule*
-    [lab=\RReplace]
-    { }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repair
-        {t}
-        {\MathReplace{\MathAnnot{\MathHole}{\tau'}}}
-        {\tau}
-        {\MathReplace{\tau'}}
-      }
-    }
-  }
+\paragraph{\rulename{\RPermutePis}}
 
-  {
-    \inferrule*
-    [lab=\RepairTermPrefix-Otherwise-\GenericRepairPrefix]
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \genericrepair
-        { t }
-        { \delta_t }
-        { \tau }
-      }
-    }
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      {\repair
-        { t }
-        { \delta_t }
-        { \tau }
-        { \delta_\tau }
-      }
-    }
-  }
+$$\RepairTermOnePermutePis{}$$
 
-\end{mathpar}
+This rule applies when the term being repaired is a sequence of term
+abstractions $\MathLam{\permutationRange{x_{i}}}{t}$, while its type used to be
+some telescope of type abstractions
+$\mkMathPiRaw{\permutationRange{(\chi_{i}:\tau_{i})}}{\tau}{}{}$, and its type
+has undergone a permutation $\MathPermutePis{p}{\dtau{}}$.  Note that the
+sequence of term abstractions, as well as the telescope of type abstractions,
+could be longer than the length of the permutation, and of different lengths.
+All that matters is that we have \emph{at least} $|p|$ explicit $\lambda$s in
+the term, and \emph{at least} $|p|$ explicit $\Pi$s in the type abstraction, so
+that we can perform the permutation.  When this is possible, the rule is fairly
+simple: it applies the permutation to both the term and the type, and repairs
+the resulting term against the resulting type.  The output of this result is
+then permuted to obtain the result of the original problem.
 
-\end{Rules}
+\paragraph{\rulename{\RReplace}}
+
+$$\RepairTermOneReplace{}$$
+
+When the type of a term has been replaced by an arbitrary type $\tau'$, there is
+nothing meaningful that can be done to repair the old term.  We have to give up
+and return a typed hole, $(\MathAnnot{\MathHole{}}{\tau'})$.
+
+\paragraph{\rulename{\RepairTermPrefix-Otherwise}}
+
+$$\RepairTermOneOtherwise{}$$
+
+Finally, when none of the other rules apply, we have exhausted the ways in which
+we could use the type to guide the repair.  There are still opportunities for
+repairing the term, but they are no longer directed by its type, only by the
+syntax of the term itself.  Therefore, we simply forget about the type
+information, and call $\repairTermThreeOp{}$, which we will discuss now.

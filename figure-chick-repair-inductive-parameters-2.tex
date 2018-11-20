@@ -1,0 +1,115 @@
+\begin{Rules}
+  {fig:repair-inductive-parameters-2}
+  { Rules for repairing inductive parameters ($\repairParametersOp$, part 2/2) }
+
+  \begin{mathpar}
+    {
+      \inferrule*
+      [lab=\RepairParameters{Ins}]
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}
+            {\MathIns{\MathLocalAssum{v}{\tau}}{\delta_{\Gamma}}}
+          }
+          {\repairParameters%
+            {\pind{}}
+            {\dpind{}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'},\dpindprime{})}
+          }
+        }
+      }
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}{\delta_{\Gamma}}
+          }
+          {\repairParameters%
+            {\pind{}}
+            {\MathIns{\MathLocalAssum{v}{\tau}}{\dpind{}}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \dpindprime{})}
+          }
+        }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=\RepairParameters{Mod}]
+      {
+        {
+          \freshOne{v}{\delta_{v}}{\delta_{v}'}
+        }
+        \\
+        {
+          \MathPatches{\tau}{\delta_{\tau}}{\tau'}
+        }
+        \\
+        {
+          \turnstile
+          { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+          { \repair{\tau}{\delta_{\tau}'}{\coqinline{Type}}{\MathSame{}} }
+        }
+        \\\\\\
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\MathCons{\MathLocalAssum{v}{\tau}}{\Gamma}}
+            {\MathMod{\MathLocalAssum{\delta_{v}'}{\delta_{\tau}'}}{\delta_{\Gamma}}}
+          }
+          {\repairParameters%
+            {\pind{}}
+            {\dpind{}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'},
+              \MathMod{\MathLocalAssum{\delta_{v}'}{\delta_{\tau}'}}{\dpindprime{}})}}
+        }
+      }
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}{\delta_{\Gamma}}
+          }
+          {\repairParameters%
+            {\MathCons{\MathLocalAssum{v}{\tau}}{\pind{}}}
+            {\MathMod{\MathLocalAssum{\delta_{v}}{\delta_{\tau}} }{\dpind{}}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \dpindprime{})}}
+        }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=\RepairParameters{Drop}]
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\MathCons{\MathLocalAssum{v}{\tau}}{\Gamma}}
+            {\MathDrop{\delta_{\Gamma}}}
+          }
+          {\repairParameters%
+            {\pind{}}
+            {\dpind{}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'},\dpindprime{})}
+          }
+        }
+      }
+      {
+        {\turnstile%
+          {\dcontext
+            {E}{\delta_E}
+            {\Gamma}{\delta_{\Gamma}}
+          }
+          {\repairParameters%
+            {\MathCons{\MathLocalAssum{v}{\tau}}{\pind{}}}
+            {\MathDrop{\dpind{}}}
+            {(\blackdiff{\Gamma'}{\delta_{\Gamma}'}, \dpindprime{})}}
+        }
+      }
+    }
+  \end{mathpar}
+
+\end{Rules}
