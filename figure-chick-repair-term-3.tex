@@ -103,7 +103,7 @@
   {
     {\turnstile
       { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairTermWithoutType{\tau}{\delta_\tau} }
+      { \repair{\tau}{\delta_\tau}{\coqinline{Type}}{\MathSame{}} }
     }
     \and
     {\turnstile
@@ -129,7 +129,7 @@
 
 \begin{Rules}
   {fig:repair-term-3}
-  { Rules for $\repairTermThreeOp$, the term-directed repair algorithm. }
+  { Rules for repairing terms, term-directed ($\repairTermThreeOp$) }
 
 \begin{mathpar}
   \RepairTermTwoVar{}

@@ -65,7 +65,7 @@ appropriate updated environment and its diff.
 processes unchanged commands, they might need repairs to account for changes in
 their dependencies, as accounted for in the global environment diff.
 
-TODO: other RProg
+\TODO{Describe the remaining rules}
 
 \paragraph{Note} While our presentation makes it look like vernacular commands
 each add exactly one element to the global environment, it is not always as
@@ -73,8 +73,8 @@ simple: inductive data type definitions add \begin{enumerate*} \item the
 inductive type (e.g. \coqinline{list}), \item all its constructors
 (e.g. \coqinline{nil}, \coqinline{cons}), and \item all its eliminators
 (e.g. \coqinline{list_rec}, \coqinline{list_ind}, as described later in
-Section~\ref{deriving}) \end{enumerate*}.  For simplifying diff operations, the
-whole $\InductiveText$ effectively acts as a placeholder, in our formalism, for
-all of those at once.  The lookup rules, given in Appendix~\ref{appendix-chick},
-encapsulate the complexity of accounting for all the definitions arising from
-one inductive data type definition.
+Section~\ref{chick-deriving}) \end{enumerate*}.  For simplifying diff
+operations, the whole $\InductiveText$ effectively acts as a placeholder, in our
+formalism, for all of those at once.  The lookup rules, given in
+Appendix~\ref{appendix-chick}, encapsulate the complexity of accounting for all
+the definitions arising from one inductive data type definition.

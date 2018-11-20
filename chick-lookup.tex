@@ -228,12 +228,12 @@ sure the user notices, we rename the variable using the helper
 $\op{\text{Deprecate}}$, and make its diff as uninformative as possible using a
 hole (Rule \rulename{Diff-\LCDrop-Here}).
 
-In the cases were a variable other than our target is being modified (Rule
-\rulename{Diff-\LCMod-There}), or being dropped (Rule
-\rulename{Diff-\LCDrop-There}), we simply keep looking recursively into the
-remaining context.  Finally, if the context has undergone a permutation (Rule
-\rulename{Diff-\LCPermute}), we can permute the context appropriately and keep
-looking recursively.
+In the cases were a variable other than our target is being modified (covered in
+Rule \rulename{Diff-\LCMod-There}), or in the cases were a variable other than
+our target is being dropped (covered in Rule \rulename{Diff-\LCDrop-There}), we
+simply keep looking recursively into the remaining context.  Finally, if the
+context has undergone a permutation (Rule \rulename{Diff-\LCPermute}), we can
+permute the context appropriately and keep looking recursively.
 
 \subsubsection{Lookup rules for diffs in the global environment}
 

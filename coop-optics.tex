@@ -1,7 +1,7 @@
 \section{Optics to repair unknown language constructs}\label{coop-optics}
 
-There is a big problem with the approach described in
-Section~\ref{embedding-extracting}.  Consider the following \OCaml{} code:
+There is a major problem with the approach described in
+Section~\ref{coop-embedding-extracting}.  Consider the following \OCaml{} code:
 
 \begin{minted}{ocaml}
 type a = … (* some type definition *)
@@ -103,7 +103,7 @@ facilities, though we have not yet written such automation.
 Depending on how the abstract syntax tree of the source language has been
 defined, there are actually two distinct ways of building those traversals.
 They correspond to the following two ways of defining a data type of
-''commands'' over a datatype of ''expressions'':
+``commands'' over a datatype of ``expressions'':
 
 \begin{minted}{haskell}
 -- Variant 1: concrete representation

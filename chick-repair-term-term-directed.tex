@@ -49,7 +49,7 @@ ought to be:
 
 \noindent%
 %
-$\delta_{t} = (\MathInsApp{(\MathModApp{\MathSame}{\MathSame})}{(\MathAnnot{\MathHole}{B})})$.
+$\delta_{t} = (\MathInsApp{(\MathModApp{\MathSame}{\MathSame})}{(\MathAnnot{\MathHole}{B})})$
 
 \noindent%
 %
@@ -67,7 +67,7 @@ In order to do so, we syntactically extract as many nested applications as
 possible, yielding a sequence of arguments of some arbitrary length
 $\range{n}{a_{i}}$, and pass this array of arguments to $\repairArgsOp{}$.
 
-TODO: decide on this
+\TODO{decide on whether to write those rules}
 
 We omit the rules for $\repairArgsOp{}$ as they would be cumbersome and not
 enlightening.
@@ -86,28 +86,168 @@ using $\freshOneOp{}$, for the same reasons as explained for Rule
 $$\RepairTermTwoMatch{}$$
 
 This rule applies to repair a \coqinline{match} construct. The repair process is
-fairly simple, but cumbersome, so we abstract over it with the
-$\repairBranchesOp{}$ helper function.  The discriminee, $t$, is repaired
-independently.
+quite complex, so we abstract over it with the $\repairBranchesOp{}$ helper
+function.  The discriminee, $t$, can be readily repaired.
 
-Subsequently, each branch can be repaired independently.  Repairing a branch
-requires repairing its pattern, its optional guard, and its body.  Repairing the
-pattern is the hard part, as we need to recognize what constructor we are
-looking at, and what inductive type this constructor belongs to, so that we can
-figure out changes to the type of said constructor, and update the pattern
-variables accordingly.  We use some heuristics that let us guess the type being
-eliminated without user annotation.  Once the pattern is repaired, we can update
-the local context and its diff accordingly, and simply repair the optional guard
-and the body, who are just terms, using $\repairTermThreeOp{}$.
+Subsequently, we need to repair the branches.  There are two complications:
 
-\TODO{Mention how it's cool that we add branches automatically, so that we don't
-accidentally capture new cases in wildcard patterns!}
+\begin{enumerate}
 
-We have not yet extended it to dependent pattern matching, of the form:
+  \item We need to find what type is being matched, so that we can look up its
+constructors and how they have changed.  However, the type never appears
+explicitly in the program.
+
+  \item We would like to keep the existing branches in the same order as they
+appear in the user's program, which can be different from the order in which the
+constructors are declared in the data type.
+
+\end{enumerate}
+
+To resolve the first issue, we use a sequence of heuristics: we can look up the
+type of $t$, which might be the inductive type.  However, remember that in a
+dependently-typed language, the type of $t$ could be an arbitrary computation,
+rather than simply a concrete type constructor applied to its arguments.  Our
+second heuristic looks at the constructors in the branches, and looks for an
+inductive data type in scope that has these constructors.  This is more involved,
+but should cover cases where the type of $t$ is not helpful.
+
+Once we know the inductive type of $t$, we are ready to attack the second
+problem.  Let us consider a concrete case to make matters clear.  Consider the
+code:
+
+\begin{minted}{coq}
+Inductive T : Type := A : T | B : T | C : T.
+
+Definition code (t : T) : … :=
+  match t with
+  | C => …
+  | A => …
+  | B => …
+  end.
+\end{minted}
 
 \noindent%
 %
-\coqinline{match … as … in … return … with … end}
+And let's consider the following modification to inductive data type
+\coqinline{T}:
+
+\begin{minted}{coq}
+Inductive T : Type := B : T | C : T | D : T.
+\end{minted}
+
+\noindent%
+%
+where constructor \coqinline{A} has been removed, and constructor \coqinline{D}
+has been added.  We would like the repair to be:
+
+\begin{minted}{coq}
+Definition code (t : T) : … :=
+  match t with
+  | C => …
+  (* | A => … *) (* this branch should be deleted *)
+  | B => …
+  | D => …       (* this branch should be added *)
+  end.
+\end{minted}
+
+A simple way to obtain this result is to find a permutation from the old list of
+branches to the old list of constructors, and a mapping from the old list of
+constructors to the new list of constructors, as depicted in
+Figure~\ref{chick-repair-match-permutations}.  We first compute the permutation
+$p$ that will let us reorder the patterns as they appear in the user's program,
+to the order in which they appear in the data type declaration.  Now that they
+are in the same order, and we know the inductive data type being modified, we
+can also obtain the diff to that inductive data type, and in particular, the
+diff to the list of constructors.  From this, it is easy to compute a
+diff-continuation, represented in Figure~\ref{chick-repair-match-permutations}
+as a list diff operation with ``$…$''.
+
+\begin{figure}[!htp]
+
+  \centering
+  \begin{tikzpicture}
+
+    \tikzstyle{box} = [%
+    align=right,
+    minimum height=1cm,
+    minimum width=2.25cm,
+    %draw=black,
+    ];
+
+    \node[box]                        (branch-C) {\coqinline{| C => …}};
+    \node[box,below=0.25 of branch-C] (branch-A) {\coqinline{| A => …}};
+    \node[box,below=0.25 of branch-A] (branch-B) {\coqinline{| B => …}};
+
+    \node[box,right=2.00 of branch-C]          (permuted-branch-A) {\coqinline{| A => …}};
+    \node[box,below=0.25 of permuted-branch-A] (permuted-branch-B) {\coqinline{| B => …}};
+    \node[box,below=0.25 of permuted-branch-B] (permuted-branch-C) {\coqinline{| C => …}};
+    \node[box,below=0.25 of permuted-branch-C] (ghost-D)           {};
+
+    \node[box,right=2.00 of permuted-branch-A] (diff-A) {$\MathDrop{…}$};
+    \node[box,below=0.25 of diff-A]            (diff-B) {$\MathMod{\delta_{B}}{…}$};
+    \node[box,below=0.25 of diff-B]            (diff-C) {$\MathMod{\delta_{C}}{…}$};
+    \node[box,below=0.25 of diff-C]            (diff-D) {$\MathIns{\delta_{D}}{…}$};
+
+    \node[box,right=2.00 of diff-A]          (permuted-diff-C) {$\MathMod{\delta_{C}}{…}$};
+    \node[box,below=0.25 of permuted-diff-C] (permuted-diff-A) {$\MathDrop{…}$};
+    \node[box,below=0.25 of permuted-diff-A] (permuted-diff-B) {$\MathMod{\delta_{B}}{…}$};
+    \node[box,below=0.25 of permuted-diff-B] (permuted-diff-D) {$\MathIns{D}{…}$};
+
+    \draw[->,ultra thick,color=purple] (branch-A.east) -- (permuted-branch-A.west);
+    \draw[->,ultra thick,color=purple] (branch-B.east) -- (permuted-branch-B.west);
+    \draw[->,ultra thick,color=purple] (branch-C.east) -- (permuted-branch-C.west);
+
+    \node[
+    purple,
+    fit={(branch-C.east) (permuted-branch-C.west)},
+    label=$\op{\MathPermute{p}{}}$,
+    ] {};
+
+    \draw[->,ultra thick,color=purple] (permuted-branch-A.east) -- (diff-A.west);
+    \draw[->,ultra thick,color=purple] (permuted-branch-B.east) -- (diff-B.west);
+    \draw[->,ultra thick,color=purple] (permuted-branch-C.east) -- (diff-C.west);
+    \draw[->,ultra thick,color=purple]           (ghost-D.east) -- (diff-D.west);
+
+    \node[
+    purple,
+    fit={(permuted-branch-A.east) (diff-D.west)},
+    label=$\repairBranchOp{}$,
+    ] {};
+
+    \draw[->,ultra thick,color=purple] (diff-A.east) -- (permuted-diff-A.west);
+    \draw[->,ultra thick,color=purple] (diff-B.east) -- (permuted-diff-B.west);
+    \draw[->,ultra thick,color=purple] (diff-C.east) -- (permuted-diff-C.west);
+    \draw[->,ultra thick,color=purple] (diff-D.east) -- (permuted-diff-D.west);
+
+    \node[
+    RoundedRectangle,
+    purple,
+    fit={(diff-A.east) (permuted-diff-B.west)},
+    label=$\op{\MathPermute{p^{-1}}{}}$,
+    ] {};
+
+  \end{tikzpicture}
+
+  \caption{Repairing branches of a  \coqinline{match} using
+permutations}~\label{chick-repair-match-permutations}
+
+\end{figure}
+
+For instance, since the \coqinline{A} constructor was removed, we can compute
+that the \coqinline{A} branch must be removed.  Had the \coqinline{B}
+constructor been modified, we could compute a relevant $\delta_{B}$ patch to
+repair the branch.  In our simple example where it has not changed, we have
+$\delta_{B} = \MathSame{}$.  For new constructors, like \coqinline{D}, we can
+just fabricate empty branches (with the proper constructor and arity for each
+pattern) and append them last.
+
+We have not yet extended our language to dependent pattern matching of the form:
+
+\begin{minted}{coq}
+match … as … in … return … with
+| …
+end
+\end{minted}
 
 \noindent%
 %
@@ -115,9 +255,63 @@ as found in \Coq{}, but we believe it should not pose a significant challenge:
 the \coqinline{as} clause, \coqinline{in} clause, and \coqinline{return} clause,
 should be repaired in order, with proper care taken about what variables come in
 and out of scope.  They can be repaired independently from the discriminee and
-the branches.  When a \coqinline{return} clause is present, however, we might be
-able to use $\repairTermOneOp{}$, rather than $\repairTermThreeOp{}$, to repair
-the body of each branch, since we know what type to expect from the branch!
+the branches.  When an \coqinline{in} clause is present, it would in fact tell
+us the type of the discriminee!  When a \coqinline{return} clause is present,
+however, we might be able to use $\repairTermOneOp{}$, rather than
+$\repairTermThreeOp{}$, to repair the body of each branch, since we know what
+type to expect from the branch!
+
+Our treatment of \coqinline{match} has a great advantage over manual refactoring
+in the presence of a wildcard pattern.  A common source of problems when
+refactoring a data type definition happens when some code uses wildcard
+patterns.  Consider the following code:
+
+\begin{minted}{coq}
+Inductive T : Type := A : T | B : T | C : T.
+
+(* then, somewhere far from this definition *)
+
+Definition handle (t : T) : bool :=
+  match t with
+  | A => true
+  | _ => false (* everything else is false! *)
+  end.
+\end{minted}
+
+\noindent%
+%
+If the programmer later decides to extend the datatype to the following:
+
+\begin{minted}[escapeinside=@@]{coq}
+Inductive T : Type := A : T | B : T | C : T @\modified{| D : T}@.
+\end{minted}
+
+\noindent%
+%
+then the old version of the \coqinline{handle} function will happily type-check,
+mapping input \coqinline{D} to output \coqinline{false}, which might not have
+been the intent of the programmer.  Pattern matches that does not use wildcard
+patterns, on the other hand, will complain that the \coqinline{D} case is not
+handled.  For this reason, wildcard patterns are often considered bad practice.
+However, with our technique, the same program will naturally be repaired into:
+
+\begin{minted}[escapeinside=@@]{coq}
+Inductive T : Type := A : T | B : T | C : T @\modified{| D : T}@.
+
+Definition handle (t : T) : bool :=
+  match t with
+  | A => true
+  @\repaired{| D => (\_ : bool)}@
+  | _ => false (* everything else is false! *)
+  end.
+\end{minted}
+
+\noindent%
+%
+which will force the user to consider whether they want this branch to return
+\coqinline{true} or \coqinline{false}.  In some sense, it makes working with
+wildcard patterns safer, as long as all refactoring attempts are carried through
+our tool, of course.
 
 \TODO{Decide whether to type up rules for $\repairBranchesOp{}$}
 
@@ -125,23 +319,31 @@ the body of each branch, since we know what type to expect from the branch!
 
 $$\RepairTermTwoAnnot{}$$
 
-WRITEME
+This rule applied when the term being repaired is a type-annotated term.  This
+is quite straightforward: we first repair the type, then we repair the term.
+Note that, even though we repair the type with $\repairTermOneOp{}$, there are
+no rules that apply to a type like \coqinline{Type}, so it will defer back to
+$\repairTermThreeOp{}$.  We only choose to present the rule with
+$\repairTermOneOp{}$ so that, if someone extended $\repairTermOneOp{}$ to be
+more clever, this could benefit.
 
 \paragraph{\rulename{\UTROtherwise}}
 
 $$\RepairTermTwoOtherwise{}$$
 
-WRITEME
+For all other cases, we do not yet perform any meaningful repair.  The concrete
+terms that we do not attempt to repair are:
 
+\begin{itemize}
 
+  \item immediately-applied term abstractions, which are harder than applied
+functions because we cannot simply look up the type of the term abstraction,
 
+  \item holes, that can remain the same,
 
+  \item term abstractions whose type is unknown,
+    \TODO{Can we do better here?}
 
+  \item and universes, that can remain the same.
 
-
-
-Also of note, in Rule \rulename{\UTRAnnot}, we actually retrieve type
-information from the annotation, and can repair the annotated term with more
-information.  In practice however, we don't expect much code to contain type
-annotations.  Finally, Rule \rulename{\UTROtherwise} captures terms such as
-holes, and universes, which we repair by doing nothing.
+\end{itemize}

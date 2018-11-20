@@ -1,13 +1,55 @@
 \section{Background}\label{chick-background}
 
-Programs are rarely written once and for all: bugs may be found that must be
-fixed, requirements may evolve in ways that require rewriting parts of a
-program, and programs may be re-written in semantically-equivalent ways in order
-to account for performance, resource-efficiency, or even simply stylistic
-concerns.
+We discussed the concepts of dependent types and \define{refactoring} in
+Chapter~\ref{background}.  In the concept of a dependently-typed language, the
+problem of refactoring is the subject of an interesting tension.
 
-The concept of \define{refactoring}, which was introduced as early as
-in~\citet{wirfs1990surveying}, characterizes program transformations that
-preserve the semantics of the program being manipulated.
+On the one hand, a dependent type system allows the user to describe the types
+of the objects of discourse at a very high level of expressiveness.  This could
+lead to two advantages.  First, if the types are indeed more precise, maybe the
+refactoring algorithm could benefit from the additional, tighter information
+provided by them.  Second, because the types are more precise, the type system
+may enforce more strict requirements, so that failures of the refactoring
+algorithm could be less dramatic, if they end up caught by the type system.
 
-% TODO FIXME
+On the other hand, because the types are stronger, the terms often end up being
+more complex.  For instance, simple functions from the standard library of
+languages like \Haskell{} and \OCaml{} might be encoded using more complex
+type-level machinery in a dependently-typed language.  Because of this, the
+refactoring algorithm is confronted with more complex problems, which are often
+much less tractable than their simply-typed and polymorphically-typed
+counterparts.
+
+In our preliminary research, we found out only a few refactoring techniques for
+functional languages (mostly~\mycite{li2005haskell}), and barely any work on
+refactoring with dependent types (apart from the very
+recent~\mycite{ringer2018adapting}).  We would like to build on top of the
+existing body of work for refactoring functional programs, but in the context of
+a dependently-typed language.  In particular, we would like to support the
+following refactoring scenarios:
+
+\begin{itemize}
+
+  \item any modification to the declaration of an inductive data type should be
+propagated throughout the program,
+
+  \item any modification to the type of a function should be propagated
+throughout the program,
+
+\end{itemize}
+
+In the case of a proof assistant with a tactic language, it would be best to
+also be able to propagate changes through proof scripts written using this
+tactic language.  While we do not contribute such changes in this dissertation,
+we demonstrate a path towards this goal.  Unfortunately, achieving such a goal
+would likely require developing a formal semantics for the tactic language.  The
+only known attempt at formalizing the semantics of \Ltac{} that the author is
+aware of is in~\mycite{jedynak2013}, and it only formalizes a very small,
+simplified fragment of it, which is already quite an achievement.  We don't
+believe that anyone is working on such a formalization at the moment, and in
+fact, the tactic language itself is currently being revised by the \Coq{}
+maintainers.
+
+Any attempt at refactoring tactics would require work similar to the one we are
+presenting as a prerequisite, so we consider our work as a stepping
+stone towards this ambitious goal.
