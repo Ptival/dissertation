@@ -1,0 +1,137 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+\begin{figure}[htp!]
+  \resizebox{\columnwidth}{!}{
+
+
+
+  \centering
+  \begin{tikzpicture}[node distance=0.8cm]
+
+    \tikzstyle{box} = [%
+    align=center,
+    draw=black,
+    font=\bfseries,
+    inner sep=2ex,
+    line width=3pt,
+    rectangle,
+    %ultra thick,
+    ];
+
+    \tikzstyle{doc}=[%
+    align=center,
+    draw=black,
+    shape=document,
+    inner sep=2ex,
+    shape=document,
+    thick,
+    ]
+
+    %\draw [dotted,draw=black] (0,0) grid (15,22) rectangle (0,0);
+    \node at (0,0)  (SW) { };
+    \node at (15,0) (SE) { };
+
+    \node[doc] at (4,21) (original-1) {Original program};
+    \node[doc,right=of original-1] (modified-1) {Partially refactored program};
+    \path (original-1) -- node (mid-1) {} (modified-1);
+
+    \node[box,below=1.25cm of mid-1,minimum width=11cm] (parser) { Source language parser };
+
+    \node[doc,below=3cm of original-1] (original-2) {Original AST};
+    \node[doc,below=3cm of modified-1] (modified-2)
+    {Partially refactored AST};
+
+    \node[box,below=3cm of parser,minimum width=11cm] (embedder) { Source language embedder };
+
+    \draw[dashed, ultra thick] (embedder.west) -- (embedder.west -| SW);
+    \draw[dashed, ultra thick] (embedder.east) -- (embedder.east -| SE)
+    node[above left,font=\bfseries]{\makecell[r]{Source\\language}}
+    node[below left,font=\bfseries]{Chick}
+    ;
+
+    \node[doc,below=3cm of original-2] (original-3) {Original AST};
+    \node[doc,below=3cm of modified-2] (modified-3)
+    {Partially refactored AST};
+
+    \node[box,below=3cm of embedder,minimum width=11cm] (chick)
+    { Chick (as described in Figure~\ref{chick-workflow}) };
+
+    \node[doc,below=of chick]      (repaired-1) { Repaired AST };
+    \node[box,below=of repaired-1,minimum width=11cm] (extracter)
+    { Source language extracter };
+
+    \draw[dashed, ultra thick] (extracter.west) -- (extracter.west -| SW);
+    \draw[dashed, ultra thick] (extracter.east) -- (extracter.east -| SE)
+    node[above left,font=\bfseries]{Chick}
+    node[below left,font=\bfseries]{\makecell[r]{Source\\language}}
+    ;
+
+    \node[doc,below=of extracter]  (repaired-2) { Repaired AST };
+    \node[box,below=of repaired-2,minimum width=11cm] (printer)
+    { Source language diff-pretty-printer };
+    \node[doc,below=of printer]    (repaired-3) { Repaired program };
+
+    \draw[->,ultra thick] (original-1.south) -- (original-1.south |- parser.north);
+    \draw[->,ultra thick] (modified-1.south) -- (modified-1.south |- parser.north);
+
+    \draw[->,ultra thick] (parser.south -| original-1.south) -- (original-2.north);
+    \draw[->,ultra thick] (parser.south -| modified-1.south) -- (modified-2.north);
+
+    \draw[->,ultra thick] (original-2.south) -- (original-2.south |- embedder.north);
+    \draw[->,ultra thick] (modified-2.south) -- (modified-2.south |- embedder.north);
+
+    \draw[->,ultra thick] (embedder.south -| original-2.south) -- (original-3.north);
+    \draw[->,ultra thick] (embedder.south -| modified-2.south) -- (modified-3.north);
+
+    \draw[->,ultra thick] (original-3.south) -- (original-3 |- chick.north);
+    \draw[->,ultra thick] (modified-3.south) -- (modified-3 |- chick.north);
+
+    \draw[->,ultra thick] (chick.south)      -- (repaired-1.north);
+    \draw[->,ultra thick] (repaired-1.south) -- (extracter.north);
+    \draw[->,ultra thick] (extracter.south)  -- (repaired-2.north);
+    \draw[->,ultra thick] (repaired-2.south) -- (printer.north);
+    \draw[->,ultra thick] (printer.south)    -- (repaired-3.north);
+
+    \draw[->,rounded corners,ultra thick]
+    (modified-2.east)
+    -| ($(embedder.east)+(1,0)$)
+    |- (printer.east);
+
+    % \draw[->,rounded corners,ultra thick]
+    % (original.east)
+    % -- (guess.south |- original.east)
+    % -- (guess.south)
+    % ;
+
+    % \draw[->,ultra thick] (modified.east) -- (guess.west);
+    % \draw[->,ultra thick] (guess.east)    -- (guessed.west);
+
+    % \draw[->,rounded corners,ultra thick]
+    % (original.east)
+    % -- (repair.south |- original.east)
+    % -- (repair.south)
+    % ;
+
+    % \draw[->,ultra thick] (guessed.east) -- (repair.west);
+    % \draw[->,ultra thick] (repair.east)  -- (repaired.west);
+
+    % \draw[->,ultra thick] (original.east)  -- (patch.west);
+    % \draw[->,ultra thick] (repaired.south) -- (patch.north);
+    % \draw[->,ultra thick] (patch.south)    -- (patched.north);
+
+  \end{tikzpicture}
+
+
+
+  }
+\end{figure}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

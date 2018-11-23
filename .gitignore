@@ -4,6 +4,7 @@
 *.bcf
 *.blg
 *.cls
+*.cpt
 *.dvi
 *.fdb_latexmk
 *.glg

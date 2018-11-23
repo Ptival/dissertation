@@ -1,0 +1,107 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+%\begin{figure}[htp!]
+  %\resizebox{\columnwidth}{!}{
+
+% \begin{minipage}{\columnwidth}
+%
+% \begin{grammar}
+% <$\DeltaList{}\ \tau \ \Delta_{\tau}$> ::= \ %trick LaTeX
+% \alt \synt{$\DeltaAtomic{}\ \tau$} %\hfill (atomic modification of the whole list)
+% \alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}$\langle\tau\rangle$
+%        & $\MathIns{}{}$
+%        & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular} % \hfill (insert a head)
+% \alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}$\langle\Delta_\tau\rangle$
+%        & $\MathMod{}{}$
+%        & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
+%      %\hfill (modify and keep the head)
+% \alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}\quad
+%        & $\MathDrop{}$
+%        & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
+%      %\hfill (drop the head)
+% \alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}\quad
+%        & $\MathPermute{p}{}$
+%        & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
+%      %\hfill (permute according to a permutation $p$)
+% \end{grammar}
+%
+% \end{minipage}%
+% %
+
+% \begin{mathpar}
+%   {
+%     \inferrule*
+%     [right=Insert]
+%     {\MathPatches{l}{\delta_{l}}{l'}}
+%     {\MathPatches{l}{\MathIns{h}{\delta_{l}}}{(h :: l')}}
+%   }
+% \end{mathpar}
+
+% \begin{mathpar}
+%    {
+%      \inferrule*
+%      [right=Modify]
+%      {\MathPatches{h}{\delta_{h}}{h'} \quad \MathPatches{t}{\delta_{t}}{t'}}
+%      {\MathPatches{(h :: t)}{\MathMod{\delta_{h}}{\delta_{t}}}{(h' :: t')}}
+%    }
+% \end{mathpar}
+
+% \\
+%   % {
+%   %   \inferrule*
+%   %   [right=Keep]
+%   %   {\MathPatches{t}{\delta_{t}}{t'}}
+%   %   {\MathPatches{(h :: t)}{\MathKeep{\delta_{t}}}{(h :: t')}}
+%   % }
+%   {
+%     \inferrule*
+%     [right=Drop]
+%     {\MathPatches{t}{\delta_{t}}{t'}}
+%     {\MathPatches{(h :: t)}{\MathDrop{\delta_{t}}}{t'}}
+%   }
+
+%   {
+%     \inferrule*
+%     [right=Permute]
+%     {\MathPatches{(h_{p(1)} \Cons \ldots \Cons h_{p(|p|)} \Cons t)}{\delta}{l}}
+%     {\MathPatches{(h_1 \Cons \ldots \Cons h_{|p|} \Cons t)}{\MathPermute{p}{\delta}}{l}}
+%   }
+
+% \end{mathpar}
+
+% \end{minipage}
+
+% \begin{align*}
+% \delta_{1} & = \MathPermutePis{[1, 0]}{\MathSame{}}\\
+% \delta_{2} & =
+%   \MathDropPi{(\MathModPi
+%              {\MathSame{}}
+%              {\MathSame{}}
+%              {\MathInsPi{\coqinline{_}}{\coqinline{nat}}{\MathSame{}}}
+%              )}
+% \end{align*}
+
+\begin{align*}
+\MathPatches
+{\coqinline{nat → bool → string}}
+{\delta_{1}}
+{\coqinline{bool → nat → string}}\\
+\MathPatches
+{\coqinline{nat → bool → string}}
+{\delta_{2}}
+{\coqinline{bool → nat → string}}
+\end{align*}
+
+
+%}
+%\end{figure}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

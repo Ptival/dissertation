@@ -6,56 +6,67 @@
     [→,fill=color04
       [A,fill=color01]
       [→,
-      fill=color04,tikz={\node[RoundedRectangle,color04,fit= () (!u)]{};},
-      tikz={\draw[RoundedDottedPath,color04]
-          (.north east) -- (!u.north east)
-          -- (!u.north west) -- (!u.south west)
-          -- (.south west) -- (.south east) -- (.north east)
-          ;},
+      fill=color04,
+      tikz={
+        \filldraw[RoundedDottedPath,color04,fill opacity=0.5]
+        (.north east) -- (!u.north east)
+        -- (!u.north west) -- (!u.south west)
+        -- (.south west) -- (.south east) -- (.north east)
+        ;
+      },
         [C,fill=color02]
         [D,fill=color03]
       ]
     ]
     [→,fill=color05
       [A,fill=color12]
-      [→,fill=color05,tikz={\node[RoundedRectangle,color05,fit=()(!u)(!uu)]{};}
-        ,tikz={\draw[RoundedDottedPath,color05]
-          (.north east) -- (!u.north east) -- (!uu.north east)
-          -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
-          -- (.south west) -- (.south east) -- (.north east)
-          ;}
+      [→,
+      fill=color05,
+      tikz={
+        \filldraw[RoundedDottedPath,color05,fill opacity=0.5]
+        (.north east) -- (!u.north east) -- (!uu.north east)
+        -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
+        -- (.south west) -- (.south east) -- (.north east)
+        ;
+      },
         [C,fill=color13]
         [D,fill=color14]
       ]
     ]
   ]
   [,phantom[,phantom[,phantom]]]
-  [→,fill=color05
-    [→,fill=color04
-      [C,fill=color02]
-      [→,fill=color04
+  [→,fill=color05,
+    [→,fill=color04,
+      [C,fill=color02,]
+      [→,fill=color04,
         [B]
-        [→,fill=color04,tikz={\node[RoundedRectangle,color04,fit=()(!u)(!uu)]{};}
-        ,tikz={\draw[RoundedDottedPath,color04]
+        [→,
+        fill=color04,
+        tikz={
+          \filldraw[RoundedDottedPath,color04,fill opacity=0.5]
           (.north east) -- (!u.north east) -- (!uu.north east)
           -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
           -- (.south west) -- (.south east) -- (.north east)
-          ;}
+          ;
+        },
           [A,fill=color01]
           [D,fill=color03]
         ]
       ]
     ]
-    [→,fill=color05
+    [→,fill=color05,
       [A,fill=color12]
-      [→,fill=color05
+      [→,fill=color05,
         [B]
-        [→,fill=color05,tikz={\node[RoundedRectangle,color05,fit=()(!u)(!uu)(!uuu)]{};}
-        ,tikz={\draw[RoundedDottedPath,color05]
+        [→,
+        fill=color05,
+        tikz={
+          \filldraw[RoundedDottedPath,color05,fill opacity=0.5]
           (.north east) -- (!u.north east) -- (!uu.north east) -- (!uuu.north east)
           -- (!uuu.north west) -- (!uuu.south west) -- (!uu.south west) -- (!u.south west)
           -- (.south west) -- (.south east) -- (.north east)
-          ;}
+          ;
+        },
           [C,fill=color13]
           [D,fill=color14]
         ]

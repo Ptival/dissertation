@@ -227,3 +227,17 @@ ultra thick,
 }
 }
 \makeatother
+
+\newtcbox{\bicolorbox}[1][]{
+nobeforeafter,math upper,tcbox raise base,
+enhanced,frame hidden,boxrule=0pt,
+size=fbox,
+boxrule=2pt,
+colback=white,
+%interior style={top color=green!10!white,
+%bottom color=green!10!white,middle color=green!50!yellow},
+borderline={2pt}{0mm}{color07},
+borderline={2pt}{0mm}{color08,dashed},
+%fuzzy halo=1pt with green,
+#1
+}

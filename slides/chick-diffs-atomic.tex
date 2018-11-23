@@ -1,0 +1,46 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+%\begin{figure}[htp!]
+  %\resizebox{\columnwidth}{!}{
+
+\phantom{X}
+
+\begin{minipage}{0.25\columnwidth}
+\begin{grammar}
+<$\DeltaAtomic{}\ \tau$> ::= \ %trick LaTeX
+\alt $\MathSame$                        %\hfill (unchanged)
+\alt $\MathReplace{\langle\tau\rangle}$ %\hfill (replaced)
+\end{grammar}
+\end{minipage}%
+%
+\begin{minipage}{0.75\columnwidth}
+\begin{mathpar}
+  {
+    \inferrule*
+    [right=Identity]
+    {  }
+    {\MathPatches{x}{\MathSame}{x}}
+  }
+
+  {
+    \inferrule*
+    [right=Replace]
+    {  }
+    {\MathPatches{x}{\MathReplace{y}}{y}}
+  }
+
+\end{mathpar}
+\end{minipage}
+
+%}
+%\end{figure}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

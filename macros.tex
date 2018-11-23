@@ -54,8 +54,10 @@
 %   %}%
 % }
 
-\newcommand{\modified}[1]{\color{Orange}{#1}}
-\newcommand{\repaired}[1]{\color{PineGreen}{#1}}
+% need this because minted will change height of text... huh
+\newcommand{\dummystrut}[1]{\colorbox{white}{\strut #1}}
+\newcommand{\modified}[1]{\colorbox{orange!30}{\strut #1}}
+\newcommand{\repaired}[1]{\colorbox{teal!30}{\strut #1}}
 
 \newcommand{\rulename}[1]{$\LeftTirNameStyle{#1}$}
 

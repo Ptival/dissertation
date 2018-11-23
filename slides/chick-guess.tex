@@ -1,0 +1,118 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+\begin{figure}[htp!]
+  \resizebox{\columnwidth}{!}{
+
+\begin{forest}
+[,phantom
+  [→,fill=color05,
+    [→,fill=color04,
+      tikz={
+        \filldraw[RoundedDottedPath,color04,fill opacity=0.5]%,draw opacity=0.75]
+        (.south west) -- (!l.south west)
+        -- (!l.south east) -- (!l.north east)
+        -- (.north east) -- (.north west) -- (.south west)
+        ;
+        % \draw[RoundedDottedPath,bicolor={color01}{color01}]
+        % (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+        % -- (!1.south east) -- (.south east)
+        % ;
+      },
+      [A,fill=color01]
+      [→,
+      fill=color04,
+      % tikz={\node[RoundedRectangle,color04,fit= () (!u)]{};},
+      tikz={
+          % \draw[RoundedDottedPath,bicolor={color02}{color02}]
+          % (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+          % -- (!1.south east) -- (.south east)
+          % ;
+        },
+        [C,fill=color02]
+        [D,fill=color03]
+      ]
+    ]
+    [→,fill=color05,
+      [A,fill=color12]
+      [→,fill=color05,
+      % tikz={\node[RoundedRectangle,color05,fit=()(!u)(!uu)]{};},
+      tikz={\filldraw[RoundedDottedPath,color05,fill opacity=0.5]
+          (.north east) -- (!u.north east) -- (!uu.north east)
+          -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
+          -- (.south west) -- (.south east) -- (.north east)
+          ;},
+        [C,fill=color13]
+        [D,fill=color14]
+      ]
+    ]
+  ]
+  [,phantom[,phantom[,phantom]]]
+  [→,fill=color05,
+    [→,fill=color04,
+        tikz={
+          \filldraw[RoundedDottedPath,color04,fill opacity=0.5]%,draw opacity=0.75]
+          (.south west) -- (!l.south west) -- (!ll.south west)
+          -- (!ll.south east) -- (!ll.north east) -- (!l.north east)
+          -- (.north east) -- (.north west) -- (.south west)
+          ;
+          % \draw[RoundedDottedPath,bicolor={color02}{color02}]
+          % (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+          % -- (!1.south east) -- (.south east)
+          % ;
+        },
+      [C,fill=color02]
+      [→,fill=color04,
+        [B]
+        [→,fill=color04,
+        tikz={
+          % \draw[RoundedDottedPath,bicolor={color01}{color01}]
+          % (.south east) -- (.north east) -- (.north west) -- (!1.north west) -- (!1.south west)
+          % -- (!1.south east) -- (.south east)
+          % ;
+          },
+        % tikz={\node[RoundedRectangle,color04,fit=()(!u)(!uu)]{};},
+        % tikz={
+        %   \draw[RoundedDottedPath,color04]
+        %   (.north east) -- (!u.north east) -- (!uu.north east)
+        %   -- (!uu.north west) -- (!uu.south west) -- (!u.south west)
+        %   -- (.south west) -- (.south east) -- (.north east)
+        %   ;
+        % },
+          [A,fill=color01]
+          [D,fill=color03]
+        ]
+      ]
+    ]
+    [→,fill=color05,
+      [A,fill=color12]
+      [→,fill=color05,
+        [B]
+        [→,fill=color05,
+        % tikz={\node[RoundedRectangle,color05,fit=()(!u)(!uu)(!uuu)]{};},
+        tikz={\filldraw[RoundedDottedPath,color05,fill opacity=0.5]
+          (.north east) -- (!u.north east) -- (!uu.north east) -- (!uuu.north east)
+          -- (!uuu.north west) -- (!uuu.south west) -- (!uu.south west) -- (!u.south west)
+          -- (.south west) -- (.south east) -- (.north east)
+          ;},
+          [C,fill=color13]
+          [D,fill=color14]
+        ]
+      ]
+    ]
+  ]
+]
+\end{forest}
+
+
+  }
+\end{figure}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

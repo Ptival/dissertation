@@ -23,21 +23,24 @@
 
 \usepackage{graphicx}
 
-% Removed for preliminary appointment
-% \usepackage{showframe}
-
 % Valentin
-\usepackage[dvipsnames]{xcolor} % must be loaded prior to tikz, pgfplots, etc.
+\usepackage[dvipsnames]{xcolor}
+% xcolor must be loaded prior to tikz, pgfplots, showframe, etc.
 \let\iint\relax
 \let\iiint\relax
 \let\iiiint\relax
 \let\idotsint\relax
+
+% Removed for preliminary appointment
+% \usepackage{showframe}
+
 \usepackage{amsmath} % loaded by mathtools?
 \usepackage{amssymb}
 \usepackage[english]{babel}
 \usepackage{calc}
 \usepackage{caption}
 \usepackage{color}
+\usepackage{cprotect} % to draw a fbox around a minipage, for debugging
 \usepackage{DejaVuSansMono}
 \usepackage{dsfont}
 \let\textlozenge\relax
@@ -183,6 +186,20 @@ inner sep=1pt,
 ultra thick,
 ]
 
+\newtcbox{\bicolorbox}[1][]{
+nobeforeafter,math upper,tcbox raise base,
+enhanced,frame hidden,boxrule=0pt,
+size=fbox,
+boxrule=2pt,
+colback=white,
+%interior style={top color=green!10!white,
+%bottom color=green!10!white,middle color=green!50!yellow},
+borderline={2pt}{0mm}{color07},
+borderline={2pt}{0mm}{color08,dashed},
+%fuzzy halo=1pt with green,
+#1
+}
+
 \graphicspath{ {./images/} }
 
 \AtBeginDocument{%
@@ -197,15 +214,15 @@ ultra thick,
   {}{}
 \makeatother
 
-\surroundwithmdframed[
-backgroundcolor=white,
-linecolor=white,
-skipabove=1em,
-skipbelow=-0.5em,
-leftmargin=10pt,
-innertopmargin=1pt,
-innerbottommargin=0pt
-]{minted}
+%\surroundwithmdframed[
+%backgroundcolor=white,
+%linecolor=white,
+%skipabove=1em,
+%skipbelow=-0.5em,
+%leftmargin=10pt,
+%innertopmargin=1pt,
+%innerbottommargin=0pt
+%]{minted}
 
 \setminted{
   % DO NOT use bgcolor, use mdframed instead

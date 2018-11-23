@@ -88,47 +88,49 @@ in Section~\ref{chick-diffs-importance}.
 Third and finally, the repaired program is obtained by simply applying the
 repaired diff to the original program.
 
-\begin{figure*}[!htp]
-
-  \noindent%
-  \begin{minipage}[t]{0.50\textwidth}
-    \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
+\begin{figure*}[!htp]%
+  \centering
+  \cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+    \begin{minted}[fontsize=\footnotesize{},escapeinside=@@,linenos=false]{coq}
 Inductive nat : Set :=
 | O : nat
 | S : ∀ (n : nat), nat.
 
-Inductive list (A : Type)
-: Type :=
-| nil : list A
-| cons : A →
-    list A → list A.
+Inductive list (A : Type)         @\dummystrut{ }@
+: Type :=                         @\dummystrut{ }@
+| nil : list A                    @\dummystrut{ }@
+| cons : A →                      @\dummystrut{ }@
+    list A → list A.              @\dummystrut{ }@
 
 Definition a_list
-: list nat :=
-  cons nat (S (S (S O)))
-    (nil nat).
+: list nat :=                     @\dummystrut{ }@
+  cons nat (S (S (S O)))          @\dummystrut{ }@
+                                  @\dummystrut{ }@
+    (nil nat).                    @\dummystrut{ }@
 
 Definition length :
   ∀ (T : Type),
-    list T → nat :=
-  λ T l, list_rect T (λ _, nat) O
+    list T → nat :=               @\dummystrut{ }@
+  λ T l, list_rect T (λ _, nat) O @\dummystrut{ }@
     (λ _ _ lt, S lt) l.
 
 Fixpoint map :
   ∀ (A B : Type), (A → B) →
-    list A →
-    list B :=
+    list A →                      @\dummystrut{ }@
+    list B :=                     @\dummystrut{ }@
   λ _ B f l,
     match l with
-    | nil _      => nil B
-    | cons _ h t =>
-      cons B (f h)
+    | nil _      => nil B         @\dummystrut{ }@
+    | cons _ h t =>               @\dummystrut{ }@
+      cons B (f h)                @\dummystrut{ }@
            (map A B f t)
     end.
   \end{minted}
-\end{minipage}%
-\begin{minipage}[t]{0.50\textwidth}
-  \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
+\end{minipage}}%
+\cprotect\fbox{
+\begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}
+  \begin{minted}[fontsize=\footnotesize{},escapeinside=@@,linenos=false]{coq}
 Inductive nat : Set :=
 | O : nat
 | S : ∀ (n : nat), nat.
@@ -141,14 +143,15 @@ Inductive @\modified{vec}@ (A : Type)
 
 Definition a_list
 : @\repaired{vec}@ nat @\repaired{(\_ : nat)}@ :=
-  @\repaired{vcons}@ nat @\repaired{(\_ : nat)}@ (S (S (S O)))
+  @\repaired{vcons}@ nat (S (S (S O)))
+    @\repaired{(\_ : nat)}@
     (@\repaired{vnil}@ nat).
 
 Definition length :
   ∀ (T : Type),
     @\repaired{vec}@ T @\repaired{(\_ : nat)}@ → nat :=
-  λ T l, @\repaired{vec\_rect}@ T (λ _, nat) O
-    (λ _ _ lt, S lt) l.
+  λ T l, @\repaired{vec\_rect}@ T (λ @\repaired{\_}@ _, nat) O
+    (λ _ @\repaired{\_}@ _ lt, S lt) l.
 
 Fixpoint map :
   ∀ (A B : Type), (A → B) →
@@ -157,12 +160,12 @@ Fixpoint map :
   λ _ B f l,
     match l with
     | @\repaired{vnil}@ _         => @\repaired{vnil}@ B
-    | @\repaired{vcons}@ _ @\repaired{\_}@ h t =>
-      @\repaired{vcons}@ B @\repaired{\_}@ (f h)
+    | @\repaired{vcons}@ _ h @\repaired{\_}@ t =>
+      @\repaired{vcons}@ B (f h) @\repaired{\_}@
             (map A B f t)
     end.
   \end{minted}
-\end{minipage}
+\end{minipage}}
 
 \caption%
 [Running example of a \Chick{} repair]

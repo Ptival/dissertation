@@ -1,17 +1,32 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
 \begin{figure}[htp!]
-\centering
+  \resizebox{0.5\columnwidth}{!}{
+
 \begin{forest}
-[,phantom
-  [→,fill=color06
-    [→,fill=color07,
-      [A,fill=color01]
+  begin draw/.code={\begin{tikzpicture}[anchor=base,baseline=(current bounding box)]},
+[,phantom,tikz={
+  %\draw[Matching] (!11l) -- (!l1ll);
+  %\draw[Matching] (!11l) -- (!l1);
+},
+  [→,fill=color06,
       [→,fill=color08,
-        [C,fill=color02]
-        [D,fill=color03]
+        [C,fill=color02,
+        ]
+        [→,fill=color07,
+          [A,fill=color01,
+          ]
+          [D,fill=color03,
+          ]
       ]
     ]
     [→,fill=color09,
-      [A,fill=color12]
+      [A,fill=color12,
+      ]
       [→,fill=color10,
         [C,fill=color13]
         [D,fill=color14]
@@ -19,20 +34,25 @@
     ]
   ]
   [,phantom[,phantom[,phantom]]]
-  [→,fill=color06
-    [→,fill=color08
-      [C,fill=color02]
-      [→,fill=color15
-        [B]
-        [→,fill=color07
-          [A,fill=color01]
-          [D,fill=color03]
+  [→,fill=color06,
+    [→,fill=color08,
+      [C,fill=color02,
+      ]
+      [→,fill=color15,
+        [B,
+        ]
+        [→,fill=color07,
+          [A,fill=color01,
+          ]
+          [D,fill=color03,
+          ]
         ]
       ]
     ]
-    [→,fill=color09
-      [A,fill=color12]
-      [→,fill=color16
+    [→,fill=color09,
+      [A,fill=color12,
+      ]
+      [→,fill=color16,
         [B]
         [→,fill=color10
           [C,fill=color13]
@@ -43,8 +63,10 @@
   ]
 ]
 \end{forest}
-\\
-\vspace{20pt}
+}%
+%
+\centering
+  \resizebox{0.49\columnwidth}{!}{
 \scalebox{1.25}{
   \tcbhighmath[size=fbox,boxrule=2pt,colframe=color06,colback=white]{
     \begin{tabular}{c}
@@ -109,5 +131,14 @@
     \end{tabular}
   }
 }
-\caption{Final guess}\label{chick-guess-result}
+}
+
+
+  %}
 \end{figure}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

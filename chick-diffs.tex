@@ -32,12 +32,12 @@ diff type $\Delta_{\coqinline{Term}}$.
 
   \noindent%
   \begin{minipage}[t]{0.50\textwidth}
-    \begin{minted}[linenos=false]{coq}
+    \begin{minted}[escapeinside=@@,linenos=false]{coq}
 Inductive Bool : Set :=
 | True  : Bool
 | False : Bool.
 
-Definition a : Bool := True.
+Definition a : Bool := True. @\dummystrut{ }@
 \end{minted}
 \end{minipage}%
 \begin{minipage}[t]{0.50\textwidth}
@@ -328,19 +328,21 @@ $\delta\coqinline{cons}$) is shown in Figures~\ref{diff-list-vec-nil}
 and~\ref{diff-list-vec-cons} respectively.
 
 \noindent%
-  \begin{minipage}[t]{0.50\textwidth}
-    \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
+\cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+    \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
 Inductive nat : Set :=
 | O : nat
 | S : ∀ (n : nat), nat.
 
-Inductive list (A : Type)
-: Type := …
+Inductive list (A : Type) @\dummystrut{ }@
+: Type := …               @\dummystrut{ }@
 
 … (* rest of first program *)
     \end{minted}
-  \end{minipage}%
-  \begin{minipage}[t]{0.50\textwidth}
+  \end{minipage}}%
+\cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
     \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
 Inductive nat : Set :=
 | O : nat
@@ -351,7 +353,7 @@ Inductive @\modified{vec}@ (A : Type)
 
 … (* identical *)
     \end{minted}
-  \end{minipage}
+  \end{minipage}}
 
   \vspace{2em}%
 
@@ -385,18 +387,20 @@ type, nor the parameters of the inductive type, in every constructor.
 \begin{figure*}[!htp]
 
   \noindent%
-  \begin{minipage}[t]{0.50\textwidth}
-    \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
+\cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+    \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
 …
-| nil : list A
+| nil : list A @\dummystrut{ }@
   \end{minted}
-\end{minipage}%
-\begin{minipage}[t]{0.50\textwidth}
+\end{minipage}}%
+\cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
   \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
 …
 | @\modified{vnil}@ : @\modified{vec}@ A @\modified{O}@
   \end{minted}
-\end{minipage}
+\end{minipage}}
 
   \vspace{2em}%
 
@@ -418,20 +422,22 @@ type, nor the parameters of the inductive type, in every constructor.
 \begin{figure*}[!htp]
 
   \noindent%
-  \begin{minipage}[t]{0.50\textwidth}
-    \begin{minted}[fontsize=\footnotesize,linenos=false]{coq}
+\cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+    \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
 …
-| cons : A →
-    list A → list A.
+| cons : A →         @\dummystrut{ }@
+    list A → list A. @\dummystrut{ }@
   \end{minted}
-\end{minipage}%
-\begin{minipage}[t]{0.50\textwidth}
+\end{minipage}}%
+\cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
   \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
 …
 | @\modified{vcons}@ : A → @\modified{∀ (n : nat),}@
     @\modified{vec}@ A @\modified{n}@ → @\modified{vec}@ A @\modified{(S n)}@.
   \end{minted}
-\end{minipage}
+\end{minipage}}
 
   \vspace{2em}%
 
@@ -488,11 +494,11 @@ change this type to \coqinline{bool → nat → string}:
 \begin{align*}
 \delta_{1} & = \MathPermutePis{[1, 0]}{\MathSame{}}\\
 \delta_{2} & =
-  \MathDropPi{\MathModPi
+  \MathDropPi{(\MathModPi
              {\MathSame{}}
              {\MathSame{}}
              {\MathInsPi{\coqinline{_}}{\coqinline{nat}}{\MathSame{}}}
-             }
+             )}
 \end{align*}
 
 \noindent%
