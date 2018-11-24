@@ -1,0 +1,44 @@
+\section{Repairing tactic scripts}
+
+Using the same methodology we used to repair programs and terms, we have
+considered repairing proof scripts written in a tactic language like \Ltac{}.
+The problem with \Coq{} tactics is that their effect depends on what is in
+context when the tactic is called, making them hard to reason about statically.
+For instance, the \coqinline{intros} tactic inspects the current sub-goal, and
+introduces as many universally quantified variables from the sub-goal as it can.
+To do so, it has to come up with names for those variables, yet the user never
+explicitly passes those names.  Instead, the algorithm chooses suitable, fresh
+names, using the names of the variables as they appear in the sub-goal (when
+their quantification is explicitly named), or picking some fresh name.
+
+For instance, if your current goal is:
+
+\begin{minted}[linenos=false]{coq}
+nat → nat → nat → nat
+\end{minted}
+
+\noindent%
+%
+and you run \coqinline{intros}, the following names will be added to your
+context:
+
+\begin{minted}[linenos=false]{coq}
+H, H0, H1 : nat
+\end{minted}
+
+\noindent%
+%
+This makes tactic scripts complicated to repair, as there is no lexical binding
+position for those automatically introduced names.  In order to repair tactic
+scripts, we \emph{must} be able to replay them.  This can only be done outside
+the tool if the tactic language has well-defined semantics.  Unfortunately,
+\Ltac{} is a very complicated tactic script, and formalizing its semantics is
+still an open-ended problem.
+
+Had we done so, we could hope to repair tactics by replaying them, and computing
+diffs for the proof context, just like we did for our global environment and
+local context when repairing terms.  The problem is very interesting, as a
+change in the number of constructors of a data type can have drastic changes in
+the structure of a proof.  We have started working on a prototype, toying with
+repairing a tactic language that only provides tactics like \coqinline{intro}
+and \coqinline{destruct}, but we don't have a proper prototype for those yet.

@@ -1,7 +1,127 @@
 \section{Avoiding problematic binders using scope sets}
 
-\TODO{Write a bit about this.}
+Our treatment of binders in Section~\ref{chick-design-repair-term} is extremely
+cumbersome.  Not only do we have to be careful about capture-avoiding
+substitutions, both in the old program and the new program, but we also have to
+be careful to repair every term only once, because the repair operation is
+\emph{not} idempotent.
 
-\section{Repairing tactic scripts}
+A novel approach from~\mycite{flatt2016binding} developed for the new Racket
+macro expander might be useful here.  In their setting, every scope created is
+assigned a label, and every reference to a bound variable is initially marked
+with the set of scopes within which it appears in the original program text.
+Subsequently, the macro expander discards the renaming approach entirely.
+Instead, every binding form, as well as every macro expansion, creates a scope,
+adds that scope to all identifiers in binding position, and keeps track of a
+mapping from identifiers with scope sets to the representation of a binding.
 
-\TODO{Write a bit about this.}
+Subsequently, the macro expander is free to perform expansions without need for
+capture-avoiding freshness conditions, or, as it is called in the macro
+expansion literature, \define{hygienic macro
+expansion}~\mycite{kohlbecker1986hygienic}.  Instead, a reference's binding is
+found by looking in the mapping for the binder with same name whose scope of
+sets is the largest subset of the reference.
+
+We believe this approach could potentially be adapted to solve the problems we
+encounter.  Our first issue (demonstrated in Rule \rulename{\RModPi}) was that
+of an outer binding becoming shadowed by a binding position, when said outer
+binding is renamed by the programmer to have the same name as the binding
+position.  For instance, in the following code:
+
+\begin{figure*}[htp]
+\noindent
+\cprotect\fbox{
+\begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+\begin{minted}[linenos=false,escapeinside=@@]{coq}
+Definition f := … @\dummystrut{ }@
+
+… (λ g → f g) …
+\end{minted}
+\end{minipage}}%
+\cprotect\fbox{
+\begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+\begin{minted}[linenos=false,escapeinside=@@]{coq}
+Definition @\modified{g}@ := …
+
+… (λ g → f g) …
+\end{minted}
+\end{minipage}}%
+\end{figure*}
+
+\noindent%
+%
+we could not simply rename the variable \coqinline{f} on the right side to
+\coqinline{g}, because it would accidentally become captured by the term
+abstraction.  We needed to be very careful about this problem in our rules.
+With a ``set of scopes'' approach, we would instead have:
+
+\begin{figure*}[htp]
+\noindent
+\cprotect\fbox{
+\begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+\begin{minted}[linenos=false,escapeinside=@@]{coq}
+Definition f@$^{\{a\}}$@ := … @\dummystrut{ $^{\phantom{\{a, m\}}}$}@
+
+… (λ g@$^{\{a, b\}}$@ → f@$^{\{a, b\}}$@ g@$^{\{a, b\}}$@) …
+\end{minted}
+\end{minipage}}%
+\cprotect\fbox{
+\begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+\begin{minted}[linenos=false,escapeinside=@@]{coq}
+Definition @\modified{g$^{\{a, m\}}$}@ := …
+
+… (λ g@$^{\{a, b\}}$@ →  f@$^{\{a, b\}}$@ g@$^{\{a, b\}}$@) …
+\end{minted}
+\end{minipage}}%
+\end{figure*}
+
+\noindent%
+%
+where scope label $a$ corresponds to the scope created by the definition of
+\coqinline{f}, scope label $b$ corresponds to the scope created by the term
+abstraction introducing \coqinline{g}, and scope label $m$ corresponds to a
+virtual scope that we introduce to mark where the user has modified their
+program.  As a result, in this approach, we can repair the program on the right
+with simple substitution, yielding:
+
+\begin{figure*}[htp]
+\noindent
+\cprotect\fbox{
+\begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+\begin{minted}[linenos=false,escapeinside=@@]{coq}
+Definition f@$^{\{a\}}$@ := … @\dummystrut{ $^{\phantom{\{a, m\}}}$}@
+
+… (λ g@$^{\{a, b\}}$@ → f@$^{\{a, b\}}$@ g@$^{\{a, b\}}$@) … @\dummystrut{ $^{\phantom{\{a, m\}}}$}@
+\end{minted}
+\end{minipage}}%
+\cprotect\fbox{
+\begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+\begin{minted}[linenos=false,escapeinside=@@]{coq}
+Definition @\modified{g$^{\{a, m\}}$}@ := …
+
+… (λ g@$^{\{a, b\}}$@ →  @\repaired{g$^{\{a, m\}}$}@ g@$^{\{a, b\}}$@) …
+\end{minted}
+\end{minipage}}%
+\end{figure*}
+
+\noindent%
+%
+where the inner mention of \coqinline{g} with scope set $\{a, m\}$ is \emph{not}
+captured by the term abstraction, because its set of scopes mentions scope label
+$m$, preventing it from being a subset of the enclosing $\{a, b\}$ set.  We will
+still need to resolve the name collision when producing the concrete repaired
+program, but as far as the repair algorithm is concerned, there is no need to
+pick a fresh name for the binder, as it can \emph{not} capture the repaired
+variable.
+
+The second problem we had with binders, still in Rule ~\rulename{RModPi}, was to
+pick a name that was both fresh for the term abstraction, and fresh for the type
+abstraction, so that we could add this name to the typing context, as we
+proceeded to repair the term abstraction's body, assuming its type was the type
+abstraction's body.  Here again, we could circumvent the renaming altogether by
+introducing a new scope label.
+
+If we decide to attach scope labels to any term of the abstract syntax tree,
+rather than only variables, we could even consider using scope labels as
+markers, separating terms that have been repaired from terms that have not been
+repaired yet.

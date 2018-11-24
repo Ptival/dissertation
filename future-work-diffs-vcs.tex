@@ -1,0 +1,25 @@
+\section{Integrating code diffs in version control systems}
+
+An equally ambitious goal could be to treat our diffs, that is, first-class
+values that represent the intent of changes made to a program, the same way we
+treat the code of the program.  For instance, as a program evolves, we keep a
+published index on the changes made to it using a version control system.  We
+can envision a diff-aware version system wherein diffs are also published.
+
+Consider a use case where Ada is publishing a software library that Bertrand
+depends upon for his project.  When Ada decides to make a breaking change to her
+library, she could perform the change by using a diff-based repair algorithm
+like the one we present.  When the repair is finished, she has a complete,
+structural diff, that captures exactly all of the changes that have happened to
+the library.  Ada can publish this diff, alongside the new code, to her public
+version control system.  Bertrand can update his dependency to Ada's new
+version, but he needs to update his client code to adapt to the changes made by
+Ada.  Thanks to the published diffs, Bertrand could also run a repair algorithm
+over his code, automating much of the necessary code changes needed to stay
+compatible with Ada's library.
+
+Of course, this workflow would need to be extremely polished to convince both
+users to opt in.  In particular, we would definitely want a strong diff guessing
+algorithm, like the one presented in Section~\ref{chick-guess}, and would need a
+nice way of presenting different guesses to the programmer so that they can
+safely pick the choice that best matches their intent.
