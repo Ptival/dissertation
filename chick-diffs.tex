@@ -3,27 +3,31 @@
 We define a family of data types that allows us to describe changes made to
 terms from the language presented in Section~\ref{chick-syntax-terms}, as well
 as programs from the language presented in Section~\ref{chick-syntax-programs}.
-We will refer to these descriptions of changes as \textit{diffs}.  We will
-usually denote a \textit{diff type} $\Delta_{\tau}$ if it corresponds to values
-of the diffed type $\tau$.  Informally, one can think of the type
-$\Delta_{\tau}$ as a descriptor for how some value $v_{1}$ of type $\tau$ can be
-transformed into another value $v_{2}$.
+We will refer to these descriptions of changes as
+\textit{diffs}~\footnotemark{}.  We will usually denote a \textit{diff type}
+$\Delta_{\tau}$ if it corresponds to values of the diffed type $\tau$.
+Informally, one can think of the type $\Delta_{\tau}$ as a descriptor for how
+some value $v_{1}$ of type $\tau$ can be transformed into another value $v_{2}$.
+
+\footnotetext{Our approach is very similar to that of~\mycite{miraldo2017type},
+though it was derived independently from their work, at around the same time
+they were publishing it.}
 
 It is important to clarify how we intend to use those diff types.  We will want
 to describe changes made to the data types in the abstract syntax tree
 (\define{AST}) of the user's program.  An example will help us avoid some
 misconception: consider the user program and its modification in
 Figure~\ref{bool-modification}.  While, from the program point of view, a value
-of type \coqinline{Bool} was modified from the value \coqinline{True} to the
+of type \coqinline{bool} was modified from the value \coqinline{True} to the
 value \coqinline{False}, we will \emph{not} use the type
-$\Delta_{\coqinline{Bool}}$ to describe this change!  From the point of view of
+$\Delta_{\coqinline{bool}}$ to describe this change!  From the point of view of
 the abstract syntax tree, a value of type \coqinline{term} has changed from the
 original value \coqinline{Var "True"} to the value \coqinline{Var "False"},
 which we will capture using the diff type $\Delta_{\coqinline{Term}}$.
 
 To be precise, we will have to describe how a \coqinline{Definition} has
 changed, and describe how its name has remained \coqinline{a}, its type has
-remained \coqinline{Bool}, but its definition has changed.  This will be
+remained \coqinline{bool}, but its definition has changed.  This will be
 described as a value of type $\Delta_{\coqinline{Vernacular}}$, containing a
 diff for each of those three components that may change, including the one of
 diff type $\Delta_{\coqinline{Term}}$.
@@ -33,20 +37,20 @@ diff type $\Delta_{\coqinline{Term}}$.
   \noindent%
   \begin{minipage}[t]{0.50\textwidth}
     \begin{minted}[escapeinside=@@,linenos=false]{coq}
-Inductive Bool : Set :=
-| True  : Bool
-| False : Bool.
+Inductive bool : Set :=
+| True  : bool
+| False : bool.
 
-Definition a : Bool := True. @\dummystrut{ }@
+Definition a : bool := True. @\dummystrut{ }@
 \end{minted}
 \end{minipage}%
 \begin{minipage}[t]{0.50\textwidth}
   \begin{minted}[escapeinside=@@,linenos=false]{coq}
-Inductive Bool : Set :=
-| True  : Bool
-| False : Bool.
+Inductive bool : Set :=
+| True  : bool
+| False : bool.
 
-Definition a : Bool := @\modified{False}@.
+Definition a : bool := @\modified{False}@.
 \end{minted}
 \end{minipage}
 
