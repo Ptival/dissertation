@@ -319,13 +319,17 @@ our tool, of course.
 
 $$\RepairTermTwoAnnot{}$$
 
-This rule applied when the term being repaired is a type-annotated term.  This
-is quite straightforward: we first repair the type, then we repair the term.
-Note that, even though we repair the type with $\repairTermOneOp{}$, there are
-no rules that apply to a type like \coqinline{Type}, so it will defer back to
+This rule applied when the term being repaired is a type-annotated term.  Note
+that $(t : \tau)$ \emph{is} the term being repaired here, the black colon
+operator being part of the syntax of \Chick{} (described in
+Section~\ref{chick-syntax-terms}), as opposed to the purple colon operator that
+we use in the previous judgment $\repairTermOneOp{}$.  This is quite
+straightforward: we first repair the type, then we repair the term.  Note that,
+even though we repair the type with $\repairTermOneOp{}$, there are no rules
+that apply to a type like \coqinline{Type}, so it will defer back to
 $\repairTermThreeOp{}$.  We only choose to present the rule with
 $\repairTermOneOp{}$ so that, if someone extended $\repairTermOneOp{}$ to be
-more clever, this could benefit.
+more clever in its treatment of \coqinline{Type}, this could benefit from it.
 
 \paragraph{\rulename{\UTROtherwise}}
 

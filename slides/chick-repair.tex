@@ -1,0 +1,77 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
+%\resizebox{\columnwidth}{!}{
+%\resizebox{\columnwidth}{!}{
+
+%$\turnstile{E\ \op{,}\ \Gamma}{ \hasType{ v }{ \out{\tau} } }$
+%
+%}
+%    $$\turnstile
+%    {\dcontext {E} {\delta_E} {\Gamma} {\delta_\Gamma} }
+%    { \declDiff { v } { \delta_v } { \delta_{\tau} } }$$
+% }
+
+\begin{figure*}
+\begin{align*}
+{\turnstile
+      {\denv{E}{\delta_E}}
+      {\repairProg{p}{\delta_p}{\delta_p'}}
+}
+& \quad &
+{\turnstile
+  {\denv{E}{\delta_E}}
+  {\repairVernac{v}{\delta_v}{\delta_v'}}
+}
+\\ & & \\
+{\turnstile
+  { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+  {\repair{t}{\delta_t}{\tau}{\delta_\tau}}
+}
+& &
+{\turnstile
+  { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+  {\repairTermWithoutType{t}{\delta_t}}
+}
+&
+\end{align*}
+
+\resizebox{\columnwidth}{!}{
+${\turnstile%
+  {\denv{E}{\delta_E}}
+  {\repairInd%
+    {\diff{\nind{}}{\dnind{}}}
+    {\diff{\pind{}}{\dpind{}}}
+    {\diff{\iind{}}{\diind{}}}
+    {\diff{\uind{}}{\duind{}}}
+    {\diff{\cind{}}{\dcind{}}}
+    {(\dpind{}', \diind{}', \dcind{}')}
+  }
+}$
+}
+
+$$\turnstile%
+{
+  \dcontext%
+  {E}
+  {\delta_E}
+  {\Gamma}
+  {\delta_{\Gamma}}
+}
+{\repairConstructors{\cind{}}{\dcind{}}{\dcind{}'}}
+$$
+
+
+%}
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
