@@ -1,6 +1,6 @@
 \begin{Rules}
 {rules-lookup-environment-constructor}
-{Lookup in the global environment (constructor rules)}
+{Lookup in the global environment (constructor rules, part 1/2)}
 
   \begin{mathpar}
     % Possibilities:
@@ -24,13 +24,14 @@
         \\\\\\
         {
           \delta_{I} =
-          \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
+          \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}
+          {\MathMod{\delta_{C}}{\dcind{}}}
         }
         \\\\\\
         {
           C = \Constructor{v}{\pctor{}}{\ictor{}}
         }
-        \\\\\\
+        \and
         {
           \delta_{C} = \ModifyConstructor{\delta_{v}}{\dpctor{}}{\dictor{}}
         }
@@ -41,16 +42,8 @@
       }
       {\turnstile
         { \diff
-          {\MathCons
-            {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}}
-            {E}
-          }
-          {\MathMod
-            {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}
-              {\MathMod{\delta_{C}}{\dcind{}}}
-            }
-            {\delta_{E}}
-          }
+          {\MathCons{I}{E}}
+          {\MathMod{\delta_{I}}{\delta_{E}}}
         }
         { \declDiff{v}{\delta_v}{\delta_{\tau}} }
       }
@@ -61,36 +54,31 @@
       [lab=Diff-\GEMod{Constructor-Ins}]
       {
         {
-          I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}
+          I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}
         }
         \\\\\\
         {
           \delta_{I} =
-          \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
+          \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\MathIns{C}{\dcind{}}}
         }
         \\\\\\
-        {
-          C = \Constructor{v}{\pctor{}}{\ictor{}}
-        }
-        \\\\\\
-        {
-          \delta_{C} = \ModifyConstructor{\delta_{v}}{\dpctor{}}{\dictor{}}
-        }
-        \\\\\\
-        {
-          \deltaConstructorType{I}{\delta_{I}}{C}{\delta_{C}}{\delta_\tau}
+        {\turnstile%
+          { \diff%
+            {\MathCons{I}{E}}
+            {\MathMod
+              {\ModifyInductive%
+                {\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
+              }
+              {\delta_{E}}
+            }
+          }
+          { \declDiff{v}{\delta_v}{\delta_{\tau}} }
         }
       }
-      {\turnstile
-        { \diff
-          {\MathCons
-            {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}}
-            {E}
-          }
-          {\MathMod
-            {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}}
-            {\delta_{E}}
-          }
+      {\turnstile%
+        { \diff%
+          {\MathCons{I}{E}}
+          {\MathMod{\delta_{I}}{\delta_{E}}}
         }
         { \declDiff{v}{\delta_v}{\delta_{\tau}} }
       }
@@ -98,10 +86,14 @@
 
     {
       \inferrule*
-      [lab=Diff-\GEMod{Constructor-Drop}]
+      [lab=Diff-\GEMod{Constructor-Drop-Here}]
       {
         {
           C = \Constructor{v}{\pctor{}}{\ictor{}}
+        }
+        \and
+        {
+          \deprecate{v} = v'
         }
       }
       {\turnstile
@@ -117,7 +109,51 @@
             {\delta_{E}}
           }
         }
-        { \declDiff{v}{\MathHole{}}{\MathHole{}} }
+        { \declDiff{v}{v'}{\MathReplace{\MathHole{}}} }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEMod{Constructor-Drop-There}]
+      {
+        {
+          C = \Constructor{w}{\pctor{}}{\ictor{}}
+        }
+        \and
+        {
+          v \neq w
+        }
+        \\\\\\
+        {
+          \turnstile%
+          { \diff%
+            {\MathCons%
+              {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}}
+              {E}
+            }
+            {\MathMod%
+              {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}}
+              {\delta_{E}}
+            }
+          }
+          { \declDiff{v}{v'}{\MathReplace{\MathHole{}}} }
+        }
+      }
+      {\turnstile%
+        { \diff%
+          {\MathCons%
+            {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}}
+            {E}
+          }
+          {\MathMod%
+            {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}
+              {\MathDrop{\dcind{}}}
+            }
+            {\delta_{E}}
+          }
+        }
+        { \declDiff{v}{v'}{\MathReplace{\MathHole{}}} }
       }
     }
 

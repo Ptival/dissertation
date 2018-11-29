@@ -8,22 +8,22 @@ following grammar:
 
 \begin{grammar}%
 <term> ::= \ %trick LaTeX
-\alt <term> \coqinline{:} <term>                         \hfill (type annotation)
+\alt <var>                                               \hfill (variable)
 \alt <term> <term>                                       \hfill (function application)
-\alt \coqinline{_}                                       \hfill (hole)
-\alt \coqinline{λ} <binder> \coqinline{,} <term>         \hfill (value abstraction)
-\alt \coqinline{match} <term> \coqinline{with}
-$\overline{ \synt{pattern} }$ \coqinline{end}            \hfill (pattern matching)
+\alt \coqinline{λ} <binder> \coqinline{,} <term>         \hfill (term abstraction)
 \alt \coqinline{Π(} <binder> \coqinline{:} <term>
 \coqinline{) →} <term>                                   \hfill (type abstraction)
 \alt <universe>                                          \hfill (universes)
-\alt <var>                                               \hfill (variable)
+\alt \coqinline{match} <term> \coqinline{with}
+$\overline{ \synt{pattern} }$ \coqinline{end}            \hfill (pattern matching)
+\alt <term> \coqinline{:} <term>                         \hfill (type annotation)
+\alt \coqinline{_}                                       \hfill (hole)
 
 <universe> ::= \coqinline{Prop} | \coqinline{Set} | \coqinline{Type}
 
 <binder> ::= \ % trick LaTeX
-\alt <var> \hfill (named)
-\alt _     \hfill (anonymous)
+\alt <var>         \hfill (named)
+\alt \coqinline{_} \hfill (anonymous)
 
 <pattern> ::= ($\overline{ \synt{binder} }$, <term>)
 \end{grammar}

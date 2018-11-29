@@ -1,0 +1,37 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
+\phantom{A}
+\begin{grammar}%
+<term> ::= \ %trick LaTeX
+\alt <var>                                                               \hfill (variable)
+\alt <term> <term>                                                       \hfill (function application)
+\alt \coqinline{λ} <binder> \coqinline{→} <term>                         \hfill (term abstraction)
+\alt \coqinline{Π(} <binder> \coqinline{:} <term>
+  \coqinline{) →} <term> \hfill (type abstraction)
+\alt <universe>                                                          \hfill (universes)
+\alt \coqinline{match} <term> \coqinline{with}
+  $\overline{ \synt{pattern} }$ \coqinline{end} \hfill (pattern matching)
+\alt <term> \coqinline{:} <term>                                         \hfill (type annotation)
+\alt \coqinline{_}                                                       \hfill (hole)
+%
+%<universe> ::= \coqinline{Prop} | \coqinline{Set} | \coqinline{Type}
+%
+%<binder> ::= \ % trick LaTeX
+%\alt <var> \hfill (named)
+%\alt _     \hfill (anonymous)
+%
+%<pattern> ::= ($\overline{ \synt{binder} }$, <term>)
+\end{grammar}
+\phantom{A}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

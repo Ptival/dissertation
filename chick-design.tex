@@ -113,7 +113,7 @@ Definition length :
   ∀ (T : Type),
     list T → nat :=               @\dummystrut{ }@
   λ T l, list_rect T (λ _, nat) O @\dummystrut{ }@
-    (λ _ _ lt, S lt) l.
+    (λ _ _ lt, S lt) l.           @\dummystrut{ }@
 
 Fixpoint map :
   ∀ (A B : Type), (A → B) →
@@ -161,7 +161,7 @@ Fixpoint map :
     match l with
     | @\repaired{vnil}@ _         => @\repaired{vnil}@ B
     | @\repaired{vcons}@ _ h @\repaired{\_}@ t =>
-      @\repaired{vcons}@ B (f h) @\repaired{\_}@
+      @\repaired{vcons}@ B (f h) @\repaired{(\_ : nat)}@
             (map A B f t)
     end.
   \end{minted}

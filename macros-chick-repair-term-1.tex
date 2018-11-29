@@ -1,0 +1,125 @@
+\newcommand{\RepairTermOneSamePi}{
+  \inferrule*
+  [lab=\RSamePi]
+  {
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repair
+        {t}
+        {\delta}
+        {\MathPi{\tau_1}{\chi}{\tau_2}}
+        {\MathModPi{\MathSameTerm{}}{\MathSameBinder{}}{\MathSameTerm{}}}
+      }
+    }
+  }
+  {\turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    { \repair
+      {t}
+      {\delta}
+      {\MathPi{\tau_1}{\chi}{\tau_2}}
+      {\MathSameTerm{}}
+    }
+  }
+}
+
+\newcommand{\RepairTermOneSameOther}{
+  \inferrule*
+  [lab=\RSame]
+  {
+    \text{\rulename{\RSamePi} does not apply}
+    \and
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairTermWithoutType{t}{\delta_{t}}}
+    }
+  }
+  {\turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    { \repair{t}{\delta_{t}}{\tau}{\MathSame} }
+  }
+}
+
+\newcommand{\RepairTermOneModPi}{
+  \inferrule*
+  [lab=\RModPi]
+  {
+    {\turnstile%
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+      {\freshOne{x}{\MathSame}{\delta_x}}
+    }
+    \and
+    {\MathPatches{x}{\delta_x}{x'}}
+    % \and
+    % {\diffExpand{\tau_{2}}{\delta_{\tau_{2}}}{\delta_{\tau_{2}}'}
+    % }
+    \\\\\\
+    {\turnstile%
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+      {\freshTwo{\blackdiff{x}{\delta_x}}{\blackdiff{\chi}{\delta_\chi}}{z}}
+    }
+    \and
+    {\MathPatches{\chi}{\delta_\chi}{\chi'}}
+    \\\\\\
+    {\turnstile%
+      { \dcontext{E}{\delta_E}
+        { \MathCons{\MathLocalAssum{z}{\tau_1}}{\Gamma} }
+        { \MathMod%
+          {\MathLocalAssum{\MathReplace{z}}{\delta_{\tau_1}}}
+          {\delta_\Gamma}
+        }
+      }
+      { \repair%
+        {t[\subst{x}{z}]}
+        {\delta_{t}}
+        {\tau_2[\subst{\chi}{z}]}
+        {\delta_{\tau_2}[\subst{\MathReplace{\chi'}}{\MathReplace{z}}]}
+      }
+    }
+    % \\\\\\
+    % {\diffExpand{t}{\delta_{t}}{\delta_{t}'}
+    % }
+  }
+  {\turnstile%
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    {\repair%
+      { \MathLam{x}{t} }
+      { \MathModLam{\delta_x}{\delta_{t}[\subst{\MathReplace{z}}{\MathReplace{x'}}]} }
+      { \MathPi{\tau_1}{\chi}{\tau_2} }
+      { \MathModPi{\delta_{\tau_1}}{\delta_\chi}{\delta_{\tau_2}} }
+    }
+  }
+}
+
+\newcommand{\RepairTermOneInsPi}{
+  \inferrule*
+  [lab=\RInsPi]
+  {
+    {\turnstile
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+      {\freshOne{\chi}{\MathSame}{\delta_\chi}}
+    }
+    \and
+    {\MathPatches{\chi}{\delta_\chi}{x}}
+    \and
+    {\MathPatches{\tau}{\delta_{\tau_1}}{\tau_1}}
+    \\\\\\
+    \turnstile
+    {\dcontext{E}{\delta_E}{\Gamma}
+      {\MathIns{\MathLocalAssum{x}{\tau_1}}{\delta_\Gamma}}
+    }
+    { \repair{t}{\delta_{t}}{\tau}
+      {\delta_{\tau_2}[\subst{\MathReplace{\chi}}{\MathReplace{x}}]}
+    }
+  }
+  {
+    \turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    { \repair
+      {t}
+      { \MathInsLam{x}{\delta_{t}} }
+      {\tau}
+      { \MathInsPi{\delta_{\tau_1}}{\chi}{\delta_{\tau_2}} }
+    }
+  }
+}

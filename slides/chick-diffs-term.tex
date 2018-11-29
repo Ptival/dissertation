@@ -1,0 +1,30 @@
+\documentclass[preview]{standalone}
+
+\input{packages}
+\input{../macros}
+
+\begin{document}
+
+
+
+\phantom{A}
+\begin{grammar}
+<$\DeltaTerm{}$> ::= \ %trick LaTeX
+\alt \synt{$\DeltaAtomic{}\ t$}
+\alt \synt{$\DeltaTerm{}$} $\op{\oIns{ \$ }}$ \synt{$\DeltaTerm{}$}
+\alt $\op{\oIns{\lambda}}$ \synt{v} $\op{\rightarrow}$ \synt{$\DeltaTerm{}$}
+\alt $\op{\oIns{\Pi}}$ $\op{(}$\synt{v} $\op{:}$ \synt{$\DeltaTerm{}$}$\op{) \rightarrow}$
+\synt{$\DeltaTerm{}$}
+\alt … \hfill (other insertions)
+\alt … \hfill (removals/modifications/permutations)
+\end{grammar}
+\phantom{A}
+
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

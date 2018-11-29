@@ -7,29 +7,29 @@
 %\begin{figure}[htp!]
   %\resizebox{\columnwidth}{!}{
 
-% \begin{minipage}{\columnwidth}
-%
-% \begin{grammar}
-% <$\DeltaList{}\ \tau \ \Delta_{\tau}$> ::= \ %trick LaTeX
-% \alt \synt{$\DeltaAtomic{}\ \tau$} %\hfill (atomic modification of the whole list)
-% \alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}$\langle\tau\rangle$
-%        & $\MathIns{}{}$
-%        & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular} % \hfill (insert a head)
-% \alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}$\langle\Delta_\tau\rangle$
-%        & $\MathMod{}{}$
-%        & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
-%      %\hfill (modify and keep the head)
-% \alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}\quad
-%        & $\MathDrop{}$
-%        & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
-%      %\hfill (drop the head)
-% \alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}\quad
-%        & $\MathPermute{p}{}$
-%        & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
-%      %\hfill (permute according to a permutation $p$)
-% \end{grammar}
-%
-% \end{minipage}%
+\begin{minipage}{\columnwidth}
+
+\begin{grammar}
+<$\DeltaList{}\ \tau \ \Delta_{\tau}$> ::= \ %trick LaTeX
+\alt \synt{$\DeltaAtomic{}\ \tau$} %\hfill (atomic modification of the whole list)
+\alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}$\langle\tau\rangle$
+       & $\op{\MathIns{}{}}$
+       & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular} % \hfill (insert a head)
+\alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}$\langle\Delta_\tau\rangle$
+       & $\op{\MathMod{}{}}$
+       & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
+     %\hfill (modify and keep the head)
+\alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}\quad
+       & $\op{\MathDrop{}}$
+       & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
+     %\hfill (drop the head)
+\alt \begin{tabular}{p{0.9cm} >{\centering}p{0.9cm} l}\quad
+       & $\op{\MathPermute{p}{}}$
+       & \synt{$\DeltaList{}\ \tau\ \Delta_{\tau}$} \\\end{tabular}
+     %\hfill (permute according to a permutation $p$)
+\end{grammar}
+
+\end{minipage}%
 % %
 
 % \begin{mathpar}
@@ -85,16 +85,16 @@
 %              )}
 % \end{align*}
 
-\begin{align*}
-\MathPatches
-{\coqinline{nat → bool → string}}
-{\delta_{1}}
-{\coqinline{bool → nat → string}}\\
-\MathPatches
-{\coqinline{nat → bool → string}}
-{\delta_{2}}
-{\coqinline{bool → nat → string}}
-\end{align*}
+% \begin{align*}
+% \MathPatches
+% {\coqinline{nat → bool → string}}
+% {\delta_{1}}
+% {\coqinline{bool → nat → string}}\\
+% \MathPatches
+% {\coqinline{nat → bool → string}}
+% {\delta_{2}}
+% {\coqinline{bool → nat → string}}
+% \end{align*}
 
 
 %}

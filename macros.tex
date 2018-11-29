@@ -132,6 +132,7 @@
 \newcommand{\op}[1]{\textcolor{\opcolor}{#1}}
 
 \newcommand{\boundOp}{\op{\text{Bound}}}
+\newcommand{\diffExpandOp}{\op{\Delta_{\text{Expand}}}}
 \newcommand{\freshOneOp}{\op{\text{Fresh}_1}}
 \newcommand{\freshTwoOp}{\op{\text{Fresh}_2}}
 \newcommand{\repairIndOp}{\op{R_{\text{Inductive}}}}
@@ -143,6 +144,10 @@
 \newcommand{\vernacEnvOp}{\op{E_{V}}}
 \newcommand{\repairBranchOp}{\op{R_{\text{Branch}}}}
 \newcommand{\repairBranchesOp}{\op{R_{\text{Branches}}}}
+
+\newcommand{\diffExpand}[3]{
+  \op{\diffExpandOp{}(} \diff{#1}{#2} \op{) = } \out{#3}
+}
 
 \newcommand{\repairParametersOp}{\op{R_{\text{Parameters}}}}
 \newcommand{\repairIndicesOp}{\op{R_{\text{Indices}}}}
@@ -361,6 +366,11 @@
 \newcommand{\deltaInductiveTypeOp}{\op{\delta_{\text{InductiveType}}}}
 \newcommand{\deltaInductiveType}[5]{
   \deltaInductiveTypeOp\op{(} #1\op{,}\ #2\op{,}\ #3\op{,}\ #4\op{) =\ } \out{#5}
+}
+
+\newcommand{\constructorTypeOp}{\op{\text{ConstructorType}}}
+\newcommand{\constructorType}[3]{
+  \constructorTypeOp\op{(} #1 \op{,\ }#2 \op{) =\ }\out{#3}
 }
 
 \newcommand{\deltaConstructorTypeOp}{\op{\delta_{\text{ConstructorType}}}}

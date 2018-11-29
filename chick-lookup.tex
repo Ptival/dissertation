@@ -247,6 +247,8 @@ raises the number of cases in a quadratic fashion.  We do our best to summarize
 those cases in few rules, by using disjunctive premises to account for many
 cases in a single rule.
 
+\input{figure-chick-rules-lookup-environment-same}
+
 Figure~\ref{rules-lookup-environment-same} covers the simplest cases.  When the
 environment has not changed, as in Rule \rulename{Diff-\GESame}, the variable
 must not have changed either, as long as it actually existed.  When any
@@ -255,7 +257,7 @@ keep looking recursively (Rule \rulename{Diff-\GEIns}).  Finally, when the
 environment has undergone a permutation, we can simply proceed recursively on
 the appropriately permuted environment (Rule \rulename{Diff-\GEPermute}).
 
-\input{figure-chick-rules-lookup-environment-same}
+\input{figure-chick-rules-lookup-environment-drop}
 
 When an element has been removed from the environment
 (Figure~\ref{rules-lookup-environment-drop}), we need to check whether it was
@@ -267,7 +269,7 @@ then we indicate that the variable has been removed by using
 $\op{\text{Deprecate}}$ again (Rule \rulename{Diff-\GEDrop-Here}).  Otherwise,
 we keep looking recursively (Rule \rulename{Diff-\GEDrop-There}).
 
-\input{figure-chick-rules-lookup-environment-drop}
+\input{figure-chick-rules-lookup-environment-mod}
 
 When an element has been modified in the environment
 (Figure~\ref{rules-lookup-environment-mod}), we again need to check whether our
@@ -277,8 +279,8 @@ definitions, yielding Rule \rulename{Diff-\GEMod{Here}} for cases where the
 target variable is being modified, and Rule \rulename{Diff-\GEMod{There}} for
 cases where other variables than our target are being modified.
 
-\input{figure-chick-rules-lookup-environment-mod}
-
-TODO
-
 \input{figure-chick-rules-lookup-environment-constructor}
+
+\input{figure-chick-rules-lookup-environment-constructor-2}
+
+\TODO{Describe rules for constructors}

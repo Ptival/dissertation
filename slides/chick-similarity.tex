@@ -5,136 +5,214 @@
 
 \begin{document}
 \begin{figure}[htp!]
-  \resizebox{0.5\columnwidth}{!}{
+  \resizebox{\columnwidth}{!}{
 
 \begin{forest}
-  begin draw/.code={\begin{tikzpicture}[anchor=base,baseline=(current bounding box)]},
-[,phantom,tikz={
-  %\draw[Matching] (!11l) -- (!l1ll);
-  %\draw[Matching] (!11l) -- (!l1);
-},
-  [→,fill=color06,
-      [→,fill=color08,
-        [C,fill=color02,
-        ]
-        [→,fill=color07,
-          [A,fill=color01,
-          ]
-          [D,fill=color03,
-          ]
+[,phantom,
+  for tree={
+    draw opacity=0.25,
+    edge={ draw opacity=0.25 },
+    fill opacity=0.25,
+    text opacity=0.25,
+  },
+  [→
+    [→
+      [A,fill=color01]
+      [→,name=spec n1,tikz={
+        \node[RoundedRectangle,red,fit= () (!1) (!l)] (T1) {};
+        \node[below=1pt of T1]{$T_{1}$};
+        \node[NodeLabel] at (spec n1.south east) {$l_{1}$};
+        },
+  for tree={
+    draw opacity=1,
+    fill opacity=1,
+    text opacity=1,
+  },
+        [C,fill=color02,edge={draw opacity=1}]
+        [D,fill=color03,edge={draw opacity=1}]
       ]
     ]
-    [→,fill=color09,
-      [A,fill=color12,
-      ]
-      [→,fill=color10,
-        [C,fill=color13]
-        [D,fill=color14]
+    [→
+      [A,fill=color01]
+      [→,name=spec n2,tikz={
+        \node[RoundedRectangle,red,fit= () (!1) (!l)] (T2) {};
+        \node[below=1pt of T2]{$T_{2}$};
+        \node[NodeLabel] at (spec n2.south east) {$l_{2}$};
+      },
+  for tree={
+    draw opacity=1,
+    fill opacity=1,
+    text opacity=1,
+  },
+        [C,fill=color02,edge={draw opacity=1}]
+        [D,fill=color03,edge={draw opacity=1}]
       ]
     ]
   ]
   [,phantom[,phantom[,phantom]]]
-  [→,fill=color06,
-    [→,fill=color08,
-      [C,fill=color02,
-      ]
-      [→,fill=color15,
-        [B,
-        ]
-        [→,fill=color07,
-          [A,fill=color01,
-          ]
-          [D,fill=color03,
-          ]
+  [→
+    [→
+      [C,fill=color02]
+      [→
+        [B]
+        [→
+          [A,fill=color01]
+          [D,fill=color03]
         ]
       ]
     ]
-    [→,fill=color09,
-      [A,fill=color12,
-      ]
-      [→,fill=color16,
+    [→
+      [A,fill=color01]
+      [→
         [B]
-        [→,fill=color10
-          [C,fill=color13]
-          [D,fill=color14]
+        [→,name=spec n3,tikz={
+          \node[RoundedRectangle,red,fit= () (!1) (!l)] (T3) {};
+          \node[below=1pt of T3]{$T_{3}$};
+          \node[NodeLabel] at (spec n3.south east) {$r$};
+          },
+  for tree={
+    draw opacity=1,
+    fill opacity=1,
+    text opacity=1,
+  },
+          [C,fill=color02,edge={draw opacity=1}]
+          [D,fill=color03,edge={draw opacity=1}]
         ]
       ]
     ]
   ]
 ]
 \end{forest}
-}%
-%
-\centering
-  \resizebox{0.49\columnwidth}{!}{
-\scalebox{1.25}{
-  \tcbhighmath[size=fbox,boxrule=2pt,colframe=color06,colback=white]{
-    \begin{tabular}{c}
-      $
-      \MathModPi%
-      {
-        \bicolorbox{
-          \MathPermutePis%
-          {[0,1]}
-          {
-            \tcbhighmath[size=fbox,boxrule=2pt,colframe=color08,colback=white]{
-              \MathModPi%
-              {
-                \tcbhighmath[size=fbox,boxrule=2pt,colframe=color02,colback=white]{
-                  \MathSame{}
-                }
-              }
-              {\MathSame{}}
-              {
-                \tcbhighmath[size=fbox,boxrule=2pt,colframe=color15,colback=white]{
-                  \MathInsPi%
-                  {B}
-                  {\_}
-                  {
-                    \tcbhighmath[size=fbox,boxrule=2pt,colframe=color07,colback=white]{
-                      \MathSame{}
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      {\MathSame{}}
-      {  } % left empty so that it can be on two lines
-      $
-      \tabularnewline
-      $
-        \tcbhighmath[size=fbox,boxrule=2pt,colframe=color09,colback=white]{
-          \MathModPi%
-          {
-            \tcbhighmath[size=fbox,boxrule=2pt,colframe=color12,colback=white]{
-              \MathSame{}
-            }
-          }
-          {\MathSame{}}
-          {
-            \tcbhighmath[size=fbox,boxrule=2pt,colframe=color16,colback=white]{
-              \MathInsPi%
-              {B}
-              {\_}
-              {
-                \tcbhighmath[size=fbox,boxrule=2pt,colframe=color10,colback=white]{
-                  \MathSame{}
-                }
-              }
-            }
-          }
-        }
-      $
-    \end{tabular}
+
+
+% \begin{forest}
+%   begin draw/.code={\begin{tikzpicture}[anchor=base,baseline=(current bounding box)]},
+% [,phantom,tikz={
+%   %\draw[Matching] (!11l) -- (!l1ll);
+%   %\draw[Matching] (!11l) -- (!l1);
+% },
+%   [→,fill=color06,
+%       [→,fill=color08,
+%         [C,fill=color02,
+%         ]
+%         [→,fill=color07,
+%           [A,fill=color01,
+%           ]
+%           [D,fill=color03,
+%           ]
+%       ]
+%     ]
+%     [→,fill=color09,
+%       [A,fill=color12,
+%       ]
+%       [→,fill=color10,
+%         [C,fill=color13]
+%         [D,fill=color14]
+%       ]
+%     ]
+%   ]
+%   [,phantom[,phantom[,phantom]]]
+%   [→,fill=color06,
+%     [→,fill=color08,
+%       [C,fill=color02,
+%       ]
+%       [→,fill=color15,
+%         [B,
+%         ]
+%         [→,fill=color07,
+%           [A,fill=color01,
+%           ]
+%           [D,fill=color03,
+%           ]
+%         ]
+%       ]
+%     ]
+%     [→,fill=color09,
+%       [A,fill=color12,
+%       ]
+%       [→,fill=color16,
+%         [B]
+%         [→,fill=color10
+%           [C,fill=color13]
+%           [D,fill=color14]
+%         ]
+%       ]
+%     ]
+%   ]
+% ]
+% \end{forest}
+% }%
+% %
+% \centering
+%   \resizebox{0.49\columnwidth}{!}{
+% \scalebox{1.25}{
+%   \tcbhighmath[size=fbox,boxrule=2pt,colframe=color06,colback=white]{
+%     \begin{tabular}{c}
+%       $
+%       \MathModPi%
+%       {
+%         \bicolorbox{
+%           \MathPermutePis%
+%           {[0,1]}
+%           {
+%             \tcbhighmath[size=fbox,boxrule=2pt,colframe=color08,colback=white]{
+%               \MathModPi%
+%               {
+%                 \tcbhighmath[size=fbox,boxrule=2pt,colframe=color02,colback=white]{
+%                   \MathSame{}
+%                 }
+%               }
+%               {\MathSame{}}
+%               {
+%                 \tcbhighmath[size=fbox,boxrule=2pt,colframe=color15,colback=white]{
+%                   \MathInsPi%
+%                   {B}
+%                   {\_}
+%                   {
+%                     \tcbhighmath[size=fbox,boxrule=2pt,colframe=color07,colback=white]{
+%                       \MathSame{}
+%                     }
+%                   }
+%                 }
+%               }
+%             }
+%           }
+%         }
+%       }
+%       {\MathSame{}}
+%       {  } % left empty so that it can be on two lines
+%       $
+%       \tabularnewline
+%       $
+%         \tcbhighmath[size=fbox,boxrule=2pt,colframe=color09,colback=white]{
+%           \MathModPi%
+%           {
+%             \tcbhighmath[size=fbox,boxrule=2pt,colframe=color12,colback=white]{
+%               \MathSame{}
+%             }
+%           }
+%           {\MathSame{}}
+%           {
+%             \tcbhighmath[size=fbox,boxrule=2pt,colframe=color16,colback=white]{
+%               \MathInsPi%
+%               {B}
+%               {\_}
+%               {
+%                 \tcbhighmath[size=fbox,boxrule=2pt,colframe=color10,colback=white]{
+%                   \MathSame{}
+%                 }
+%               }
+%             }
+%           }
+%         }
+%       $
+%     \end{tabular}
+%   }
+% }
+% }
+
+
   }
-}
-}
-
-
-  %}
 \end{figure}
 \end{document}
 
