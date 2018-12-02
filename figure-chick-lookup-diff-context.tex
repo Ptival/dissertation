@@ -90,12 +90,17 @@
     {
       \inferrule*
       [lab=Diff-\LCPermute]
-      {\turnstile%
-        { \diff%
-          { \permuteOp{p}{\Gamma} }
-          { \delta_{\Gamma} }
+      {
+        { \MathPatches{\Gamma}{\MathPermute{p}{\MathSame{}}}{\Gamma'}
         }
-        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+        \and
+        {\turnstile%
+          { \diff%
+            { \Gamma' }
+            { \delta_{\Gamma} }
+          }
+          { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
+        }
       }
       {\turnstile%
         { \diff%

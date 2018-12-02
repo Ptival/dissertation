@@ -25,15 +25,7 @@
 
     {
       \inferrule*
-          [lab=\RepairProg{Replace}]
-          % {\turnstile%
-          %   { \denv{E}{\delta_E} }
-          %   { \repairProg{q}{\MathSameProgram{}}{\delta} }
-          % }
-          % {\turnstile%
-          %   { \denv{E}{\delta_E} }
-          %   { \repairProg{p}{\MathReplace{q}}{\delta} }
-          % }
+          [lab=\RProgReplace]
           { }
           {\turnstile%
             { \denv{E}{\delta_E} }
@@ -43,11 +35,11 @@
 
     {
       \inferrule*
-          [lab=\RepairProg{Insert}]
+          [lab=\RProgIns]
           {\turnstile%
             { \denv%
-              {\MathCons{v}{E}}
-              {\MathMod{\MathSameVernacular{}}{\delta_E}}
+              {E}
+              {\MathIns{v}{\delta_E}}
             }
             { \repairProg{p}{\delta_{p}}{\delta} }
           }
@@ -61,7 +53,7 @@
 
     {
       \inferrule*
-          [lab=\RepairProg{Drop}]
+          [lab=\RProgDrop]
           {
             {\turnstile%
               { \denv{v \Cons{} E}{\MathDrop{\delta_E}} }
@@ -76,7 +68,7 @@
 
     {
       \inferrule*
-          [lab=\RepairProg{Permute}]
+          [lab=\RProgPermute]
           {
             { \MathPatches{q}{\MathPermute{p}{}}{q'} }
             \and

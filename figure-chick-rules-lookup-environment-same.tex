@@ -36,12 +36,16 @@
     {
       \inferrule*
       [lab=Diff-\GEPermute]
-      {\turnstile%
-        { \diff%
-          { \permuteOp{p}{E} }
-          { \delta_{E} }
+      {
+        {\MathPatches{E}{\MathPermute{p}{\MathSame{}}}{E\,'}}
+        \and
+        {\turnstile%
+          { \diff%
+            { E\,' }
+            { \delta_{E} }
+          }
+          { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
         }
-        { \declDiff { v } { \delta_{v} } { \delta_{\tau} } }
       }
       {\turnstile%
         { \diff%

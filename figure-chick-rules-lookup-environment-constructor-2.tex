@@ -5,10 +5,76 @@
   \begin{mathpar}
     {
       \inferrule*
-      [lab=Diff-\GEMod{Constructor-Permute}]
-      { A
+      [lab=Diff-\GEMod{Constructor-Ins}]
+      {
+        {
+          I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}
+        }
+        \\\\\\
+        {
+          \delta_{I} =
+          \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\MathIns{C}{\dcind{}}}
+        }
+        \\\\\\
+        {\turnstile%
+          { \diff%
+            {\MathCons{I}{E}}
+            {\MathMod
+              {\ModifyInductive%
+                {\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
+              }
+              {\delta_{E}}
+            }
+          }
+          { \declDiff{v}{\delta_v}{\delta_{\tau}} }
+        }
       }
-      { B
+      {\turnstile%
+        { \diff%
+          {\MathCons{I}{E}}
+          {\MathMod{\delta_{I}}{\delta_{E}}}
+        }
+        { \declDiff{v}{\delta_v}{\delta_{\tau}} }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEMod{Constructor-Permute}]
+      {
+        {
+          \MathPatches{\cind{}}{\MathPermute{p}{\MathSame{}}}{\cind{}'}
+        }
+        \\\\\\
+        {
+          \turnstile%
+          { \diff%
+            {\MathCons%
+              {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}'}}
+              {E}
+            }
+            {\MathMod%
+              {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}}
+              {\delta_{E}}
+            }
+          }
+          { \declDiff{v}{\delta_{v}}{\delta_{\tau}} }
+        }
+      }
+      {\turnstile%
+        { \diff%
+          {\MathCons%
+            {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}}
+            {E}
+          }
+          {\MathMod%
+            {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}
+              {\MathPermute{p}{\dcind{}}}
+            }
+            {\delta_{E}}
+          }
+        }
+        { \declDiff{v}{\delta_{v}}{\delta_{\tau}} }
       }
     }
 

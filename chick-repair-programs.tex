@@ -61,11 +61,13 @@ where \coqinline{list} was defined, and that the updated program must replace it
 with \coqinline{vec}.  We therefore repair the rest of the program $p$ in the
 appropriate updated environment and its diff.
 
-\rulename{\RProgSameCons} simply defers to \rulename{\RProgMod}: even though it
-processes unchanged commands, they might need repairs to account for changes in
+Rule \rulename{\RProgSameCons} applies when the list of vernacular commands has
+not changed.  It defers to Rule \rulename{\RProgMod}: even though it the
+commands have not changed, they might need repairs to account for changes in
 their dependencies, as accounted for in the global environment diff.
-
-\TODO{Describe the remaining rules}
+\rulename{\RProgIns} and \rulename{\RProgDrop} update their environment as
+necessary.  Finally, Rule \rulename{RProgPermute} recursively repairs the
+permuted sequence of commands.
 
 \paragraph{Note} While our presentation makes it look like vernacular commands
 each add exactly one element to the global environment, it is not always as

@@ -3,20 +3,33 @@
 {Lookup in the global environment (constructor rules, part 1/2)}
 
   \begin{mathpar}
-    % Possibilities:
-    % (v + cs), (δv +mod δcs)
-    % (v + cs), (-drop δcs)
-    % (v + cs), (+keep δcs)
-    % (v + cs), (permute p δcs)
-    % (v + cs), (v' +ins δcs)
-    % (v' + cs), (δv +mod δcs)
-    % (v' + cs), (-drop δcs)
-    % (v' + cs), (+keep δcs)
-    % (v' + cs), (permute p δcs)
-    % (v' + cs), (v'' +ins δcs)
     {
       \inferrule*
-      [lab=Diff-\GEMod{Constructor-Mod}]
+      [lab=Diff-\GEMod{Constructor-Same-Here}]
+      {
+        {
+          C = \Constructor{v}{\pctor{}}{\ictor{}}
+        }
+      }
+      {\turnstile
+        { \diff
+          {\MathCons%
+            {\Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}
+              {\MathCons{C}{\cind{}}}
+            }
+            {E}}
+          {\ModifyInductive%
+            {\dnind{}}{\dpind{}}{\diind{}}{\duind{}}
+            {\MathSame{}}
+          }
+        }
+        { \declDiff{v}{\MathSame{}}{\MathSame{}} }
+      }
+    }
+
+    {
+      \inferrule*
+      [lab=Diff-\GEMod{Constructor-Mod-Here}]
       {
         {
           I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\MathCons{C}{\cind{}}}
@@ -42,41 +55,6 @@
       }
       {\turnstile
         { \diff
-          {\MathCons{I}{E}}
-          {\MathMod{\delta_{I}}{\delta_{E}}}
-        }
-        { \declDiff{v}{\delta_v}{\delta_{\tau}} }
-      }
-    }
-
-    {
-      \inferrule*
-      [lab=Diff-\GEMod{Constructor-Ins}]
-      {
-        {
-          I = \Inductive{\nind{}}{\pind{}}{\iind{}}{\uind{}}{\cind{}}
-        }
-        \\\\\\
-        {
-          \delta_{I} =
-          \ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\MathIns{C}{\dcind{}}}
-        }
-        \\\\\\
-        {\turnstile%
-          { \diff%
-            {\MathCons{I}{E}}
-            {\MathMod
-              {\ModifyInductive%
-                {\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}
-              }
-              {\delta_{E}}
-            }
-          }
-          { \declDiff{v}{\delta_v}{\delta_{\tau}} }
-        }
-      }
-      {\turnstile%
-        { \diff%
           {\MathCons{I}{E}}
           {\MathMod{\delta_{I}}{\delta_{E}}}
         }
@@ -115,7 +93,7 @@
 
     {
       \inferrule*
-      [lab=Diff-\GEMod{Constructor-Drop-There}]
+      [lab=Diff-\GEMod{Constructor-There}]
       {
         {
           C = \Constructor{w}{\pctor{}}{\ictor{}}
@@ -126,6 +104,22 @@
         }
         \\\\\\
         {
+          \begin{cases}
+            \phantom{\text{or}\ }
+            \delta = \MathSame{}
+            & \delta' = \MathSame{}
+            \\
+            {\text{or}\ }
+            \delta = \MathMod{\delta_{C}}{\dcind{}}
+            & \delta' = \dcind{}
+            \\
+            {\text{or}\ }
+            \delta = \MathDrop{\dcind{}}
+            & \delta' = \dcind{}
+          \end{cases}
+        }
+        \\\\\\
+        {
           \turnstile%
           { \diff%
             {\MathCons%
@@ -133,11 +127,11 @@
               {E}
             }
             {\MathMod%
-              {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\dcind{}}}
+              {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}{\delta'}}
               {\delta_{E}}
             }
           }
-          { \declDiff{v}{v'}{\MathReplace{\MathHole{}}} }
+          { \declDiff{v}{\delta_{v}}{\delta_{\tau}} }
         }
       }
       {\turnstile%
@@ -148,12 +142,12 @@
           }
           {\MathMod%
             {\ModifyInductive{\dnind{}}{\dpind{}}{\diind{}}{\duind{}}
-              {\MathDrop{\dcind{}}}
+              {\delta}
             }
             {\delta_{E}}
           }
         }
-        { \declDiff{v}{v'}{\MathReplace{\MathHole{}}} }
+        { \declDiff{v}{\delta_{v}}{\delta_{\tau}} }
       }
     }
 

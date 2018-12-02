@@ -283,4 +283,9 @@ cases where other variables than our target are being modified.
 
 \input{figure-chick-rules-lookup-environment-constructor-2}
 
-\TODO{Describe rules for constructors}
+Finally, the rules in Figures~\ref{rules-lookup-environment-constructor}
+and~\ref{rules-lookup-environment-constructor-2} describe diffs lookups in cases
+where the variable we are looking up could be one of the constructors of a
+modified inductive data type declaration.  The rules search through the list of
+constructors, ignoring inserted constructors, until they find the target or the
+lookup or exhaust the list of constructors.
