@@ -45,6 +45,10 @@ the inductive indices with terms: they are simply repaired in isolation.
 
 \subsubsection{Repairing inductive parameters}
 
+\input{figure-chick-repair-inductive-parameters}
+
+\input{figure-chick-repair-inductive-parameters-2}
+
 Figures~\ref{fig:repair-inductive-parameters}
 and~\ref{fig:repair-inductive-parameters-2} show the rules for
 $\repairParametersOp{}$, the algorithm for repairing inductive parameters.  As
@@ -54,11 +58,8 @@ While our formalization in this dissertation returns the contexts explicitly,
 our implementation uses a \define{state monad} to pass around local context and
 global environment.
 
-\input{figure-chick-repair-inductive-parameters}
-
-\input{figure-chick-repair-inductive-parameters-2}
-
-\TODO{Give some high-level description of the complicated rules}
+The rules are fairly straightforward, recursively going over every parameter in
+the list, and accounting for their changes in the local context.
 
 \subsubsection{Repairing inductive indices}
 

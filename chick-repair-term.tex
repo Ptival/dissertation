@@ -1,8 +1,9 @@
 \subsection{Repairing terms}\label{chick-design-repair-term}
 
 The repair algorithm for terms is described formally in
-Figures~\ref{fig:repair-term-1},~\ref{fig:repair-term-2}
-and~\ref{fig:repair-term-3} using the following judgments:
+Figures~\ref{fig:repair-term-1}, \ref{fig:repair-term-2},
+\ref{fig:repair-term-two-1}, and~\ref{fig:repair-term-two-2} using the following
+judgments:
 
 {
   \[
@@ -29,11 +30,12 @@ The first judgment (described in Figures~\ref{fig:repair-term-1}
 and~\ref{fig:repair-term-2}) describes how a term is repaired when we know both
 its old type $\tau$, and how that type got modified $\delta_\tau$.  It is
 syntax-directed by the structure of $\delta_\tau$.  The second judgment
-(described in Figure~\ref{fig:repair-term-3}) describes how a term is repaired
-when we no longer make decisions based on its old type and type diff: this
-happens for constructs whose type does not inform us about the type of its
-constituents (for instance, function application), and for simple terms (holes,
-universes, variables).
+(described in Figures~\ref{fig:repair-term-two-1}
+and~\ref{fig:repair-term-two-2}) describes how a term is repaired when we no
+longer make decisions based on its old type and type diff: this happens for
+constructs whose type does not inform us about the type of its constituents (for
+instance, function application), and for simple terms (holes, universes,
+variables).
 
 \paragraph{Notation} The first judgment can be read as follows:
 

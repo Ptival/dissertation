@@ -19,9 +19,9 @@
   }
 }
 
-\newcommand{\RepairTermTwoApp}{
+\newcommand{\RepairTermTwoAppVar}{
   \inferrule*
-  [lab=\UTRApp]
+  [lab=\UTRAppVar]
   {
     {\turnstile
       { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
@@ -38,6 +38,28 @@
   {\turnstile
     { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
     { \repairTermWithoutType{ f\ \range{n}{a_{i}} }{\delta} }
+  }
+}
+
+\newcommand{\RepairTermTwoAppTerm}{
+  \inferrule*
+  [lab=\UTRAppTerm]
+  {
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairTermWithoutType{t}{\delta_{t}}
+      }
+    }
+    \and
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairTermWithoutType{a}{\delta_{a}}
+      }
+    }
+  }
+  {\turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    { \repairTermWithoutType{ t a }{\MathModApp{\delta_{t}}{\delta_{a}}} }
   }
 }
 
@@ -74,87 +96,45 @@
   }
 }
 
-\newcommand{\RepairTermTwoMatch}{
+\newcommand{\RepairTermTwoLam}{
   \inferrule*
-  [lab=\UTRMatch]
+  [lab=\UTRLam]
   {
     {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairTermWithoutType{t}{\delta_t} }
+      {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+      {\freshOne{x}{\MathSame}{\delta_x}}
     }
     \and
     {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairBranches{t}{[b_1 \ldots b_n]}{\delta_b} }
-    }
-  }
-  {\turnstile
-    {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
-    {\repairTermWithoutType
-      {\MathMatch{t}{b_1 \ldots b_n}}
-      {\delta}
-    }
-  }
-}
-
-\newcommand{\RepairTermTwoAnnot}{
-  \inferrule*
-  [lab=\UTRAnnot]
-  {
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repair{\tau}{\delta_\tau}{\coqinline{Type}}{\MathSame{}} }
-    }
-    \and
-    {\turnstile
-      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repair{t}{\delta_t}{\tau}{\delta_\tau} }
+      { \dcontext { e } { \delta_E }
+        { \MathCons{x}{\Gamma} }
+        { \MathMod{\delta_{x}}{\delta_{\Gamma}} }
+      }
+      { \repairTermWithoutType{t}{\delta_{t}} }
     }
   }
   {\turnstile
     { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-    { \repairTermWithoutType{\MathAnnot{t}{\tau}}{\MathAnnot{\delta_t}{\delta_\tau}} }
-  }
-}
-
-\newcommand{\RepairTermTwoOtherwise}{
-  \inferrule*
-  [lab=\UTROtherwise]
-  {  }
-  {\turnstile
-    {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
-    {\repairTermWithoutType{t}{\MathSame}}
+    { \repairTermWithoutType{ \MathLam{x}{t} }
+      { \MathModLam{\delta_x}{\delta_{t}} }
+    }
   }
 }
 
 \begin{Rules}
-  {fig:repair-term-3}
+  {fig:repair-term-two-1}
   { Rules for repairing terms, term-directed ($\repairTermThreeOp$) }
 
-\begin{mathpar}
-  \RepairTermTwoVar{}
+  \begin{mathpar}
+    \RepairTermTwoVar{}
 
-  \RepairTermTwoApp{}
+    \RepairTermTwoAppVar{}
 
-  \RepairTermTwoPi{}
+    \RepairTermTwoAppTerm{}
 
-  \RepairTermTwoMatch{}
+    \RepairTermTwoPi{}
 
-  \RepairTermTwoAnnot{}
-
-  % This is not necessary, as it is encompassed in the otherwise rule
-  % {
-  %   \inferrule*
-  %   [lab=\UTRType]
-  %   { u \in \{ \MathProp, \MathSet, \MathType \} }
-  %   {\turnstile
-  %     { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-  %     { \repairTermWithoutType{u}{\MathSame} }
-  %   }
-  % }
-
-  \RepairTermTwoOtherwise{}
-
+    \RepairTermTwoLam{}
   \end{mathpar}
 
 \end{Rules}

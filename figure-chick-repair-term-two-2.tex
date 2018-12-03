@@ -1,0 +1,66 @@
+\newcommand{\RepairTermTwoMatch}{
+  \inferrule*
+  [lab=\UTRMatch]
+  {
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairTermWithoutType{t}{\delta_t} }
+    }
+    \and
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repairBranches{t}{[b_1 \ldots b_n]}{\delta_b} }
+    }
+  }
+  {\turnstile
+    {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+    {\repairTermWithoutType
+      {\MathMatch{t}{b_1 \ldots b_n}}
+      {\delta}
+    }
+  }
+}
+
+\newcommand{\RepairTermTwoAnnot}{
+  \inferrule*
+  [lab=\UTRAnnot]
+  {
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repair{\tau}{\delta_\tau}{\coqinline{Type}}{\MathSame{}} }
+    }
+    \and
+    {\turnstile
+      { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+      { \repair{t}{\delta_t}{\tau}{\delta_\tau} }
+    }
+  }
+  {\turnstile
+    { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
+    { \repairTermWithoutType{\MathAnnot{t}{\tau}}{\MathAnnot{\delta_t}{\delta_\tau}} }
+  }
+}
+
+\newcommand{\RepairTermTwoOtherwise}{
+  \inferrule*
+  [lab=\UTROtherwise]
+  {  }
+  {\turnstile
+    {\dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma}}
+    {\repairTermWithoutType{t}{\MathSame}}
+  }
+}
+
+\begin{Rules}
+  {fig:repair-term-two-2}
+  { Rules for repairing terms, term-directed ($\repairTermThreeOp$, part 2/2) }
+
+  \begin{mathpar}
+    \RepairTermTwoAnnot{}
+
+    \RepairTermTwoOtherwise{}
+
+    \RepairTermTwoMatch{}
+  \end{mathpar}
+
+\end{Rules}

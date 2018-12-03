@@ -1,11 +1,13 @@
 \subsubsection*{Term-directed term repair algorithm}
 
-\input{figure-chick-repair-term-3}
+\input{figure-chick-repair-term-two-1}
 
-$\repairTermThreeOp$ (described in Figure~\ref{fig:repair-term-3}) is an
-algorithm directed by the syntax of the term being repaired, and is used when no
-information is known about its type, or how that type might have changed.  Let
-us again go through the rules one by one.
+\input{figure-chick-repair-term-two-2}
+
+$\repairTermThreeOp$ (described in Figures~\ref{fig:repair-term-two-2}
+and~\ref{fig:repair-term-two-2}) is an algorithm directed by the syntax of the
+term being repaired, and is used when no information is known about its type, or
+how that type might have changed.  Let us again go through the rules one by one.
 
 \paragraph{\rulename{\UTRVar}}
 
@@ -22,14 +24,14 @@ this the case, repairing an occurrence of $v$ properly would require adding
 values for these new arguments.
 
 This is just a special case of repairing a function application, that we will
-see in the next rule (Rule \rulename{\UTRApp}).  We will solve the problem by
+see in the next rule (Rule \rulename{\UTRAppVar}).  We will solve the problem by
 using a helper function, $\repairArgsOp{}$, which repairs an arbitrary function
 applied to some number of arguments.  A variable is simply a special case where
 the list of arguments is empty, i.e. $[]$.
 
-\paragraph{\rulename{\UTRApp}}
+\paragraph{\rulename{\UTRAppVar}}
 
-$$\RepairTermTwoApp{}$$
+$$\RepairTermTwoAppVar{}$$
 
 This rule applies when the term is a function application.  Repairing nested
 function applications is not as trivial as it could seem.  Consider some
@@ -71,6 +73,12 @@ $\range{n}{a_{i}}$, and pass this array of arguments to $\repairArgsOp{}$.
 
 We omit the rules for $\repairArgsOp{}$ as they would be cumbersome and not
 enlightening.
+
+\paragraph{\rulename{\UTRAppTerm}}
+
+$$\RepairTermTwoAppTerm{}$$
+
+\TODO{Write about me.}
 
 \paragraph{\rulename{\UTRPi}}
 
@@ -344,9 +352,6 @@ terms that we do not attempt to repair are:
 functions because we cannot simply look up the type of the term abstraction,
 
   \item holes, that can remain the same,
-
-  \item term abstractions whose type is unknown,
-    \TODO{Can we do better here?}
 
   \item and universes, that can remain the same.
 

@@ -83,9 +83,9 @@ was to undergo modification $\delta_{\chi}$.  However, we changed this
 resolution so that variable $\chi$ will instead become $x$.  Therefore, within
 $\delta_{\tau_{2}}$, we should replace occurrences of $\chi'$, the variable that
 $\delta_{\tau_{2}}$ was expecting, to $z$, the variable that will actually be in
-scope.  Since the only diff construct that mentions variables is
-$\MathReplace{}$, this means we must substitute $\MathReplace{z}$ everywhere we
-see a free $\MathReplace{\chi'}$.
+scope.  Since the only diff construct that can mentions variables is the
+``replace'' atomic diff operation, $\MathReplace{…}$, this means we only need to
+substitute $\MathReplace{z}$ everywhere we see a free $\MathReplace{\chi'}$.
 
 Repairing the body of the term abstraction gives us back a diff,
 $\out{\delta_{t}}$.  However, remember that this diff was built with $z$
