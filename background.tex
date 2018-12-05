@@ -415,6 +415,33 @@ concerns.
 
 The concept of \define{refactoring}, which was introduced as early as
 in~\citet{wirfs1990surveying}, characterizes program transformations that
-preserve the semantics of the program being manipulated.
+preserve the semantics of the program being manipulated.  Semantics-preserving
+transformations of a program can include tasks such as:
 
-\TODO{Finish this section.}
+\begin{itemize}
+
+  \item reordering parameters to functions, classes, modules, and other
+parameterized language constructs,
+
+  \item changing the location of some units of code, possibly crossing module or
+file boundaries,
+
+  \item consistent renaming of variables and constants,
+
+  \item abstracting over some concrete code, or concretizing some abstract code,
+
+  \item etc.
+
+\end{itemize}
+
+\noindent%
+%
+Examples of non semantics-preserving transformations include:
+
+\begin{itemize}
+
+  \item adding, removing, or changing parameters to a function,
+
+  \item adding, removing, or changing parameters to a data constructor.
+
+\end{itemize}

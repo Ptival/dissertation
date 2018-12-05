@@ -34,7 +34,39 @@ qualitative feedback from participants.  Thirteen students chose to use
 \PeaCoq{} over the other alternatives, and provided feedback on what they liked
 and disliked.
 
-%TODO
+The results of the study were qualitative, indicating to us places where
+\PeaCoq{} could be improved for users, through their feedback.  The first issue
+that was raised concerned the amount of tactics presented by the automation.
+Users would routinely be shown dozens of tactic variations for a given context,
+with many tactics deemed unnecessary or redundant.  They requested some
+pre-processing, sorting, and grouping of tactics, so that they could easily
+ignore tactics that they knew would not help.
+
+Thanks to this feedback, we developed a grouping of tactics based on their
+action.  For instance, the \coqinline{destruct} tactic applies to any hypothesis
+in context that is built using a data type.  Since contexts often grow to have
+many such hypotheses, the context is often cluttered with a dozen of variations
+of the \coqinline{destruct} tactic, before the next tactics get listed.  When
+the user knows they are not interested in any of these, scrolling through them
+is tedious.  A suggested alternative consists in grouping tactics by theme,
+offering browsing facilities per theme and across themes.  This way, users not
+interested in \coqinline{destruct} tactics can browse over the whole group in
+one action.
+
+Another problem some beginners had was that some very general tactics were often
+confusing.  For instance, \Coq{} provides the \coqinline{left} and
+\coqinline{right} tactics, often presented for their use in proving logical
+conjunctions.  However, those tactics are overloaded to work on any data type
+with two constructors.  For instance, when the user needs to provide a
+\coqinline{list}, they can run the \coqinline{left} tactic to provide an empty
+list, or the \coqinline{right} tactic to indicate their intent to provide a
+non-empty list.  This behavior, while useful for certain expert proving tasts,
+is quite confusing for beginners.  We solved this problem by overwriting those
+tactics to instead perform a guard check for the shape of the goal.  Our
+modified \coqinline{left} and \coqinline{right} tactic first check that the goal
+is a syntactic conjunction, before applying the tactic.  While this
+significantly reduces the power of the tactic, it is sufficient for beginner
+exercises, and provides less surprising results.
 
 \subsection{A-B study}~\label{peacoq-a-b-study}
 

@@ -4,10 +4,27 @@ Proof assistants have a steep learning curve.  Not only do they require an
 understanding of high-level mathematical concepts, including but extending
 beyond the ones presented in Chapter~\ref{background}, but they also require the
 user to learn the idiosyncrasies of their proof assistant of choice.  Even
-experts of a given proof assistant would require at least several days to
-become comfortable in a new proof assistant.
+experts of a given proof assistant would require a decent amount of time to
+become proficient in a different proof assistant.
 
-% TODO
+Let's focus on the \Coq{} proof assistant.  Learning to use it requires getting
+familiar with the Calculus of (Co-)Inductive Constructions, a dependently-typed
+lambda calculus.  Proficiency in this language requires becoming familiar with
+dependent pattern matching, universe hierarchies, induction and co-induction,
+well-founded relations, etc.  This covers the knowledge required to write code
+and specifications in this proof assistant.
+
+In order to write proofs, the user must learn an additional, untyped language of
+tactics called \Ltac{}.  This language contains more than a hundred tactic
+formers, with several variations for each tactic.  While many proofs can be
+carried out with just a small subset of those, complicated proofs often require
+a large arsenal of tactics and a thorough understanding of the tactic language.
+
+Additionally, writing proofs over standard data types requires being able to
+locate relevant theorems within the standard library.  This standard library,
+by default, includes more than a thousand lemmas.  While \Coq{} offers facilities
+to search a relevant lemma by giving the shape of its expected type, this is still
+a somewhat tedious endeavor.
 
 We have identified three challenges in the learning process for novice users
 that we would like to tackle with \PeaCoq{}:

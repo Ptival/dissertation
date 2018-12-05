@@ -24,6 +24,11 @@
   [lab=\UTRAppVar]
   {
     {\turnstile
+      { \context{E}{\ \Gamma} }
+      { \hasType{f}{\out{\tau_f}} }
+    }
+    \\\\\\
+    {\turnstile
       { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
       { \declDiff{f}{\delta_f}{\delta_{\tau_f}} }
     }
@@ -45,21 +50,27 @@
   \inferrule*
   [lab=\UTRAppTerm]
   {
+    t \text{ is not a variable}
+    \\\\\\
     {\turnstile
       { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
       { \repairTermWithoutType{t}{\delta_{t}}
       }
     }
     \and
-    {\turnstile
+    \range{n}{\turnstile
       { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-      { \repairTermWithoutType{a}{\delta_{a}}
+      { \repairTermWithoutType{a_{i}}{\delta_{a_{i}}}
       }
     }
   }
   {\turnstile
     { \dcontext{E}{\delta_E}{\Gamma}{\delta_\Gamma} }
-    { \repairTermWithoutType{ t a }{\MathModApp{\delta_{t}}{\delta_{a}}} }
+    { \repairTermWithoutType{ t\ \range{n}{a_{i}} }
+      {\delta_{t}
+        {\range{n}{\MathModApp{}{\delta_{a_{i}}}}}
+      }
+    }
   }
 }
 

@@ -63,17 +63,7 @@ the list, and accounting for their changes in the local context.
 
 \subsubsection{Repairing inductive indices}
 
-\TODO{Describe repair of inductive indices, pretty boring}
-
-% Figures~\ref{fig:repair-inductive-parameters}
-% and~\ref{fig:repair-inductive-parameters-2} show the rules for
-% $\repairParametersOp{}$, the algorithm for repairing inductive parameters.  As
-% previously mentioned, the algorithm must return its final local context (and
-% diff), so that the inductive indices may be repaired in the proper context.
-% While our formalization in this dissertation returns the contexts explicitly,
-% our implementation uses a \define{state monad} to pass around local context and
-% global environment.
-
-% \input{figure-chick-repair-inductive-parameters}
-
-% \input{figure-chick-repair-inductive-parameters-2}
+Inductive indices are also given as a telescope, like the inductive parameters,
+with the only difference being that their binder may be omitted, where inductive
+parameters must be named.  They can be repaired in a similar fashion to
+inductive parameters, so we omit the rules for indices.

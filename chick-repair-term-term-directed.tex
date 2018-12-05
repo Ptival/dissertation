@@ -69,16 +69,92 @@ In order to do so, we syntactically extract as many nested applications as
 possible, yielding a sequence of arguments of some arbitrary length
 $\range{n}{a_{i}}$, and pass this array of arguments to $\repairArgsOp{}$.
 
-\TODO{decide on whether to write those rules}
+We omit the rules for $\repairArgsOp{}$ as they would be cumbersome.  The
+algorithm is first directed by the diff of the function's type, performing the
+appropriate addition, modification, deletion, and permutation of arguments,
+while also repairing existing arguments.  Care is taken in keeping track of the
+unprocessed list of arguments, so that when the function's type diff becomes
+$\MathSame{}$, we can introduce the appropriate amount of $\MathMod{}{}$ in the
+result.  For instance, consider the following change and repair, and their
+diffs:
 
-We omit the rules for $\repairArgsOp{}$ as they would be cumbersome and not
-enlightening.
+\begin{figure*}[!htp]
+\noindent%
+\cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+    \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
+Definition f : A → C → D → E → F := @\dummystrut{ }@
+…
+.
+
+Definition x := f a c d e.      @\dummystrut{ }@
+  \end{minted}
+\end{minipage}}%
+\cprotect\fbox{%
+  \begin{minipage}[t]{0.50\textwidth-2\fboxrule-2\fboxsep}%
+  \begin{minted}[fontsize=\footnotesize,escapeinside=@@,linenos=false]{coq}
+Definition f : A → @\modified{B →}@ C → D → E → F :=
+…
+.
+
+Definition x := f a @\repaired{(\_ : B)}@ c d e.
+  \end{minted}
+\end{minipage}}
+
+\vspace{0.2em}%
+
+  \begin{align*}
+    \delta_{\tau_{f}} & = \MathModPi{\MathSame{}_{\coqinline{A}}}{\MathSame{}}{\MathInsPi{A}{B}{\MathSame{}_{\coqinline{C → D → E}}}}\\
+    \delta_{x} & = \MathModApp{\MathModApp{\MathModApp{\MathInsApp{\MathSame{}}{\coqinline{(_ : B)}}}{\MathSame{}_{\coqinline{c}}}}{\MathSame{}_{\coqinline{d}}}}{\MathSame{}_{\coqinline{e}}}
+  \end{align*}
+
+  \caption{Modification and repair of a function and function call, and their respective diff}
+  \label{diff-list-vec-nil}
+
+\end{figure*}
+
+In this figure, we annotate the instances of $\MathSame$ with a subscript
+indicating the term that they are preserving.  Notice how, in the type, we have
+$\MathSame_{\coqinline{C → D → E}}$, but in the diff for \coqinline{x}, we have
+no choice but to expand it to a sequence of $\MathModApp{}{}$ operations, one
+for each argument, because of the reversed order.  In practice, this can be
+achieved in one of two ways:
+
+\begin{itemize}
+
+  \item by pre-processing instances of $\MathSame{}$ in input types, and
+expanding them to the diffs that they stand for.  For instance here, we would
+expand $\MathSame{}_{\coqinline{C → D → E}}$ into the equivalent, but more verbose
+$\MathModPi{\MathSame{}_{\coqinline{C}}}{\MathSame{}}{\MathModPi{\MathSame{}_{\coqinline{D}}}{\MathSame{}}{\MathSame{}_{\coqinline{E}}}}$,
+
+  \item or by keeping track of the number of arguments in the $\repairArgsOp{}$ algorithm,
+and processing $\MathSame{}$ as if it was a $\MathModPi{}{}{}$ for as long as we have
+arguments remaining (essentially dynamically emulating the previous option).
+
+\end{itemize}
+
+We present the rules following the latter approach.
 
 \paragraph{\rulename{\UTRAppTerm}}
 
 $$\RepairTermTwoAppTerm{}$$
 
-\TODO{Write about me.}
+This rule applies when we are trying to repair a function application that does
+not fit the previous rule: its leftmost nested node that is not an application
+node is not a variable either, but some other term.  An example of such term
+is an immediately applied function obtained by pattern matching:
+
+\begin{minted}[linenos=false]{coq}
+(match b with true => f | false => g end) x
+\end{minted}
+
+\noindent%
+%
+Because we do not know the type of the function being applied, we cannot repair
+the function applications properly.  We simply repair each argument, and leave
+the sequence of applications unchanged.  A more interesting repair would consist
+in first inferring the type of $t$, then repairing it to obtain a diff for its
+type, and then calling $\repairArgsOp{}$.  We have not yet explored this option.
 
 \paragraph{\rulename{\UTRPi}}
 
@@ -321,7 +397,17 @@ which will force the user to consider whether they want this branch to return
 wildcard patterns safer, as long as all refactoring attempts are carried through
 our tool, of course.
 
-\TODO{Decide whether to type up rules for $\repairBranchesOp{}$}
+We omit the rules for $\repairBranchesOp{}$, but the high-level algorithm
+consists in:
+
+\begin{itemize}
+
+  \item heuristically figure out the type of the discriminee $t$,
+
+  \item perform the transformation described in
+Figure~\ref{chick-repair-match-permutations}.
+
+\end{itemize}
 
 \paragraph{\rulename{\UTRAnnot}}
 
