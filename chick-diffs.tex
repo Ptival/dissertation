@@ -523,7 +523,7 @@ Indeed if we run our patching function, we obtain:
 Now, consider some client code that calls this function \coqinline{f}.  For
 instance, prior to repairing, let's say that we have a call:
 
-\begin{minted}{coq}
+\begin{minted}[linenos=false]{coq}
 let result := f (S n) b in …
 \end{minted}
 
@@ -542,7 +542,7 @@ the diff was $\delta_{1}$, that is, $\MathPermutePis{[1, 0]}{\MathSame{}}$, then
 it appears the arguments were swapped, and so we should patch the client code as
 follows:
 
-\begin{minted}{coq}
+\begin{minted}[linenos=false]{coq}
 let result := f b (S n) in …
 \end{minted}
 
@@ -556,7 +556,7 @@ parameter of type \coqinline{nat} is a brand new parameter, unrelated to the one
 that was present in the old type.  Therefore, the patch to the client code
 should rather produce the following:
 
-\begin{minted}{coq}
+\begin{minted}[linenos=false]{coq}
 let result := f b (_ : nat) in …
 \end{minted}
 
